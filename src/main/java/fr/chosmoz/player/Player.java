@@ -14,7 +14,7 @@ import java.util.UUID;
 public class Player {
     private UUID playerUuid;
     private String playerName;
-    private Class cls;
+    private Class clazz;
 
     @Setter
     private int level;

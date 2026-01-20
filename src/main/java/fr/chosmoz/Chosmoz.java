@@ -39,7 +39,7 @@ public class Chosmoz extends JavaPlugin {
             File jsonRankFile = jsonRankFileLoader.loadJsonRanksFile();
             List<Rank> jsonRankData = jsonRankFileLoader.getJsonData(jsonRankFile);
             JsonRankRepository jsonRankRepository = new JsonRankRepository(jsonRankData);
-            logger.atInfo().log(jsonRankData.size() + " ranks loaded!");
+            logger.atInfo().log(jsonRankData.size() + " rank(s) loaded!");
 
             //Player
             logger.atInfo().log("Loading players...");
@@ -51,25 +51,28 @@ public class Chosmoz extends JavaPlugin {
             //Remove this if you don't use JsonPlayerRepository
             this.playerRepository = jsonPlayerRepository;
             PlayerSaveDataTask playerSaveDataTask = new PlayerSaveDataTask(jsonPlayerRepository);
+            logger.atInfo().log(jsonPlayerData.size() + " player(s) loaded!");
 
             this.getTaskRegistry().registerTask(playerSaveDataTask.run());
-            logger.atInfo().log(jsonPlayerData.size() + " players loaded!");
-
-            this.getEventRegistry().registerGlobal(PlayerConnectEvent.class, new fr.chosmoz.player.event.PlayerConnectEvent(jsonPlayerRepository, logger)::onPlayerConnect);
-            this.getEventRegistry().registerGlobal(PlayerReadyEvent.class, new fr.chosmoz.player.event.PlayerReadyEvent(jsonPlayerRepository, jsonRankRepository)::onPlayerReady);
+            this.getEventRegistry().registerGlobal(PlayerConnectEvent.class,
+                    new fr.chosmoz.player.event.PlayerConnectEvent(jsonPlayerRepository, logger)::onPlayerConnect);
+            this.getEventRegistry().registerGlobal(PlayerReadyEvent.class,
+                    new fr.chosmoz.player.event.PlayerReadyEvent(jsonPlayerRepository, jsonRankRepository, logger)::onPlayerReady);
 
             //Class
             logger.atInfo().log("Loading classes...");
-            JsonClassFileLoader jsonClsFileLoader = new JsonClassFileLoader();
-            File jsonClsFile = jsonClsFileLoader.loadJsonClassesFile();
-            List<Class> jsonClsData = jsonClsFileLoader.getJsonData(jsonClsFile);
-            JsonClassRepository jsonClsRepository = new JsonClassRepository(jsonClsData);
-            logger.atInfo().log(jsonClsData.size() + " classes loaded!");
+            JsonClassFileLoader jsonClassFileLoader = new JsonClassFileLoader();
+            File jsonClassFile = jsonClassFileLoader.loadJsonClassesFile();
+            List<Class> jsonClassData = jsonClassFileLoader.getJsonData(jsonClassFile);
+            JsonClassRepository jsonClassRepository = new JsonClassRepository(jsonClassData);
+            logger.atInfo().log(jsonClassData.size() + " class(es) loaded!");
 
-            this.getEventRegistry().registerGlobal(PlayerConnectEvent.class, new fr.chosmoz.clazz.event.PlayerConnectEvent(jsonPlayerRepository, logger)::onPlayerConnectEvent);
+            this.getEventRegistry().registerGlobal(PlayerReadyEvent.class,
+                    new fr.chosmoz.clazz.event.PlayerReadyEvent(jsonPlayerRepository, logger)::onPlayerReadyEvent);
 
             //Chat
-            this.getEventRegistry().registerGlobal(PlayerChatEvent.class, new fr.chosmoz.chat.event.PlayerChatEvent(jsonPlayerRepository, jsonRankRepository, logger)::onPlayerChatEvent);
+            this.getEventRegistry().registerGlobal(PlayerChatEvent.class,
+                    new fr.chosmoz.chat.event.PlayerChatEvent(jsonPlayerRepository, jsonRankRepository, logger)::onPlayerChatEvent);
         } catch (Exception e) {
             logger.atSevere().log(e.toString());
         }

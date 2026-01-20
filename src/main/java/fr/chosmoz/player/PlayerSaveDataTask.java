@@ -10,13 +10,11 @@ import java.util.concurrent.TimeUnit;
 public class PlayerSaveDataTask {
     private PlayerRepository playerRepository;
 
+    @SuppressWarnings("unchecked")
     public ScheduledFuture<Void> run() {
-        return HytaleServer.SCHEDULED_EXECUTOR.schedule(
-                () -> {
-                    this.playerRepository.saveData();
-                    return null;
-                },
-                5, TimeUnit.SECONDS
+        return (ScheduledFuture<Void>) HytaleServer.SCHEDULED_EXECUTOR.scheduleWithFixedDelay(
+                () -> this.playerRepository.saveData(),
+                5, 5, TimeUnit.MINUTES
         );
     }
 }

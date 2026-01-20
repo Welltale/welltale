@@ -18,10 +18,10 @@ import javax.annotation.Nonnull;
 public class PlayerReadyEvent {
     private final PlayerRepository playerRepository;
     private final RankRepository rankRepository;
+    private final HytaleLogger logger;
 
     public void onPlayerReady(@Nonnull com.hypixel.hytale.server.core.event.events.player.PlayerReadyEvent event) {
         Player player = event.getPlayer();
-
         this.setNameplate(player);
     }
 
@@ -30,23 +30,29 @@ public class PlayerReadyEvent {
             fr.chosmoz.player.Player player = this.playerRepository.getPlayerByUsername(p.getDisplayName());
 
             if (player.getRankUuid() == null) {
+                this.logger.atSevere().log("[PLAYER] onPlayerReadyEvent Failed (PlayerID: " + player.getPlayerUuid() + "): RankUUID is null");
                 return;
             }
 
             Rank playerRank = this.rankRepository.getRank(player.getRankUuid());
 
             Ref<EntityStore> ref = p.getReference();
-            assert ref != null;
+            if (ref == null) {
+                this.logger.atSevere().log("[PLAYER] onPlayerReadyEvent Failed (PlayerID: " + player.getPlayerUuid() + "): Ref is null");
+                return;
+            }
 
             Store<EntityStore> store = ref.getStore();
-
             Nameplate nameplate = store.getComponent(ref, Nameplate.getComponentType());
-            assert nameplate != null;
+            if (nameplate == null) {
+                this.logger.atSevere().log("[PLAYER] onPlayerReadyEvent Failed (PlayerID: " + player.getPlayerUuid() + "): Nameplate is null");
+                return;
+            }
 
             nameplate.setText("[" + Prefix.LevelPrefix + player.getLevel() + "] " + "[" + playerRank.getPrefix() + "] " + p.getDisplayName());
         } catch (Exception e) {
             HytaleLogger.getLogger().atSevere()
-                    .log("Failed to set custom nameplate to player " + p.getDisplayName() + ": " + e.getMessage());
+                    .log("[PLAYER] Failed to set custom nameplate to player " + p.getDisplayName() + ": " + e.getMessage());
         }
     }
 }
