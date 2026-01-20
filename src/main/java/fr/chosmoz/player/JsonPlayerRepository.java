@@ -18,7 +18,7 @@ public class JsonPlayerRepository implements PlayerRepository {
     @Override
     public void addPlayer(Player player) throws Exception {
         if (player == null || player.getPlayerUuid() == null) {
-            throw new Exception(ERR_INVALID_PLAYER);
+            throw ERR_INVALID_PLAYER;
         }
 
         for (Player cachedPlayer : this.cachedPlayers) {
@@ -37,7 +37,7 @@ public class JsonPlayerRepository implements PlayerRepository {
         return cachedPlayers.stream()
                 .filter(p -> p.getPlayerUuid().equals(playerUuid))
                 .findFirst()
-                .orElseThrow(() -> new Exception(ERR_PLAYER_NOT_FOUND));
+                .orElseThrow(() -> ERR_PLAYER_NOT_FOUND);
     }
 
     @Override
@@ -45,7 +45,7 @@ public class JsonPlayerRepository implements PlayerRepository {
         return cachedPlayers.stream()
                 .filter(p -> p.getPlayerName().equalsIgnoreCase(playerName))
                 .findFirst()
-                .orElseThrow(() -> new Exception(ERR_PLAYER_NOT_FOUND));
+                .orElseThrow(() -> ERR_PLAYER_NOT_FOUND);
     }
 
     public List<Player> getCachedPlayers() throws Exception {
@@ -55,7 +55,7 @@ public class JsonPlayerRepository implements PlayerRepository {
     @Override
     public void updatePlayer(Player player) throws Exception {
         if (player == null || player.getPlayerUuid() == null) {
-            throw new Exception(ERR_INVALID_PLAYER);
+            throw ERR_INVALID_PLAYER;
         }
 
         for (int i = 0; i < cachedPlayers.size(); i++) {
@@ -66,7 +66,7 @@ public class JsonPlayerRepository implements PlayerRepository {
             cachedPlayers.set(i, player);
             return;
         }
-        throw new Exception(ERR_PLAYER_NOT_FOUND);
+        throw ERR_PLAYER_NOT_FOUND;
     }
 
     @Override
