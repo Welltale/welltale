@@ -1,0 +1,153 @@
+Group #MainContainer {
+  Anchor: (Top: 0, Left: 0, Right: 0, Bottom: 0);
+  LayoutMode: Top;
+  Padding: (Full: 20);
+  Background: "ClassSelectBackground.png";
+
+  Group #SubContainer {
+    FlexWeight: 1;
+    LayoutMode: Left;
+
+    Group #ClassSelectorContainer {
+      FlexWeight: 1;
+      LayoutMode: Top;
+      Padding: (Full: 10);
+
+      Group #ClassSelector {
+        Anchor: (Top: 200, Right: 100, Left: 100, Height: 300);
+        FlexWeight: 1;
+        LayoutMode: Top;
+        //Background: #211E43(0.15);
+        Padding: (Full: 10);
+
+        Label #ClassSelectorTitle {
+          Text: "CLASSE";
+          Style: (FontSize: 15, TextColor: #e3e3e3, Alignment: Center, RenderBold: true);
+        }
+
+        Group #Separator {
+          LayoutMode: Left;
+          Anchor: (Height: 1, Right: 0, Left: 0, Top: 10);
+          Background: #e3e3e3(1.00);
+        }
+
+        Group #Classes {
+          LayoutMode: Left;
+          Anchor: (Top: 15);
+
+          Group #SubClasses {
+            LayoutMode: Center;
+            FlexWeight: 1;
+
+            AssetImage #Class1 {
+              Anchor: (Width: 75, Height: 75);
+              Background: "ClassSelectSlot.png";
+
+              Label #Class1Icon {
+                Style: (FontSize: 5, TextColor: #000000, Alignment: Center);
+                Text: "Test";
+              }
+            }
+
+            Group #Spacer {
+              Anchor: (Width: 7);
+            }
+
+            AssetImage #Class2 {
+              Anchor: (Width: 75, Height: 75);
+              Background: "ClassSelectSlot.png";
+
+              Label #Class2Icon {
+                Style: (FontSize: 5, TextColor: #000000, Alignment: Center);
+                Text: "Test";
+              }
+            }
+
+            Group #Spacer {
+              Anchor: (Width: 7);
+            }
+
+            AssetImage #Class3 {
+              Anchor: (Width: 75, Height: 75);
+              Background: "ClassSelectSlot.png";
+
+              Label #Class3Icon {
+                Style: (FontSize: 5, TextColor: #000000, Alignment: Center);
+                Text: "Test";
+              }
+            }
+
+            Group #Spacer {
+              Anchor: (Width: 7);
+            }
+
+            AssetImage #Class4 {
+              Anchor: (Width: 75, Height: 75);
+              Background: "ClassSelectSlot.png";
+
+              Label #Class4Icon {
+                Style: (FontSize: 5, TextColor: #000000, Alignment: Center);
+                Text: "Test";
+              }
+            }
+
+            Group #Spacer {
+              Anchor: (Width: 7);
+            }
+
+            AssetImage #Class5 {
+              Anchor: (Width: 75, Height: 75);
+              Background: "ClassSelectSlot.png";
+
+              Label #Class5Icon {
+                Style: (FontSize: 5, TextColor: #000000, Alignment: Center);
+                Text: "Test";
+              }
+            }
+          }
+        }
+      }
+
+      Group #WIP {
+        LayoutMode: Left;
+
+        Label #WIPIcon {
+          Anchor: (Height: 100, Width: 100);
+          Background: "../../Commons/WIPIcon.png";
+          Style: (Alignment: Center);
+        }
+
+        Group #Spacer {
+          Anchor: (Width: 7);
+        }
+
+        Label #WIPText {
+          Text: "Work In Progress";
+          Style: (FontSize: 15, TextColor: #e3e3e3, RenderBold: true, Alignment: Center);
+        }
+      }
+    }
+
+    Group #ClassSelectedContainer {
+      FlexWeight: 1;
+      Background: #4eaa47(0.20);
+      LayoutMode: Top;
+
+      Label #ClassSelectedTitle {
+        Text: "CLASS SELECTED";
+        Style: (FontSize: 15, TextColor: #ffffff, RenderBold: true, Alignment: Center);
+      }
+    }
+
+    Group #ClassInformationsContainer {
+      FlexWeight: 1;
+      Background: #aa1b38(0.20);
+      LayoutMode: Top;
+
+      Label #ClassInformationsTitle {
+        Text: "CLASS INFORMATIONS";
+        Style: (FontSize: 15, TextColor: #ffffff, RenderBold: true, Alignment: Center);
+      }
+    }
+  }
+}

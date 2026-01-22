@@ -5,7 +5,7 @@ import java.awt.Color;
 public class Prefix {
     // Level
     public static String LevelPrefix = "Lv.";
-    public static Color LevelPrefixColor = fr.chosmoz.util.Color.BLUE;
+    public static Color LevelPrefixColor = fr.chosmoz.util.Color.CHOSMOZ;
 
     // Server
     public static String ServerPrefix = "Chosmoz";

@@ -68,7 +68,7 @@ public class Chosmoz extends JavaPlugin {
             logger.atInfo().log(jsonClassData.size() + " class(es) loaded!");
 
             this.getEventRegistry().registerGlobal(PlayerReadyEvent.class,
-                    new fr.chosmoz.clazz.event.PlayerReadyEvent(jsonPlayerRepository, logger)::onPlayerReadyEvent);
+                    new fr.chosmoz.clazz.event.PlayerReadyEvent(jsonPlayerRepository, jsonClassRepository, logger)::onPlayerReadyEvent);
 
             //Chat
             this.getEventRegistry().registerGlobal(PlayerChatEvent.class,

@@ -6,7 +6,8 @@ import com.hypixel.hytale.logger.HytaleLogger;
 import com.hypixel.hytale.server.core.entity.UUIDComponent;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
-import fr.chosmoz.clazz.page.ClassSelectPage;
+import fr.chosmoz.clazz.ClassRepository;
+import fr.chosmoz.clazz.page.ClassSelect.ClassSelectPage;
 import fr.chosmoz.player.Player;
 import fr.chosmoz.player.PlayerRepository;
 import lombok.AllArgsConstructor;
@@ -16,6 +17,7 @@ import javax.annotation.Nonnull;
 @AllArgsConstructor
 public class PlayerReadyEvent {
     private final PlayerRepository playerRepository;
+    private final ClassRepository classRepository;
     private final HytaleLogger logger;
 
     public void onPlayerReadyEvent(@Nonnull com.hypixel.hytale.server.core.event.events.player.PlayerReadyEvent event) {
@@ -52,7 +54,7 @@ public class PlayerReadyEvent {
 
             //TODO ADD CHECK IF CLASS IS VALID
 
-            ClassSelectPage page = new ClassSelectPage(playerRef);
+            ClassSelectPage page = new ClassSelectPage(playerRef, this.logger);
             player.getPageManager().openCustomPage(ref, store, page);
         } catch (Exception e) {
             player.remove();
