@@ -1,3 +1,5 @@
+$C = "../../Commons.ui";
+
 Group #MainContainer {
   Anchor: (Top: 0, Left: 0, Right: 0, Bottom: 0);
   LayoutMode: Top;
@@ -13,95 +15,65 @@ Group #MainContainer {
       LayoutMode: Top;
       Padding: (Full: 10);
 
-      Group #ClassSelector {
+      Group #ClassSelectorSubContainer {
         Anchor: (Top: 200, Right: 100, Left: 100, Height: 300);
         FlexWeight: 1;
         LayoutMode: Top;
-        //Background: #211E43(0.15);
         Padding: (Full: 10);
 
         Label #ClassSelectorTitle {
           Text: "CLASSE";
-          Style: (FontSize: 15, TextColor: #e3e3e3, Alignment: Center, RenderBold: true);
+          Style: (FontSize: 15, TextColor: $C.@ChosmozColor, Alignment: Center, RenderBold: true);
         }
 
-        Group #Separator {
-          LayoutMode: Left;
-          Anchor: (Height: 1, Right: 0, Left: 0, Top: 10);
-          Background: #e3e3e3(1.00);
-        }
+        $C.@ChosmozSeparator {}
 
         Group #Classes {
           LayoutMode: Left;
-          Anchor: (Top: 15);
 
           Group #SubClasses {
             LayoutMode: Center;
             FlexWeight: 1;
 
-            AssetImage #Class1 {
-              Anchor: (Width: 75, Height: 75);
-              Background: "ClassSelectSlot.png";
+            Button #Class1Button {
+              Anchor: (Width: 60, Height: 60);
+              Style: (...$C.@SlotButtonStyle);
 
-              Label #Class1Icon {
-                Style: (FontSize: 5, TextColor: #000000, Alignment: Center);
-                Text: "Test";
+              Label #Class1Name {
+                Style: (FontSize: 10, TextColor: #ffffff, Alignment: Center);
               }
             }
 
-            Group #Spacer {
-              Anchor: (Width: 7);
-            }
+            $C.@SmallSpacer {}
 
-            AssetImage #Class2 {
-              Anchor: (Width: 75, Height: 75);
-              Background: "ClassSelectSlot.png";
+            Button #Class2Button {
+              Anchor: (Width: 60, Height: 60);
+              Style: (...$C.@SlotButtonStyle);
 
-              Label #Class2Icon {
-                Style: (FontSize: 5, TextColor: #000000, Alignment: Center);
-                Text: "Test";
+              Label #Class2Name {
+                Style: (FontSize: 10, TextColor: #ffffff, Alignment: Center);
               }
             }
 
-            Group #Spacer {
-              Anchor: (Width: 7);
-            }
+            $C.@SmallSpacer {}
 
-            AssetImage #Class3 {
-              Anchor: (Width: 75, Height: 75);
-              Background: "ClassSelectSlot.png";
+            Button #Class3Button {
+              Anchor: (Width: 60, Height: 60);
+              Style: (...$C.@SlotButtonStyle);
 
-              Label #Class3Icon {
-                Style: (FontSize: 5, TextColor: #000000, Alignment: Center);
-                Text: "Test";
+              Label #Class3Name {
+                Style: (FontSize: 10, TextColor: #ffffff, Alignment: Center);
               }
             }
 
-            Group #Spacer {
-              Anchor: (Width: 7);
-            }
+            $C.@SmallSpacer {}
 
-            AssetImage #Class4 {
-              Anchor: (Width: 75, Height: 75);
-              Background: "ClassSelectSlot.png";
+            Button #Class4Button {
+              Anchor: (Width: 60, Height: 60);
+              Style: (...$C.@SlotButtonStyle);
 
-              Label #Class4Icon {
-                Style: (FontSize: 5, TextColor: #000000, Alignment: Center);
-                Text: "Test";
-              }
-            }
-
-            Group #Spacer {
-              Anchor: (Width: 7);
-            }
-
-            AssetImage #Class5 {
-              Anchor: (Width: 75, Height: 75);
-              Background: "ClassSelectSlot.png";
-
-              Label #Class5Icon {
-                Style: (FontSize: 5, TextColor: #000000, Alignment: Center);
-                Text: "Test";
+              Label #Class4Name {
+                Style: (FontSize: 10, TextColor: #ffffff, Alignment: Center);
               }
             }
           }
@@ -111,42 +83,80 @@ Group #MainContainer {
       Group #WIP {
         LayoutMode: Left;
 
-        Label #WIPIcon {
+        AssetImage #WIPIcon {
           Anchor: (Height: 100, Width: 100);
           Background: "../../Commons/WIPIcon.png";
-          Style: (Alignment: Center);
         }
 
-        Group #Spacer {
-          Anchor: (Width: 7);
-        }
+        $C.@SmallSpacer {}
 
         Label #WIPText {
           Text: "Work In Progress";
-          Style: (FontSize: 15, TextColor: #e3e3e3, RenderBold: true, Alignment: Center);
+          Style: (FontSize: 20, TextColor: #ffffff, RenderBold: true, Alignment: Center);
         }
       }
     }
 
     Group #ClassSelectedContainer {
       FlexWeight: 1;
-      Background: #4eaa47(0.20);
       LayoutMode: Top;
+      Padding: (Bottom: 100, Top: 100);
 
-      Label #ClassSelectedTitle {
-        Text: "CLASS SELECTED";
-        Style: (FontSize: 15, TextColor: #ffffff, RenderBold: true, Alignment: Center);
+      Group #ClassSelectedInfo {
+        LayoutMode: Top;
+        FlexWeight: 1;
+
+        AssetImage #ClassSelectedIcon {
+          Anchor: (Height: 75, Width: 75);
+          Background: "../../Commons/WIPIcon.png";
+        }
+
+        Label #ClassSelectedName {
+          Text: "UNDEFINED";
+          Style: (FontSize: 30, RenderUppercase: true, RenderBold: true, Alignment: Center, TextColor: #ffffff);
+        }
+      }
+
+      Group #ClassSelected {
+        LayoutMode: Top;
+        FlexWeight: 1;
+
+        AssetImage #ClassSelectedPreview {
+          Anchor: (Height: 100, Width: 100);
+          Background: "../../Commons/WIPIcon.png";
+        }
+      }
+
+      Group #PlayGroup {
+        LayoutMode: Top;
+
+        TextButton #PlayButton {
+          Text: "JOUER";
+          Style: (...$C.@ButtonStyle);
+          Anchor: (Height: 30, Width: 160);
+        }
+
+        $C.@SmallSpacer {}
+
+        TextButton #DisconnectButton {
+          Text: "DÉCONNEXION";
+          Style: (...$C.@CancelButtonStyle);
+          Anchor: (Height: 30, Width: 160);
+        }
       }
     }
 
     Group #ClassInformationsContainer {
       FlexWeight: 1;
-      Background: #aa1b38(0.20);
-      LayoutMode: Top;
+      LayoutMode: Center;
 
-      Label #ClassInformationsTitle {
-        Text: "CLASS INFORMATIONS";
-        Style: (FontSize: 15, TextColor: #ffffff, RenderBold: true, Alignment: Center);
+      Group #ClassInformations {
+        Padding: (Top: 30);
+
+        AssetImage #ClassInformationCard {
+          Anchor: (Height: 100, Width: 100);
+          Background: "../../Commons/WIPIcon.png";
+        }
       }
     }
   }

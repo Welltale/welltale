@@ -1,0 +1,61 @@
+@ChosmozColor = #7BA9FFFF;
+
+@CancelButtonStyle = TextButtonStyle(
+  Default: (
+    Background: "Commons/CancelButton.png", LabelStyle: (FontSize: 13, TextColor: #ffffff, RenderBold: true, Alignment: Center)
+  ),
+  Hovered: (
+    Background: "Commons/CancelButtonHovered.png", LabelStyle: (FontSize: 13, TextColor: #ffffff, RenderBold: true, Alignment: Center)
+  ),
+  Pressed: (
+    Background: "Commons/CancelButtonPressed.png", LabelStyle: (FontSize: 13, TextColor: #ffffff, RenderBold: true, Alignment: Center)
+  )
+);
+
+@ButtonStyle = TextButtonStyle(
+  Default: (
+    Background: "Commons/Button.png", LabelStyle: (FontSize: 13, TextColor: #ffffff, RenderBold: true, Alignment: Center)
+  ),
+  Hovered: (
+    Background: "Commons/ButtonHovered.png", LabelStyle: (FontSize: 13, TextColor: #ffffff, RenderBold: true, Alignment: Center)
+  ),
+  Pressed: (
+    Background: "Commons/ButtonPressed.png", LabelStyle: (FontSize: 13, TextColor: #ffffff, RenderBold: true, Alignment: Center)
+  )
+);
+
+@SlotButtonStyle = ButtonStyle(
+  Default: (
+    Background: "Commons/Slot.png"
+  ),
+  Hovered: (
+    Background: "Commons/SlotHovered.png"
+  ),
+  Pressed: (
+    Background: "Commons/SlotPressed.png"
+  )
+);
+
+@SmallSpacer = Group {
+  Anchor: (Width: 5, Right: 0, Left: 0, Top: 5, Bottom: 5);
+};
+
+@MediumSpacer = Group {
+  Anchor: (Width: 15, Right: 0, Left: 0, Top: 15, Bottom: 15);
+};
+
+@BigSpacer = Group {
+  Anchor: (Width: 30, Right: 0, Left: 0, Top: 30, Bottom: 30);
+};
+
+@WhiteSeparator = Group {
+  LayoutMode: Left;
+  Anchor: (Height: 2, Right: 0, Left: 0, Top: 10, Bottom: 10);
+  Background: #ffffff(1.00);
+};
+
+@ChosmozSeparator = Group {
+  LayoutMode: Left;
+  Anchor: (Height: 2, Right: 0, Left: 0, Top: 10, Bottom: 10);
+  Background: @ChosmozColor;
+};

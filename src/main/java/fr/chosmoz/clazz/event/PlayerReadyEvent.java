@@ -54,7 +54,7 @@ public class PlayerReadyEvent {
 
             //TODO ADD CHECK IF CLASS IS VALID
 
-            ClassSelectPage page = new ClassSelectPage(playerRef, this.logger);
+            ClassSelectPage page = new ClassSelectPage(playerRef, this.classRepository, this.playerRepository, this.logger);
             player.getPageManager().openCustomPage(ref, store, page);
         } catch (Exception e) {
             player.remove();
