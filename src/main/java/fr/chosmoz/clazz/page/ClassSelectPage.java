@@ -80,7 +80,7 @@ public class ClassSelectPage extends InteractiveCustomUIPage<ClassSelectPage.Cla
             if (!classes.isEmpty()) {
                 this.classSelectedUuid = classes.getFirst().getUuid();
                 cmd.set("#ClassSelectedName.Text", classes.getFirst().getName());
-                //TODO ADD CLASS ICON
+                //TODO ADD CLASS ICON & PREVIEW
             }
 
             for (int i = 0; i < classes.size(); i++) {
@@ -134,6 +134,7 @@ public class ClassSelectPage extends InteractiveCustomUIPage<ClassSelectPage.Cla
                 Class newClass = this.classRepository.getClass(data.classSelectedUuid);
                 this.classSelectedUuid = newClass.getUuid();
                 this.sendUpdate(new UICommandBuilder().set("#ClassSelectedName.Text", newClass.getName()));
+                //TODO ADD CLASS ICON & PREVIEW
                 return;
             } catch (Exception e) {
                 this.logger.atSevere()
