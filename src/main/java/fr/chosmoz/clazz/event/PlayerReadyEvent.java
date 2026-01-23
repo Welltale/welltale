@@ -6,7 +6,7 @@ import com.hypixel.hytale.logger.HytaleLogger;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import fr.chosmoz.clazz.ClassRepository;
-import fr.chosmoz.clazz.page.ClassSelect.ClassSelectPage;
+import fr.chosmoz.clazz.page.ClassSelectPage;
 import fr.chosmoz.player.Player;
 import fr.chosmoz.player.PlayerRepository;
 import lombok.AllArgsConstructor;

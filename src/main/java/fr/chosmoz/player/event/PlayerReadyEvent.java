@@ -47,7 +47,7 @@ public class PlayerReadyEvent {
             fr.chosmoz.player.Player playerData = this.playerRepository.getPlayerByUuid(playerRef.getUuid());
             this.setNameplate(playerRef,ref, store, playerData);
 
-            if (playerData.getRankUuid() != null) {
+            if (playerData.getClazzUuid() != null) {
                 return;
             }
 
