@@ -133,7 +133,7 @@ Group #MainContainer {
         TextButton #PlayButton {
           Text: "JOUER";
           Style: (...$C.@ButtonStyle);
-          Anchor: (Height: 30, Width: 160);
+          Anchor: (Height: 40, Width: 160);
         }
 
         $C.@SmallSpacer {}
@@ -141,7 +141,7 @@ Group #MainContainer {
         TextButton #DisconnectButton {
           Text: "DÉCONNEXION";
           Style: (...$C.@CancelButtonStyle);
-          Anchor: (Height: 30, Width: 160);
+          Anchor: (Height: 40, Width: 160);
         }
       }
     }
@@ -151,7 +151,7 @@ Group #MainContainer {
       LayoutMode: Center;
 
       Group #ClassInformations {
-        Padding: (Top: 30);
+        Padding: (Top: 5);
 
         AssetImage #ClassInformationCard {
           Anchor: (Height: 100, Width: 100);

@@ -1,6 +1,5 @@
 package fr.chosmoz.player;
 
-import fr.chosmoz.clazz.Class;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,7 +15,7 @@ public class Player {
     private String playerName;
 
     @Setter
-    private Class clazz;
+    private UUID clazzUuid;
 
     @Setter
     private int level;

@@ -3,7 +3,6 @@ package fr.chosmoz.clazz.event;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.logger.HytaleLogger;
-import com.hypixel.hytale.server.core.entity.UUIDComponent;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import fr.chosmoz.clazz.ClassRepository;
@@ -38,21 +37,11 @@ public class PlayerReadyEvent {
             return;
         }
 
-        UUIDComponent playerUuid = store.getComponent(ref, UUIDComponent.getComponentType());
-        if (playerUuid == null) {
-            this.logger.atSevere()
-                    .log("[CLASS] onPlayerReadyEvent Failed: PlayerUUID is null");
-            player.remove();
-            return;
-        }
-
         try {
-            Player playerData = this.playerRepository.getPlayerByUuid(playerUuid.getUuid());
-            if (playerData.getClazz() != null) {
+            Player playerData = this.playerRepository.getPlayerByUuid(playerRef.getUuid());
+            if (playerData.getClazzUuid() != null) {
                 return;
             }
-
-            //TODO ADD CHECK IF CLASS IS VALID
 
             ClassSelectPage page = new ClassSelectPage(playerRef, this.classRepository, this.playerRepository, this.logger);
             player.getPageManager().openCustomPage(ref, store, page);

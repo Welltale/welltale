@@ -31,7 +31,7 @@ public class ClassSelectPage extends InteractiveCustomUIPage<ClassSelectPage.Cla
         DISCONNECT, PLAY
     }
 
-    private Class classSelected;
+    private UUID classSelectedUuid;
 
     private final ClassRepository classRepository;
     private final PlayerRepository playerRepository;
@@ -78,7 +78,7 @@ public class ClassSelectPage extends InteractiveCustomUIPage<ClassSelectPage.Cla
         try {
             List<Class> classes = this.classRepository.getClasses();
             if (!classes.isEmpty()) {
-                this.classSelected = classes.getFirst();
+                this.classSelectedUuid = classes.getFirst().getUuid();
                 cmd.set("#ClassSelectedName.Text", classes.getFirst().getName());
                 //TODO ADD CLASS ICON
             }
@@ -89,8 +89,13 @@ public class ClassSelectPage extends InteractiveCustomUIPage<ClassSelectPage.Cla
                 event.addEventBinding(CustomUIEventBindingType.Activating, "#Class" + y + "Button", EventData.of("ClassSelected", classes.get(i).getUuid().toString()));
             }
         } catch (Exception e) {
+            this.logger.atSevere()
+                    .log("[CLASS] ClassSelectPage Build Failed: " + e.getMessage());
+
             Player player = ref.getStore().getComponent(ref, Player.getComponentType());
             if (player == null) {
+                this.logger.atSevere()
+                        .log("[CLASS] ClassSelectPage Build Failed Exception: Player is null");
                 return;
             }
 
@@ -127,7 +132,7 @@ public class ClassSelectPage extends InteractiveCustomUIPage<ClassSelectPage.Cla
         if (data.classSelectedUuid != null) {
             try {
                 Class newClass = this.classRepository.getClass(data.classSelectedUuid);
-                this.classSelected = newClass;
+                this.classSelectedUuid = newClass.getUuid();
                 this.sendUpdate(new UICommandBuilder().set("#ClassSelectedName.Text", newClass.getName()));
                 return;
             } catch (Exception e) {
@@ -151,7 +156,7 @@ public class ClassSelectPage extends InteractiveCustomUIPage<ClassSelectPage.Cla
             @NonNull Store<EntityStore> store,
             @NonNull Player player
     ) {
-        if (this.classSelected == null) {
+        if (this.classSelectedUuid == null) {
             this.sendUpdate();
             return;
         }
@@ -164,12 +169,12 @@ public class ClassSelectPage extends InteractiveCustomUIPage<ClassSelectPage.Cla
 
         try {
             fr.chosmoz.player.Player playerData = this.playerRepository.getPlayerByUuid(playerUuid.getUuid());
-            if (playerData.getClazz() != null) {
+            if (playerData.getClazzUuid() != null) {
                 player.getPageManager().setPage(ref, store, Page.None);
                 return;
             }
 
-            playerData.setClazz(this.classSelected);
+            playerData.setClazzUuid(this.classSelectedUuid);
             playerRepository.updatePlayer(playerData);
             player.getPageManager().setPage(ref, store, Page.None);
         } catch (Exception e) {

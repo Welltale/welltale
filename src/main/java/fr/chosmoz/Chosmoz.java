@@ -6,6 +6,7 @@ import com.hypixel.hytale.server.core.event.events.player.PlayerConnectEvent;
 import com.hypixel.hytale.server.core.event.events.player.PlayerReadyEvent;
 import com.hypixel.hytale.server.core.plugin.JavaPlugin;
 import com.hypixel.hytale.server.core.plugin.JavaPluginInit;
+import com.hypixel.hytale.server.core.universe.Universe;
 import fr.chosmoz.clazz.Class;
 import fr.chosmoz.clazz.JsonClassFileLoader;
 import fr.chosmoz.clazz.JsonClassRepository;
@@ -32,6 +33,7 @@ public class Chosmoz extends JavaPlugin {
         super.setup();
 
         HytaleLogger logger = this.getLogger();
+        Universe universe = Universe.get();
         try {
             //Rank
             logger.atInfo().log("Loading ranks...");
@@ -55,9 +57,9 @@ public class Chosmoz extends JavaPlugin {
 
             this.getTaskRegistry().registerTask(playerSaveDataTask.run());
             this.getEventRegistry().registerGlobal(PlayerConnectEvent.class,
-                    new fr.chosmoz.player.event.PlayerConnectEvent(jsonPlayerRepository, logger)::onPlayerConnect);
+                    new fr.chosmoz.player.event.PlayerConnectEvent(jsonPlayerRepository, logger, universe)::onPlayerConnect);
             this.getEventRegistry().registerGlobal(PlayerReadyEvent.class,
-                    new fr.chosmoz.player.event.PlayerReadyEvent(jsonPlayerRepository, jsonRankRepository, logger)::onPlayerReady);
+                    new fr.chosmoz.player.event.PlayerReadyEvent(jsonPlayerRepository, jsonRankRepository, logger, universe)::onPlayerReady);
 
             //Class
             logger.atInfo().log("Loading classes...");

@@ -32,12 +32,6 @@ public class PlayerChatEvent {
         try {
             Player player = this.playerRepository.getPlayerByUuid(sender.getUuid());
 
-            if (player.getRankUuid() == null) {
-                return;
-            }
-
-            Rank playerRank = this.rankRepository.getRank(player.getRankUuid());
-
             List<PlayerRef> targets = event.getTargets();
             String content = event.getContent();
 
@@ -47,24 +41,39 @@ public class PlayerChatEvent {
                     .color(Prefix.LevelPrefixColor)
                     .bold(true);
 
-            Message prefix = Message.raw("[" + playerRank.getPrefix() + "] ")
-                    .color(fr.chosmoz.util.Color.getColor(playerRank.getColor()))
-                    .bold(true);
-
             Message author = Message.raw(sender.getUsername() + ": ")
-                    .color(fr.chosmoz.util.Color.getColor(playerRank.getColor()))
                     .bold(false);
 
             Message message = Message.raw(content)
-                    .color(fr.chosmoz.util.Color.getColor(playerRank.getColor()))
                     .bold(false);
 
+            Message formattedMessage = Message.join(level, author, message);
+
+
+            if (player.getRankUuid() != null) {
+                Rank playerRank = this.rankRepository.getRank(player.getRankUuid());
+
+                author = Message.raw(sender.getUsername() + ": ")
+                        .color(fr.chosmoz.util.Color.getColor(playerRank.getColor()))
+                        .bold(false);
+
+                message = Message.raw(content)
+                        .color(fr.chosmoz.util.Color.getColor(playerRank.getColor()))
+                        .bold(false);
+
+                Message prefix = Message.raw("[" + playerRank.getPrefix() + "] ")
+                        .color(fr.chosmoz.util.Color.getColor(playerRank.getColor()))
+                        .bold(true);
+
+                formattedMessage = Message.join(level, prefix, author, message);
+            }
+
             for (PlayerRef target : targets) {
-                target.sendMessage(Message.join(level, prefix, author, message));
+                target.sendMessage(formattedMessage);
             }
         } catch (Exception e) {
             this.logger.atSevere()
-                    .log("Failed to get sender " + sender.getUsername() + " in database: " + e.getMessage());
+                    .log("[CHAT] onPlayerChatEvent reformatMessage Failed (PlayerID: " + sender.getUuid() + "): " + e.getMessage());
         }
     }
 }
