@@ -37,7 +37,7 @@ Group #MainContainer {
 
             Button #Class1Button {
               Anchor: (Width: 60, Height: 60);
-              Style: (...$C.@SlotButtonStyle);
+              Style: (...$C.@ClickableSlotButtonStyle);
 
               Label #Class1Name {
                 Style: (FontSize: 10, TextColor: #ffffff, Alignment: Center);
@@ -48,7 +48,7 @@ Group #MainContainer {
 
             Button #Class2Button {
               Anchor: (Width: 60, Height: 60);
-              Style: (...$C.@SlotButtonStyle);
+              Style: (...$C.@ClickableSlotButtonStyle);
 
               Label #Class2Name {
                 Style: (FontSize: 10, TextColor: #ffffff, Alignment: Center);
@@ -59,7 +59,7 @@ Group #MainContainer {
 
             Button #Class3Button {
               Anchor: (Width: 60, Height: 60);
-              Style: (...$C.@SlotButtonStyle);
+              Style: (...$C.@ClickableSlotButtonStyle);
 
               Label #Class3Name {
                 Style: (FontSize: 10, TextColor: #ffffff, Alignment: Center);
@@ -70,7 +70,7 @@ Group #MainContainer {
 
             Button #Class4Button {
               Anchor: (Width: 60, Height: 60);
-              Style: (...$C.@SlotButtonStyle);
+              Style: (...$C.@ClickableSlotButtonStyle);
 
               Label #Class4Name {
                 Style: (FontSize: 10, TextColor: #ffffff, Alignment: Center);
@@ -132,7 +132,7 @@ Group #MainContainer {
 
         TextButton #PlayButton {
           Text: "JOUER";
-          Style: (...$C.@ButtonStyle);
+          Style: (...$C.@EnterButtonStyle);
           Anchor: (Height: 40, Width: 160);
         }
 

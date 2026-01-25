@@ -25,30 +25,32 @@ public class PlayerReadyEvent {
         com.hypixel.hytale.server.core.entity.entities.Player player = store.getComponent(ref, com.hypixel.hytale.server.core.entity.entities.Player.getComponentType());
         if (player == null) {
             this.logger.atSevere()
-                    .log("[CLASS] onPlayerReadyEvent Failed: Player is null");
+                    .log("[CLASS] PlayerReadyEvent OnPlayerReadyEvent Failed: Player is null");
             return;
         }
 
         PlayerRef playerRef = store.getComponent(ref, PlayerRef.getComponentType());
         if (playerRef == null) {
             this.logger.atSevere()
-                    .log("[CLASS] onPlayerReadyEvent Failed: PlayerRef is null");
+                    .log("[CLASS] PlayerReadyEvent OnPlayerReadyEvent Failed: PlayerRef is null");
             player.remove();
             return;
         }
 
-        try {
-            Player playerData = this.playerRepository.getPlayerByUuid(playerRef.getUuid());
-            if (playerData.getClazzUuid() != null) {
-                return;
-            }
-
-            ClassSelectPage page = new ClassSelectPage(playerRef, this.classRepository, this.playerRepository, this.logger);
-            player.getPageManager().openCustomPage(ref, store, page);
-        } catch (Exception e) {
-            player.remove();
+        Player playerData = this.playerRepository.getPlayerByUuid(playerRef.getUuid());
+        if (playerData == null) {
             this.logger.atSevere()
-                    .log("[CLASS] onPlayerReadyEvent Failed (PlayerID: " + playerRef.getUuid() + "): " + e.getMessage());
+                    .log("[CLASS] PlayerReadyEvent OnPlayerReadyEvent Failed: PlayerData is null");
+            player.remove();
+            return;
         }
+
+        if (playerData.getClassUuid() != null) {
+            this.classRepository.getClass(playerData.getClassUuid());
+            return;
+        }
+
+        ClassSelectPage page = new ClassSelectPage(playerRef, this.classRepository, this.playerRepository, this.logger);
+        player.getPageManager().openCustomPage(ref, store, page);
     }
 }

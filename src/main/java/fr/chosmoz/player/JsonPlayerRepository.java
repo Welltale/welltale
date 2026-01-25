@@ -3,7 +3,10 @@ package fr.chosmoz.player;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hypixel.hytale.logger.HytaleLogger;
 import lombok.AllArgsConstructor;
+import org.jspecify.annotations.NonNull;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -16,13 +19,13 @@ public class JsonPlayerRepository implements PlayerRepository {
     private HytaleLogger logger;
 
     @Override
-    public void addPlayer(Player player) throws Exception {
-        if (player == null || player.getPlayerUuid() == null) {
+    public void addPlayer(@NonNull Player player) throws Exception {
+        if (player.getUuid() == null) {
             throw ERR_INVALID_PLAYER;
         }
 
         for (Player cachedPlayer : this.cachedPlayers) {
-            if (cachedPlayer.getPlayerUuid() != player.getPlayerUuid()) {
+            if (cachedPlayer.getUuid() != player.getUuid()) {
                 continue;
             }
 
@@ -33,33 +36,33 @@ public class JsonPlayerRepository implements PlayerRepository {
     }
 
     @Override
-    public Player getPlayerByUuid(UUID playerUuid) throws Exception {
+    public @Nullable Player getPlayerByUuid(@NonNull UUID playerUuid) {
         return cachedPlayers.stream()
-                .filter(p -> p.getPlayerUuid().equals(playerUuid))
+                .filter(p -> p.getUuid().equals(playerUuid))
                 .findFirst()
-                .orElseThrow(() -> ERR_PLAYER_NOT_FOUND);
+                .orElse(null);
     }
 
     @Override
-    public Player getPlayerByUsername(String playerName) throws Exception {
+    public @Nullable Player getPlayerByUsername(@Nonnull String playerName) {
         return cachedPlayers.stream()
                 .filter(p -> p.getPlayerName().equalsIgnoreCase(playerName))
                 .findFirst()
-                .orElseThrow(() -> ERR_PLAYER_NOT_FOUND);
+                .orElse(null);
     }
 
-    public List<Player> getCachedPlayers() throws Exception {
+    public List<Player> getCachedPlayers() {
         return this.cachedPlayers;
     }
 
     @Override
-    public void updatePlayer(Player player) throws Exception {
-        if (player == null || player.getPlayerUuid() == null) {
+    public void updatePlayer(@NonNull Player player) throws Exception {
+        if (player.getUuid() == null) {
             throw ERR_INVALID_PLAYER;
         }
 
         for (int i = 0; i < cachedPlayers.size(); i++) {
-            if (!cachedPlayers.get(i).getPlayerUuid().equals(player.getPlayerUuid())) {
+            if (!cachedPlayers.get(i).getUuid().equals(player.getUuid())) {
                 continue;
             }
 

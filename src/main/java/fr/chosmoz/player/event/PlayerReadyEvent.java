@@ -8,10 +8,10 @@ import com.hypixel.hytale.server.core.entity.nameplate.Nameplate;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.Universe;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
+import fr.chosmoz.constant.Constant;
 import fr.chosmoz.player.PlayerRepository;
 import fr.chosmoz.rank.Rank;
 import fr.chosmoz.rank.RankRepository;
-import fr.chosmoz.util.Prefix;
 import fr.chosmoz.util.Teleport;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
@@ -30,7 +30,7 @@ public class PlayerReadyEvent {
         Ref<EntityStore> ref = player.getReference();
         if (ref == null) {
             this.logger.atSevere()
-                    .log("[PLAYER] onPlayerReadyEvent Failed: Ref is null");
+                    .log("[PLAYER] PlayerReadyEvent OnPlayerReady Failed: Ref is null");
             return;
         }
 
@@ -39,23 +39,25 @@ public class PlayerReadyEvent {
         PlayerRef playerRef = store.getComponent(ref, PlayerRef.getComponentType());
         if (playerRef == null) {
             this.logger.atSevere()
-                    .log("[PLAYER] onPlayerReadyEvent Failed: PlayerRef is null");
+                    .log("[PLAYER] PlayerReadyEvent OnPlayerReady Failed: PlayerRef is null");
             return;
         }
 
-        try {
-            fr.chosmoz.player.Player playerData = this.playerRepository.getPlayerByUuid(playerRef.getUuid());
-            this.setNameplate(playerRef,ref, store, playerData);
-
-            if (playerData.getClazzUuid() != null) {
-                return;
-            }
-
-            Teleport.teleportPlayerToSpawn(this.logger, this.universe, playerRef, ref, store);
-        } catch (Exception e) {
+        fr.chosmoz.player.Player playerData = this.playerRepository.getPlayerByUuid(playerRef.getUuid());
+        if (playerData == null) {
             this.logger.atSevere()
-                    .log("[PLAYER] onPlayerReadyEvent Failed (PlayerID: " + playerRef.getUuid() + "): " + e.getMessage());
+                    .log("[PLAYER] PlayerReadyEvent OnPlayerReady Failed: PlayerData is null");
+            return;
         }
+
+        this.setNameplate(playerRef,ref, store, playerData);
+        //TODO SET CHARACTERISTIC TO PLAYER
+
+        if (playerData.getClassUuid() != null) {
+            return;
+        }
+
+        Teleport.teleportPlayerToSpawn(this.logger, this.universe, playerRef.getUuid(), ref, store, Constant.World.CelesteIslandWorld.WorldName, Constant.Particle.PLAYER_SPAWN_SPAWN);
     }
 
     private void setNameplate(
@@ -67,21 +69,18 @@ public class PlayerReadyEvent {
         Nameplate nameplate = store.getComponent(ref, Nameplate.getComponentType());
         if (nameplate == null) {
             this.logger.atSevere()
-                    .log("[PLAYER] onPlayerReadyEvent SetNameplate Failed (PlayerID: " + playerData.getPlayerUuid() + "): Nameplate is null");
+                    .log("[PLAYER] PlayerReadyEvent SetNameplate Failed (PlayerID: " + playerData.getUuid() + "): Nameplate is null");
             return;
         }
 
         if (playerData.getRankUuid() == null) {
-            nameplate.setText("[" + Prefix.LevelPrefix + playerData.getLevel() + "] " + playerData.getPlayerName());
+            nameplate.setText("[" + Constant.Prefix.LevelPrefix + playerData.getLevel() + "] " + playerData.getPlayerName());
             return;
         }
 
-        try {
-            Rank playerRank = this.rankRepository.getRank(playerData.getRankUuid());
-            nameplate.setText("[" + Prefix.LevelPrefix + playerData.getLevel() + "] " + "[" + playerRank.getPrefix() + "] " + playerData.getPlayerName());
-        } catch (Exception e) {
-            this.logger.atSevere()
-                    .log("[PLAYER] onPlayerReadyEvent SetNameplate Failed (PlayerID: " + playerRef.getUuid() + "): Nameplate is null");
-        }
+        Rank playerRank = this.rankRepository.getRank(playerData.getRankUuid());
+        if (playerRank == null) return;
+
+        nameplate.setText("[" + Constant.Prefix.LevelPrefix + playerData.getLevel() + "] " + "[" + playerRank.getPrefix() + "] " + playerData.getPlayerName());
     }
 }

@@ -8,50 +8,48 @@ import fr.chosmoz.player.PlayerRepository;
 import lombok.AllArgsConstructor;
 
 import javax.annotation.Nonnull;
+import java.util.List;
 
 @AllArgsConstructor
 public class PlayerConnectEvent {
     private final PlayerRepository playerRepository;
     private final HytaleLogger logger;
-    private final Universe universe;
 
     public void onPlayerConnect(@Nonnull com.hypixel.hytale.server.core.event.events.player.PlayerConnectEvent event) {
         PlayerRef playerRef = event.getPlayerRef();
         if (playerRef == null) {
             this.logger.atSevere()
-                    .log("[PLAYER] onPlayerConnectEvent Failed: PlayerRef is null");
+                    .log("[PLAYER] PlayerConnectEvent OnPlayerConnectEvent Failed: PlayerRef is null");
             return;
         }
 
         try {
-            this.addNewPlayerInDatabase(playerRef);
+            this.addNewPlayerToDatabase(playerRef);
         } catch (Exception e) {
             this.logger.atSevere()
-                    .log("[PLAYER] onPlayerConnectEvent Failed (PlayerID: " + playerRef.getUuid() + "): " + e.getMessage());
+                    .log("[PLAYER] PlayerConnectEvent OnPlayerConnectEvent Failed (PlayerID: " + playerRef.getUuid() + "): " + e.getMessage());
         }
     }
 
-    private void addNewPlayerInDatabase(@Nonnull PlayerRef playerRef) throws Exception {
-        try {
-            this.playerRepository.getPlayerByUuid(playerRef.getUuid());
-        } catch (Exception e) {
-            if (e.getMessage().equals(PlayerRepository.ERR_PLAYER_NOT_FOUND.getMessage())) {
-                Player newPlayer = new Player(
-                        playerRef.getUuid(),
-                        playerRef.getUsername(),
-                        null,
-                        1,
-                        0,
-                        null
-                );
-
-                this.playerRepository.addPlayer(newPlayer);
-                return;
-            }
-
-            this.universe.removePlayer(playerRef);
-            this.logger.atSevere()
-                    .log("[PLAYER] onPlayerConnectEvent AddNewPlayerInDatabase Failed (PlayerID: " + playerRef.getUuid() + "): " + e.getMessage());
+    private void addNewPlayerToDatabase(@Nonnull PlayerRef playerRef) throws Exception {
+        Player playerData = this.playerRepository.getPlayerByUuid(playerRef.getUuid());
+        if (playerData != null) {
+            return;
         }
+
+        Player newPlayer = new Player(
+                playerRef.getUuid(),
+                playerRef.getUsername(),
+                null,
+                1,
+                0,
+                null,
+                null,
+                List.of(),
+                null,
+                new Player.Characteristic()
+        );
+
+        this.playerRepository.addPlayer(newPlayer);
     }
 }

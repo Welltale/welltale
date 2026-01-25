@@ -1,7 +1,9 @@
 package fr.chosmoz.rank;
 
 import lombok.AllArgsConstructor;
+import org.jspecify.annotations.NonNull;
 
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.UUID;
 
@@ -10,7 +12,7 @@ public class JsonRankRepository implements RankRepository {
     private List<Rank> cachedRanks;
 
     @Override
-    public void addRank(Rank rank) throws Exception {
+    public void addRank(@NonNull Rank rank) throws Exception {
         rank.setId(UUID.randomUUID());
 
         for (Rank cachedRank : this.cachedRanks) {
@@ -25,19 +27,19 @@ public class JsonRankRepository implements RankRepository {
     }
 
     @Override
-    public Rank getRank(UUID rankId) throws Exception {
+    public @Nullable Rank getRank(@NonNull UUID rankId) {
         return cachedRanks.stream()
                 .filter(r -> r.getId().equals(rankId))
                 .findFirst()
-                .orElseThrow(() -> ERR_RANK_NOT_FOUND);
+                .orElse(null);
     }
 
-    public List<Rank> getCachedRanks() throws Exception {
+    public List<Rank> getCachedRanks() {
         return this.cachedRanks;
     }
 
     @Override
-    public void updateRank(Rank rank) throws Exception {
+    public void updateRank(@NonNull Rank rank) throws Exception {
         for (int i = 0; i < this.cachedRanks.size(); i++) {
             if (!this.cachedRanks.get(i).getId().equals(rank.getId())) {
                 continue;
@@ -50,7 +52,7 @@ public class JsonRankRepository implements RankRepository {
     }
 
     @Override
-    public void deleteRank(UUID rankId) throws Exception {
+    public void deleteRank(@NonNull UUID rankId) throws Exception {
         Rank rank = this.getRank(rankId);
         this.cachedRanks.remove(rank);
     }

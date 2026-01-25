@@ -20,13 +20,13 @@ public class JsonClassFileLoader {
         if (!jsonDataFile.exists()) {
             ObjectMapper mapper = new ObjectMapper();
 
-            Class[] exampleClass = new Class[] {
+            Class[] exampleClass = new Class[]{
                     new Class(
                             UUID.randomUUID(),
                             "Example",
                             "GOLD",
-                            ""
-                            )
+                            List.of()
+                    )
             };
             mapper.writeValue(jsonDataFile, exampleClass);
         }

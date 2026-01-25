@@ -1,3 +1,5 @@
+$Sounds = "Sound.ui";
+
 @ChosmozColor = #7BA9FFFF;
 
 @CancelButtonStyle = TextButtonStyle(
@@ -9,10 +11,11 @@
   ),
   Pressed: (
     Background: "Commons/CancelButtonPressed.png", LabelStyle: (FontSize: 13, TextColor: #ffffff, RenderBold: true, Alignment: Center)
-  )
+  ),
+  Sounds: $Sounds.@ButtonsCancel,
 );
 
-@ButtonStyle = TextButtonStyle(
+@MainButtonStyle = TextButtonStyle(
   Default: (
     Background: "Commons/Button.png", LabelStyle: (FontSize: 13, TextColor: #ffffff, RenderBold: true, Alignment: Center)
   ),
@@ -21,10 +24,24 @@
   ),
   Pressed: (
     Background: "Commons/ButtonPressed.png", LabelStyle: (FontSize: 13, TextColor: #ffffff, RenderBold: true, Alignment: Center)
-  )
+  ),
+  Sounds: $Sounds.@ButtonsMain,
 );
 
-@SlotButtonStyle = ButtonStyle(
+@EnterButtonStyle = TextButtonStyle(
+  Default: (
+    Background: "Commons/Button.png", LabelStyle: (FontSize: 13, TextColor: #ffffff, RenderBold: true, Alignment: Center)
+  ),
+  Hovered: (
+    Background: "Commons/ButtonHovered.png", LabelStyle: (FontSize: 13, TextColor: #ffffff, RenderBold: true, Alignment: Center)
+  ),
+  Pressed: (
+    Background: "Commons/ButtonPressed.png", LabelStyle: (FontSize: 13, TextColor: #ffffff, RenderBold: true, Alignment: Center)
+  ),
+  Sounds: $Sounds.@EnterWorld,
+);
+
+@ClickableSlotButtonStyle = ButtonStyle(
   Default: (
     Background: "Commons/Slot.png"
   ),
@@ -33,7 +50,8 @@
   ),
   Pressed: (
     Background: "Commons/SlotPressed.png"
-  )
+  ),
+  Sounds: $Sounds.@ButtonsLight,
 );
 
 @SmallSpacer = Group {

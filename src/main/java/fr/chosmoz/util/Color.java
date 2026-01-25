@@ -1,5 +1,7 @@
 package fr.chosmoz.util;
 
+import javax.annotation.Nonnull;
+
 public class Color {
     public static final java.awt.Color BLACK = new java.awt.Color(0, 0, 0);
     public static final java.awt.Color DARK_BLUE = new java.awt.Color(0, 0, 170);
@@ -19,7 +21,7 @@ public class Color {
     public static final java.awt.Color WHITE = new java.awt.Color(255, 255, 255);
     public static final java.awt.Color CHOSMOZ = new java.awt.Color(123, 169, 255);
 
-    public static java.awt.Color getColor(String color) {
+    public static java.awt.Color getColor(@Nonnull String color) {
         return switch (color.toUpperCase()) {
             case "BLACK" -> BLACK;
             case "DARK_BLUE" -> DARK_BLUE;

@@ -1,0 +1,72 @@
+@ButtonsMainActivate = "Sounds/ButtonsMainActivate.ogg";
+@ButtonsMainHover = "Sounds/ButtonsMainHover.ogg";
+
+@ButtonsMain = (
+  Activate: (
+    SoundPath: @ButtonsMainActivate,
+    Volume: 6
+  ),
+  MouseHover: (
+    SoundPath: @ButtonsMainHover,
+    MinPitch: -0.1,
+    MaxPitch: 0.1,
+    Volume: 2
+  )
+);
+
+@ButtonsLightActivate = "Sounds/ButtonsLightActivate.ogg";
+@ButtonsLightHover = "Sounds/ButtonsLightHover.ogg";
+
+@ButtonsLight = (
+  Activate: (
+    SoundPath: @ButtonsLightActivate,
+    MinPitch: -0.4,
+    MaxPitch: 0.4,
+    Volume: 4
+  ),
+  MouseHover: (
+    SoundPath: @ButtonsLightHover,
+    Volume: 6
+  )
+);
+
+@ButtonsCancelActivate = "Sounds/ButtonsCancelActivate.ogg";
+
+@ButtonsCancel = (
+  Activate: (
+    SoundPath: @ButtonsCancelActivate,
+    MinPitch: -0.4,
+    MaxPitch: 0.4,
+    Volume: 6
+  ),
+  MouseHover: (
+    SoundPath: @ButtonsLightHover,
+    Volume: 6
+  )
+);
+
+@EnterWorldActivate = "Sounds/EnterWorldActivate.ogg";
+
+@EnterWorld = (
+  Activate: (
+    SoundPath: @EnterWorldActivate,
+    Volume: 6
+  ),
+  MouseHover: (
+    SoundPath: @ButtonsLightHover,
+    Volume: 6
+  ),
+  Context: (
+    SoundPath: @ButtonsLightActivate,
+    Volume: 6
+  )
+);
+
+@Respawn = "Sounds/Respawn_Stereo.ogg";
+
+@RespawnActivate = (
+  Activate: (
+    SoundPath: @Respawn,
+    Volume: -6
+  )
+);

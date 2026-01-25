@@ -1,5 +1,7 @@
 package fr.chosmoz.player;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.UUID;
 
@@ -8,15 +10,15 @@ public interface PlayerRepository {
     Exception ERR_INVALID_PLAYER = new Exception("invalid player");
     Exception ERR_PLAYER_ALREADY_EXISTS = new Exception("player already exists");
 
-    void addPlayer(Player player) throws Exception;
+    void addPlayer(@Nonnull Player player) throws Exception;
 
-    Player getPlayerByUuid(UUID playerUuid) throws Exception;
+    @Nullable Player getPlayerByUuid(@Nonnull UUID playerUuid);
 
-    Player getPlayerByUsername(String playerName) throws Exception;
+    @Nullable Player getPlayerByUsername(@Nonnull String playerName);
 
-    List<Player> getCachedPlayers() throws Exception;
+    List<Player> getCachedPlayers();
 
-    void updatePlayer(Player player) throws Exception;
+    void updatePlayer(@Nonnull Player player) throws Exception;
 
     void saveData();
 }

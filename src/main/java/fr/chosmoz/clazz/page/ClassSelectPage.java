@@ -20,6 +20,7 @@ import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import fr.chosmoz.clazz.Class;
 import fr.chosmoz.clazz.ClassRepository;
 import fr.chosmoz.player.PlayerRepository;
+import fr.chosmoz.util.Title;
 import org.jspecify.annotations.NonNull;
 
 import java.util.List;
@@ -75,23 +76,8 @@ public class ClassSelectPage extends InteractiveCustomUIPage<ClassSelectPage.Cla
     public void build(@NonNull Ref<EntityStore> ref, @NonNull UICommandBuilder cmd, @NonNull UIEventBuilder event, @NonNull Store<EntityStore> store) {
         cmd.append("Pages/Class/ClassSelectPage.ui");
 
-        try {
-            List<Class> classes = this.classRepository.getClasses();
-            if (!classes.isEmpty()) {
-                this.classSelectedUuid = classes.getFirst().getUuid();
-                cmd.set("#ClassSelectedName.Text", classes.getFirst().getName());
-                //TODO ADD CLASS ICON & PREVIEW
-            }
-
-            for (int i = 0; i < classes.size(); i++) {
-                int y = i + 1;
-                cmd.set("#Class" + y + "Name.Text", classes.get(i).getName());
-                event.addEventBinding(CustomUIEventBindingType.Activating, "#Class" + y + "Button", EventData.of("ClassSelected", classes.get(i).getUuid().toString()));
-            }
-        } catch (Exception e) {
-            this.logger.atSevere()
-                    .log("[CLASS] ClassSelectPage Build Failed: " + e.getMessage());
-
+        List<Class> classes = this.classRepository.getClasses();
+        if (classes.isEmpty()) {
             Player player = ref.getStore().getComponent(ref, Player.getComponentType());
             if (player == null) {
                 this.logger.atSevere()
@@ -100,8 +86,18 @@ public class ClassSelectPage extends InteractiveCustomUIPage<ClassSelectPage.Cla
             }
 
             player.remove();
+            return;
         }
 
+        this.classSelectedUuid = classes.getFirst().getUuid();
+        cmd.set("#ClassSelectedName.Text", classes.getFirst().getName());
+        //TODO ADD CLASS ICON & PREVIEW
+
+        for (int i = 0; i < classes.size(); i++) {
+            int y = i + 1;
+            cmd.set("#Class" + y + "Name.Text", classes.get(i).getName());
+            event.addEventBinding(CustomUIEventBindingType.Activating, "#Class" + y + "Button", EventData.of("ClassSelected", classes.get(i).getUuid().toString()));
+        }
         event.addEventBinding(CustomUIEventBindingType.Activating, "#PlayButton", EventData.of("ButtonPressed", ClassSelectPageButtonPressedId.PLAY.name()));
         event.addEventBinding(CustomUIEventBindingType.Activating, "#DisconnectButton", EventData.of("ButtonPressed", ClassSelectPageButtonPressedId.DISCONNECT.name()));
     }
@@ -130,19 +126,16 @@ public class ClassSelectPage extends InteractiveCustomUIPage<ClassSelectPage.Cla
         }
 
         if (data.classSelectedUuid != null) {
-            try {
-                Class newClass = this.classRepository.getClass(data.classSelectedUuid);
-                this.classSelectedUuid = newClass.getUuid();
-                this.sendUpdate(new UICommandBuilder().set("#ClassSelectedName.Text", newClass.getName()));
-                //TODO ADD CLASS ICON & PREVIEW
-                return;
-            } catch (Exception e) {
-                this.logger.atSevere()
-                        .log("[CLASS] ClassSelectPage HandleDataEvent Failed: " + e.getMessage());
-
+            Class newClass = this.classRepository.getClass(data.classSelectedUuid);
+            if (newClass == null) {
                 this.sendUpdate();
                 return;
             }
+
+            this.classSelectedUuid = newClass.getUuid();
+            this.sendUpdate(new UICommandBuilder().set("#ClassSelectedName.Text", newClass.getName()));
+            //TODO ADD CLASS ICON & PREVIEW
+            return;
         }
 
         this.sendUpdate();
@@ -168,19 +161,34 @@ public class ClassSelectPage extends InteractiveCustomUIPage<ClassSelectPage.Cla
             return;
         }
 
-        try {
-            fr.chosmoz.player.Player playerData = this.playerRepository.getPlayerByUuid(playerUuid.getUuid());
-            if (playerData.getClazzUuid() != null) {
-                player.getPageManager().setPage(ref, store, Page.None);
-                return;
-            }
-
-            playerData.setClazzUuid(this.classSelectedUuid);
-            playerRepository.updatePlayer(playerData);
-            player.getPageManager().setPage(ref, store, Page.None);
-        } catch (Exception e) {
-            this.logger.atSevere()
-                    .log("[CLASS] ClassSelectPage HandlePlay Failed: " + e.getMessage());
+        fr.chosmoz.player.Player playerData = this.playerRepository.getPlayerByUuid(playerUuid.getUuid());
+        if (playerData == null) {
+            player.remove();
+            return;
         }
+
+        if (playerData.getClassUuid() != null) {
+            player.getPageManager().setPage(ref, store, Page.None);
+            return;
+        }
+
+        Class selectedClass = this.classRepository.getClass(this.classSelectedUuid);
+        if (selectedClass == null) {
+            this.sendUpdate();
+            return;
+        }
+
+        //TODO ENABLE IT TO UPDATE PLAYER WITH SELECTED CLASS IN DATABASE
+        playerData.setClassUuid(selectedClass.getUuid());
+
+        try {
+            playerRepository.updatePlayer(playerData);
+        } catch (Exception e) {
+            this.logger.atSevere().log("[CLASS] ClassSelectPage HandlePlayer Failed: " + e.getMessage());
+
+        }
+
+        player.getPageManager().setPage(ref, store, Page.None);
+        Title.sendWelcomeTitle(playerRef);
     }
 }
