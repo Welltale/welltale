@@ -5,10 +5,15 @@ import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.logger.HytaleLogger;
 import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.entity.nameplate.Nameplate;
+import com.hypixel.hytale.server.core.modules.entitystats.EntityStatMap;
+import com.hypixel.hytale.server.core.modules.entitystats.asset.DefaultEntityStatTypes;
+import com.hypixel.hytale.server.core.modules.entitystats.modifier.Modifier;
+import com.hypixel.hytale.server.core.modules.entitystats.modifier.StaticModifier;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.Universe;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import fr.chosmoz.constant.Constant;
+import fr.chosmoz.player.Characteristic;
 import fr.chosmoz.player.PlayerRepository;
 import fr.chosmoz.rank.Rank;
 import fr.chosmoz.rank.RankRepository;
@@ -50,18 +55,17 @@ public class PlayerReadyEvent {
             return;
         }
 
-        this.setNameplate(playerRef,ref, store, playerData);
-        //TODO SET CHARACTERISTIC TO PLAYER
+        Characteristic.setCharacteristicToPlayer(playerRef, ref, store, playerData, this.universe);
+        this.setNameplate(ref, store, playerData);
 
         if (playerData.getClassUuid() != null) {
             return;
         }
 
-        Teleport.teleportPlayerToSpawn(this.logger, this.universe, playerRef.getUuid(), ref, store, Constant.World.CelesteIslandWorld.WorldName, Constant.Particle.PLAYER_SPAWN_SPAWN);
+        Teleport.teleportPlayerToSpawn(this.logger, this.universe, playerRef.getUuid(), ref, store, Constant.World.CelesteIslandWorld.WORLD_NAME, Constant.Particle.PLAYER_SPAWN_SPAWN);
     }
 
     private void setNameplate(
-            @Nonnull PlayerRef playerRef,
             @Nonnull Ref<EntityStore> ref,
             @NonNull Store<EntityStore> store,
             @Nonnull fr.chosmoz.player.Player playerData
@@ -74,13 +78,13 @@ public class PlayerReadyEvent {
         }
 
         if (playerData.getRankUuid() == null) {
-            nameplate.setText("[" + Constant.Prefix.LevelPrefix + playerData.getLevel() + "] " + playerData.getPlayerName());
+            nameplate.setText("[" + Constant.Prefix.LEVEL_PREFIX + playerData.getLevel() + "] " + playerData.getPlayerName());
             return;
         }
 
         Rank playerRank = this.rankRepository.getRank(playerData.getRankUuid());
         if (playerRank == null) return;
 
-        nameplate.setText("[" + Constant.Prefix.LevelPrefix + playerData.getLevel() + "] " + "[" + playerRank.getPrefix() + "] " + playerData.getPlayerName());
+        nameplate.setText("[" + Constant.Prefix.LEVEL_PREFIX + playerData.getLevel() + "] " + "[" + playerRank.getPrefix() + "] " + playerData.getPlayerName());
     }
 }

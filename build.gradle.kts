@@ -1,6 +1,7 @@
 plugins {
     `maven-publish`
     id("hytale-mod") version "0.+"
+//    id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
 group = "fr.chosmoz"
@@ -20,6 +21,9 @@ dependencies {
 
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.19.0")
     implementation("com.fasterxml.jackson.core:jackson-databind:2.19.0")
+
+//    implementation("com.fasterxml.jackson.core:jackson-core:2.19.0")
+//    implementation("com.fasterxml.jackson.core:jackson-annotations:2.19.0")
 
     annotationProcessor("org.projectlombok:lombok:1.18.38")
     compileOnly("org.projectlombok:lombok:1.18.38")
@@ -100,6 +104,25 @@ idea {
         isDownloadJavadoc = true
     }
 }
+
+//tasks.register<Jar>("fatJar") {
+//    group = "build"
+//    description = "Fat JAR Hytale"
+//
+//    archiveClassifier.set("")
+//
+//    from(sourceSets.main.get().output)
+//
+//    // Inclut deps MAIS exclut HytaleServer*.jar
+//    from({
+//        configurations.runtimeClasspath.get()
+//            .filter { it.name.endsWith("jar") && !it.name.contains("HytaleServer") && !it.name.contains("hytale-server") }
+//            .map { zipTree(it) }
+//    })
+//
+//    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+//    exclude("META-INF/*.SF", "META-INF/*.DSA", "META-INF/*.RSA")
+//}
 
 val syncAssets = tasks.register<Copy>("syncAssets") {
     group = "hytale"

@@ -4,8 +4,6 @@ import com.hypixel.hytale.logger.HytaleLogger;
 import com.hypixel.hytale.server.core.event.events.player.PlayerChatEvent;
 import com.hypixel.hytale.server.core.event.events.player.PlayerConnectEvent;
 import com.hypixel.hytale.server.core.event.events.player.PlayerReadyEvent;
-import com.hypixel.hytale.server.core.io.adapter.PacketAdapters;
-import com.hypixel.hytale.server.core.io.adapter.PacketFilter;
 import com.hypixel.hytale.server.core.modules.interaction.interaction.config.Interaction;
 import com.hypixel.hytale.server.core.plugin.JavaPlugin;
 import com.hypixel.hytale.server.core.plugin.JavaPluginInit;
@@ -13,7 +11,10 @@ import com.hypixel.hytale.server.core.universe.Universe;
 import fr.chosmoz.clazz.Class;
 import fr.chosmoz.clazz.JsonClassFileLoader;
 import fr.chosmoz.clazz.JsonClassRepository;
+import fr.chosmoz.clazz.spell.SpellComponent;
+import fr.chosmoz.clazz.spell.SpellCooldownScheduler;
 import fr.chosmoz.clazz.spell.SpellManager;
+import fr.chosmoz.clazz.spell.SpellScheduler;
 import fr.chosmoz.clazz.spell.interaction.CastSpellInteraction;
 import fr.chosmoz.player.*;
 import fr.chosmoz.player.event.BreakBlockEvent;
@@ -29,8 +30,6 @@ import java.util.List;
 
 
 public class Chosmoz extends JavaPlugin {
-    private PacketFilter inboundFilter;
-
     //Remove this if you don't use JsonPlayerRepository
     private PlayerRepository playerRepository;
 
@@ -62,10 +61,11 @@ public class Chosmoz extends JavaPlugin {
 
             //Remove this if you don't use JsonPlayerRepository
             this.playerRepository = playerRepository;
-            PlayerSaveDataTask playerSaveDataTask = new PlayerSaveDataTask(playerRepository);
+            PlayerSaveDataScheduler playerSaveDataScheduler = new PlayerSaveDataScheduler(playerRepository);
             logger.atInfo().log(jsonPlayerData.size() + " player(s) loaded!");
 
-            //this.getTaskRegistry().registerTask(playerSaveDataTask.run());
+            //TODO ENABLE IT
+            //this.getTaskRegistry().registerTask(playerSaveDataScheduler.run());
             this.getEventRegistry().registerGlobal(PlayerConnectEvent.class,
                     new fr.chosmoz.player.event.PlayerConnectEvent(playerRepository, logger)::onPlayerConnect);
             this.getEventRegistry().registerGlobal(PlayerReadyEvent.class,
@@ -91,15 +91,24 @@ public class Chosmoz extends JavaPlugin {
 
             //Spell
             logger.atInfo().log("Loading spells...");
-            SpellManager spellManager = new SpellManager(logger, playerRepository, classRepository);
-            CastSpellInteraction castSpellInteraction = new CastSpellInteraction();
-            castSpellInteraction.initStatics(spellManager, playerRepository, classRepository);
+            SpellComponent.spellComponentType = getEntityStoreRegistry().registerComponent(SpellComponent.class, SpellComponent::new);
 
-            getCodecRegistry(Interaction.CODEC).register(
-                    "chosmoz:cast_spell",
+            SpellScheduler spellScheduler = new SpellScheduler();
+            SpellManager spellManager = new SpellManager(logger, universe, classRepository, spellScheduler);
+            CastSpellInteraction castSpellInteraction = new CastSpellInteraction();
+            castSpellInteraction.initStatics(spellManager, playerRepository);
+            SpellCooldownScheduler spellCooldownScheduler = new SpellCooldownScheduler();
+
+
+            this.getCodecRegistry(Interaction.CODEC).register(
+                    CastSpellInteraction.ROOT_INTERACTION,
                     CastSpellInteraction.class,
                     CastSpellInteraction.CODEC
             );
+
+            this.getEntityStoreRegistry().registerSystem(spellScheduler);
+
+            this.getTaskRegistry().registerTask(spellCooldownScheduler.run(spellManager));
             logger.atInfo().log("Spells loaded!");
 
             //Chat
@@ -122,7 +131,6 @@ public class Chosmoz extends JavaPlugin {
             this.playerRepository.saveData();
         }
 
-        PacketAdapters.deregisterInbound(this.inboundFilter);
         this.getLogger().atInfo().log("Chosmoz Mod shutting down!");
     }
 }

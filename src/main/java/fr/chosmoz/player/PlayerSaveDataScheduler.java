@@ -7,7 +7,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 @AllArgsConstructor
-public class PlayerSaveDataTask {
+public class PlayerSaveDataScheduler {
     private PlayerRepository playerRepository;
 
     @SuppressWarnings("unchecked")

@@ -41,8 +41,8 @@ public class PlayerChatEvent {
 
         event.setCancelled(true);
 
-        Message level = Message.raw("[" + Constant.Prefix.LevelPrefix + playerData.getLevel() + "] ")
-                .color(Constant.Prefix.LevelPrefixColor)
+        Message level = Message.raw("[" + Constant.Prefix.LEVEL_PREFIX + playerData.getLevel() + "] ")
+                .color(Constant.Prefix.LEVEL_PREFIX_COLOR)
                 .bold(true);
 
         Message author = Message.raw(sender.getUsername() + ": ")

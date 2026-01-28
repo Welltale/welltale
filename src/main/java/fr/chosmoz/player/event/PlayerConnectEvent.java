@@ -3,6 +3,7 @@ package fr.chosmoz.player.event;
 import com.hypixel.hytale.logger.HytaleLogger;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.Universe;
+import fr.chosmoz.player.Characteristic;
 import fr.chosmoz.player.Player;
 import fr.chosmoz.player.PlayerRepository;
 import lombok.AllArgsConstructor;
@@ -47,7 +48,7 @@ public class PlayerConnectEvent {
                 null,
                 List.of(),
                 null,
-                new Player.Characteristic()
+                new Characteristic()
         );
 
         this.playerRepository.addPlayer(newPlayer);

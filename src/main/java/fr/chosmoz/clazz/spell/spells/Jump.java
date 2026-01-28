@@ -1,27 +1,38 @@
 package fr.chosmoz.clazz.spell.spells;
 
-import com.hypixel.hytale.component.Ref;
-import com.hypixel.hytale.component.Store;
+import com.hypixel.hytale.component.*;
 import com.hypixel.hytale.logger.HytaleLogger;
+import com.hypixel.hytale.math.vector.Transform;
 import com.hypixel.hytale.math.vector.Vector3d;
-import com.hypixel.hytale.math.vector.Vector3f;
-import com.hypixel.hytale.protocol.ChangeVelocityType;
-import com.hypixel.hytale.protocol.InteractionType;
+import com.hypixel.hytale.protocol.*;
+import com.hypixel.hytale.server.core.Message;
 import com.hypixel.hytale.server.core.entity.entities.Player;
-import com.hypixel.hytale.server.core.modules.entity.component.TransformComponent;
+import com.hypixel.hytale.server.core.entity.movement.MovementStatesComponent;
+import com.hypixel.hytale.server.core.modules.entity.component.*;
 import com.hypixel.hytale.server.core.modules.physics.component.Velocity;
+import com.hypixel.hytale.server.core.modules.projectile.ProjectileModule;
+import com.hypixel.hytale.server.core.modules.projectile.config.ProjectileConfig;
 import com.hypixel.hytale.server.core.modules.splitvelocity.VelocityConfig;
+import com.hypixel.hytale.server.core.universe.PlayerRef;
+import com.hypixel.hytale.server.core.universe.Universe;
 import com.hypixel.hytale.server.core.universe.world.ParticleUtil;
+import com.hypixel.hytale.server.core.universe.world.SoundUtil;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
+import com.hypixel.hytale.server.core.util.TargetUtil;
 import fr.chosmoz.clazz.spell.Spell;
+import fr.chosmoz.clazz.spell.SpellComponent;
+import fr.chosmoz.clazz.spell.SpellScheduler;
 import fr.chosmoz.constant.Constant;
 import lombok.AllArgsConstructor;
 import org.jspecify.annotations.NonNull;
+
+import javax.annotation.Nonnull;
 
 @AllArgsConstructor
 public class Jump implements Spell {
     public static String SLUG = "jump";
 
+    private final SpellScheduler spellScheduler;
     private HytaleLogger logger;
 
     @Override
@@ -46,7 +57,7 @@ public class Jump implements Spell {
 
     @Override
     public int getManaCost() {
-        return 5;
+        return 10;
     }
 
     @Override
@@ -55,45 +66,29 @@ public class Jump implements Spell {
     }
 
     @Override
-    public float getRange() {
-        return 10;
-    }
+    public void run(
+            @NonNull Player caster,
+            @Nonnull Ref<EntityStore> ref,
+            @Nonnull Store<EntityStore> store,
+            @Nonnull Universe universe,
+            @Nonnull CommandBuffer<EntityStore> cmdBuffer
+    ) {
+        PlayerRef casterRef = store.getComponent(ref, PlayerRef.getComponentType());
+        if (casterRef == null) return;
 
-    @Override
-    public void run(@NonNull Player caster) {
-        Ref<EntityStore> casterRef = caster.getReference();
-        if (casterRef == null) {
-            this.logger.atSevere()
-                    .log("[CLASS - SPELL] Run Failed (PlayerName: " + caster.getDisplayName() + " - Spell: " + this.getName() + "): CasterRef is null");
-            return;
-        }
+        TransformComponent casterTransform = store.getComponent(ref, TransformComponent.getComponentType());
+        if (casterTransform == null) return;
 
-        Store<EntityStore> casterStore = casterRef.getStore();
-        TransformComponent casterTransform = casterStore.getComponent(casterRef, TransformComponent.getComponentType());
-        if (casterTransform == null) {
-            this.logger.atSevere()
-                    .log("[CLASS - SPELL] Run Failed (PlayerName: " + caster.getDisplayName() + " - Spell: " + this.getName() + "): CasterTransform is null");
-            return;
-        }
+        Transform casterLook = TargetUtil.getLook(ref, store);
+        Vector3d forward = casterLook.getDirection().normalize();
 
-        Vector3d casterPosition = casterTransform.getPosition();
-        Vector3f casterRotation = casterTransform.getRotation();
-
-        double yaw = Math.toRadians(casterRotation.getY());
-        double pitch = Math.toRadians(casterRotation.getX());
-
-        double x = -Math.cos(pitch) * Math.sin(yaw);
-        double y = -Math.sin(pitch);
-        double z =  Math.cos(pitch) * Math.cos(yaw);
-
-        Vector3d forward = new Vector3d(x, y, z).normalize();
         Vector3d impulse = new Vector3d(
-                forward.getX() * 60.0,
-                30.0,
-                forward.getZ() * 60.0
+                forward.getX() * 10,
+                20,
+                forward.getZ() * 10
         );
 
-        Velocity casterVelocity = casterStore.getComponent(casterRef, Velocity.getComponentType());
+        Velocity casterVelocity = store.getComponent(ref, Velocity.getComponentType());
         if (casterVelocity == null) {
             this.logger.atSevere()
                     .log("[CLASS - SPELL] Run Failed (PlayerName: " + caster.getDisplayName() + " - Spell: " + this.getName() + "): CasterVelocity is null");
@@ -101,6 +96,61 @@ public class Jump implements Spell {
         }
 
         casterVelocity.addInstruction(impulse, new VelocityConfig(), ChangeVelocityType.Add);
-        ParticleUtil.spawnParticleEffect(Constant.Particle.PLAYER_SPAWN_SPAWN, casterPosition, casterStore);
+        ParticleUtil.spawnParticleEffect(Constant.Particle.BLOCK_BREAK_MUD, casterLook.getPosition(), store);
+        SoundUtil.playSoundEvent2d(
+                Constant.SoundIndex.SFX_BATTLEAXE_T1_SWING_CHARGED,
+                SoundCategory.SFX,
+                store
+        );
+
+        MovementStatesComponent movementStates = store.getComponent(ref, MovementStatesComponent.getComponentType());
+        if (movementStates == null) return;
+
+        final boolean[] spellCasted = {false};
+        spellScheduler.schedule((s, b) -> {
+            MovementStatesComponent cMovement = s.getComponent(ref, MovementStatesComponent.getComponentType());
+            if (cMovement == null) return false;
+
+            if (!spellCasted[0]) {
+                if (!cMovement.getMovementStates().onGround) {
+                    spellCasted[0] = true;
+                }
+            }
+
+            caster.sendMessage(Message.raw("SPELL CASTED? : " + spellCasted[0]));
+
+            if (!spellCasted[0]) {
+                return false;
+            }
+
+            return cMovement.getMovementStates().onGround;
+        }, (s, b) -> {
+            TransformComponent cTransform = s.getComponent(ref, TransformComponent.getComponentType());
+            if (cTransform == null) return;
+
+            caster.sendMessage(Message.raw("ON FLOOR, CREATING ARROW..."));
+
+            ProjectileConfig arrowFireConfig = ProjectileConfig.getAssetMap().getAsset("Projectile_Config_Arrow_Shortbow");
+            if (arrowFireConfig == null) {
+                caster.sendMessage(Message.raw("ARROW FIRE CONFIG IS NULL"));
+                return;
+            }
+
+            Vector3d position = cTransform.getPosition().clone();
+            position.y += 1.6;
+
+            Vector3d direction = TargetUtil.getLook(ref, s).getDirection().normalize();
+
+            ProjectileModule.get().spawnProjectile(
+                    ref,
+                    b,
+                    arrowFireConfig,
+                    position,
+                    direction
+            );
+
+            caster.sendMessage(Message.raw("ARROW CREATED!"));
+            cmdBuffer.removeComponent(ref, SpellComponent.getComponentType());
+        });
     }
 }

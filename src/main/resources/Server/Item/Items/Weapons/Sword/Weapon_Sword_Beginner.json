@@ -8,7 +8,6 @@
   "Texture": "Items/Weapons/Sword/Wood_Texture.png",
   "Icon": "Icons/ItemsGenerated/Weapon_Sword_Beginner.png",
   "PlayerAnimationsId": "Sword",
-  "Reticle": "DefaultMelee",
   "Quality": "Common",
   "ItemLevel": 0,
   "Categories": [
@@ -37,71 +36,77 @@
       "Sword"
     ]
   },
-  "Weapon": {},
-  "ItemAppearanceConditions": {
-    "SignatureEnergy": [
-      {
-        "Condition": [
-          100,
-          100
-        ],
-        "ConditionValueType": "Percent",
-        "Particles": [
-          {
-            "SystemId": "Sword_Signature_Ready",
-            "TargetNodeName": "Handle",
-            "PositionOffset": {
-              "X": 0.8
-            },
-            "TargetEntityPart": "PrimaryItem"
-          },
-          {
-            "SystemId": "Sword_Signature_Status_Spawn",
-            "TargetNodeName": "Handle",
-            "PositionOffset": {
-              "X": 0.5
-            },
-            "TargetEntityPart": "PrimaryItem"
-          },
-          {
-            "SystemId": "Sword_Signature_Status",
-            "TargetNodeName": "Handle",
-            "PositionOffset": {
-              "X": 0.55
-            },
-            "TargetEntityPart": "PrimaryItem",
-            "Scale": 1.3
-          }
-        ],
-        "FirstPersonParticles": [
-          {
-            "SystemId": "Sword_Signature_Ready",
-            "TargetNodeName": "Handle",
-            "PositionOffset": {
-              "X": 0.8
-            },
-            "TargetEntityPart": "PrimaryItem"
-          },
-          {
-            "SystemId": "Sword_Signature_Status_Spawn",
-            "TargetNodeName": "Handle",
-            "TargetEntityPart": "PrimaryItem",
-            "PositionOffset": {
-              "Y": -100
+  "InteractionVars": {
+    "Swing_Left_Damage": {
+      "Interactions": [
+        {
+          "Parent": "Weapon_Sword_Primary_Swing_Left_Damage",
+          "DamageCalculator": {
+            "BaseDamage": {
+              "Physical": 2
             }
           },
-          {
-            "SystemId": "Sword_Signature_Status",
-            "TargetNodeName": "Handle",
-            "PositionOffset": {
-              "X": 0.5
-            },
-            "TargetEntityPart": "PrimaryItem"
+          "DamageEffects": {
+            "WorldSoundEventId": "SFX_Light_Melee_T1_Impact",
+            "LocalSoundEventId": "SFX_Light_Melee_T1_Impact"
           }
-        ],
-        "ModelVFXId": "Sword_Signature_Status"
-      }
-    ]
+        }
+      ]
+    },
+    "Swing_Right_Damage": {
+      "Interactions": [
+        {
+          "Parent": "Weapon_Sword_Primary_Swing_Right_Damage",
+          "DamageCalculator": {
+            "BaseDamage": {
+              "Physical": 4
+            }
+          },
+          "DamageEffects": {
+            "WorldSoundEventId": "SFX_Light_Melee_T1_Impact",
+            "LocalSoundEventId": "SFX_Light_Melee_T1_Impact"
+          }
+        }
+      ]
+    },
+    "Swing_Down_Damage": {
+      "Interactions": [
+        {
+          "Parent": "Weapon_Sword_Primary_Swing_Down_Damage",
+          "DamageCalculator": {
+            "BaseDamage": {
+              "Physical": 6
+            }
+          },
+          "DamageEffects": {
+            "WorldSoundEventId": "SFX_Light_Melee_T1_Impact",
+            "LocalSoundEventId": "SFX_Light_Melee_T1_Impact"
+          }
+        }
+      ]
+    },
+    "Thrust_Damage": {
+      "Interactions": [
+        {
+          "Parent": "Weapon_Sword_Primary_Thrust_Damage",
+          "DamageCalculator": {
+            "BaseDamage": {
+              "Physical": 10
+            }
+          },
+          "EntityStatsOnHit": [
+            {
+              "EntityStatId": "SignatureEnergy",
+              "Amount": 3
+            }
+          ],
+          "DamageEffects": {
+            "WorldSoundEventId": "SFX_Sword_T2_Impact",
+            "LocalSoundEventId": "SFX_Sword_T2_Impact"
+          }
+        }
+      ]
+    }
   },
   "ItemSoundSetId": "ISS_Weapons_Wood",
   "MaxDurability": 0,
@@ -109,6 +114,9 @@
   "Interactions": {
     "Primary": "Root_Weapon_Sword_Primary",
     "Secondary": "Root_Weapon_Sword_Secondary_Guard",
-    "Ability1": "AbilityRootInteraction"
-  }
+    "Ability1": "Root_Cast_Spell_Ability",
+    "Ability2": "Root_Cast_Spell_Ability",
+    "Ability3": "Root_Cast_Spell_Ability"
+  },
+  "Reticle": "DefaultMelee"
 }

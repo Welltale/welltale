@@ -1,5 +1,6 @@
 package fr.chosmoz.player;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hypixel.hytale.math.vector.Vector3d;
 import com.hypixel.hytale.math.vector.Vector3f;
 import lombok.AllArgsConstructor;
@@ -46,18 +47,5 @@ public class Player {
         private Vector3f position;
         private Vector3d rotation;
     }
-
-    @Getter
-    @Setter
-    public static class Characteristic {
-        private int health = 10;
-        private int mana = 10;
-        private int damage = 10;
-        private int critical = 0;
-        private int resistance = 0;
-        private int regeneration = 0;
-
-        //TODO MAYBE REMOVE IT
-        private float attackSpeed = 1.0f;
-    }
 }
+
