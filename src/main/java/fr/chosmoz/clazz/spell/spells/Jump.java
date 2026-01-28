@@ -17,6 +17,7 @@ import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.Universe;
 import com.hypixel.hytale.server.core.universe.world.ParticleUtil;
 import com.hypixel.hytale.server.core.universe.world.SoundUtil;
+import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import com.hypixel.hytale.server.core.util.TargetUtil;
 import fr.chosmoz.clazz.spell.Spell;
@@ -103,9 +104,6 @@ public class Jump implements Spell {
                 store
         );
 
-        MovementStatesComponent movementStates = store.getComponent(ref, MovementStatesComponent.getComponentType());
-        if (movementStates == null) return;
-
         final boolean[] spellCasted = {false};
         spellScheduler.schedule((s, b) -> {
             MovementStatesComponent cMovement = s.getComponent(ref, MovementStatesComponent.getComponentType());
@@ -125,14 +123,17 @@ public class Jump implements Spell {
 
             return cMovement.getMovementStates().onGround;
         }, (s, b) -> {
+            World cWorld = caster.getWorld();
+            if (cWorld == null) return;
+
             TransformComponent cTransform = s.getComponent(ref, TransformComponent.getComponentType());
             if (cTransform == null) return;
 
-            caster.sendMessage(Message.raw("ON FLOOR, CREATING ARROW..."));
+            caster.sendMessage(Message.raw("ON FLOOR!, CREATING ARROW..."));
 
             ProjectileConfig arrowFireConfig = ProjectileConfig.getAssetMap().getAsset("Projectile_Config_Arrow_Shortbow");
             if (arrowFireConfig == null) {
-                caster.sendMessage(Message.raw("ARROW FIRE CONFIG IS NULL"));
+                caster.sendMessage(Message.raw("ARROW CONFIG IS NULL"));
                 return;
             }
 
@@ -141,16 +142,17 @@ public class Jump implements Spell {
 
             Vector3d direction = TargetUtil.getLook(ref, s).getDirection().normalize();
 
-            ProjectileModule.get().spawnProjectile(
-                    ref,
-                    b,
-                    arrowFireConfig,
-                    position,
-                    direction
-            );
+            cWorld.execute(() -> {
+                ProjectileModule.get().spawnProjectile(
+                        ref,
+                        b,
+                        arrowFireConfig,
+                        position,
+                        direction
+                );
 
-            caster.sendMessage(Message.raw("ARROW CREATED!"));
-            cmdBuffer.removeComponent(ref, SpellComponent.getComponentType());
+                caster.sendMessage(Message.raw("ARROW CREATED!"));
+            });
         });
     }
 }

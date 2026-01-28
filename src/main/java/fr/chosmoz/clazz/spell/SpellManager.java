@@ -79,11 +79,6 @@ public class SpellManager {
         playerCooldowns.put(casterData.getUuid().toString() + "_" + spell.getSlug(), spell.getCooldown());
         this.startCooldown(casterData.getUuid(), spell.getSlug(), spell.getCooldown());
 
-        SpellComponent casterSpellComponent = store.getComponent(ref, SpellComponent.getComponentType());
-        if (casterSpellComponent == null) {
-            cmdBuffer.addComponent(ref, SpellComponent.getComponentType());
-        }
-
         caster.sendMessage(Message.raw("Cast spell: " + spell.getName()).color(Color.DARK_GREEN));
     }
 

@@ -4,12 +4,16 @@ import com.hypixel.hytale.codec.builder.BuilderCodec;
 import com.hypixel.hytale.component.CommandBuffer;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;
+import com.hypixel.hytale.logger.HytaleLogger;
 import com.hypixel.hytale.protocol.InteractionType;
 import com.hypixel.hytale.server.core.entity.InteractionContext;
+import com.hypixel.hytale.server.core.meta.DynamicMetaStore;
 import com.hypixel.hytale.server.core.modules.interaction.interaction.CooldownHandler;
+import com.hypixel.hytale.server.core.modules.interaction.interaction.config.Interaction;
 import com.hypixel.hytale.server.core.modules.interaction.interaction.config.SimpleInteraction;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
+import fr.chosmoz.clazz.spell.SpellComponent;
 import fr.chosmoz.clazz.spell.SpellManager;
 import fr.chosmoz.player.Player;
 import fr.chosmoz.player.PlayerRepository;
@@ -39,6 +43,8 @@ public class CastSpellInteraction extends SimpleInteraction {
             return;
         }
 
+        HytaleLogger.getLogger().atInfo().log("FIRST RUN?: " + firstRun);
+
         Ref<EntityStore> owningEntityRef = context.getOwningEntity();
         Store<EntityStore> store = owningEntityRef.getStore();
         PlayerRef playerRef = store.getComponent(owningEntityRef, PlayerRef.getComponentType());
@@ -47,6 +53,11 @@ public class CastSpellInteraction extends SimpleInteraction {
         CommandBuffer<EntityStore> commandBuffer = context.getCommandBuffer();
         if (commandBuffer == null) return;
 
+        SpellComponent casterSpellComponent = store.getComponent(owningEntityRef, SpellComponent.getComponentType());
+        if (casterSpellComponent == null) {
+            commandBuffer.addComponent(owningEntityRef, SpellComponent.getComponentType());
+        }
+
         com.hypixel.hytale.server.core.entity.entities.Player player = store.getComponent(owningEntityRef, com.hypixel.hytale.server.core.entity.entities.Player.getComponentType());
         if (player == null) return;
 
@@ -54,5 +65,10 @@ public class CastSpellInteraction extends SimpleInteraction {
         if (playerData == null) return;
 
         staticSpellManager.cast(player, playerData, type, commandBuffer);
+
+//        casterSpellComponent = store.getComponent(owningEntityRef, SpellComponent.getComponentType());
+//        if (casterSpellComponent != null) {
+//            commandBuffer.removeComponent(owningEntityRef, SpellComponent.getComponentType());
+//        }
     }
 }
