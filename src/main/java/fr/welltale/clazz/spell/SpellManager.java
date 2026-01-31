@@ -15,7 +15,7 @@ import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import fr.welltale.clazz.Class;
 import fr.welltale.clazz.ClassRepository;
 import fr.welltale.clazz.spell.spells.Jump;
-import fr.welltale.clazz.spell.spells.RainOfArrows;
+import fr.welltale.clazz.spell.spells.Supershot;
 import fr.welltale.util.Color;
 
 import javax.annotation.Nonnull;
@@ -32,23 +32,21 @@ public class SpellManager {
     private final HytaleLogger logger;
     private final Universe universe;
     private final ClassRepository classRepository;
-    private final SpellScheduler spellScheduler;
 
     public SpellManager(
             @Nonnull HytaleLogger logger,
             @Nonnull Universe universe,
-            @Nonnull ClassRepository classRepository, SpellScheduler spellScheduler
+            @Nonnull ClassRepository classRepository
     ) {
         this.logger = logger;
         this.universe = universe;
         this.classRepository = classRepository;
-        this.spellScheduler = spellScheduler;
         registerSpells();
     }
 
     void registerSpells() {
-        spellRegistry.add(new Jump(spellScheduler, logger));
-        spellRegistry.add(new RainOfArrows());
+        spellRegistry.add(new Jump(logger));
+        spellRegistry.add(new Supershot());
         this.logger.atInfo().log("Spells registered: " + spellRegistry.size());
     }
 

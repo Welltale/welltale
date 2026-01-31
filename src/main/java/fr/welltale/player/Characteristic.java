@@ -23,7 +23,6 @@ public class Characteristic {
     private final int damage = 10;
     private final int critical = 0;
     private final int defense = 0;
-    private final int regeneration = 0;
 
     public static void setCharacteristicToPlayer(
             @Nonnull PlayerRef playerRef,

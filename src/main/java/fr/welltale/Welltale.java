@@ -14,8 +14,8 @@ import fr.welltale.clazz.JsonClassRepository;
 import fr.welltale.clazz.spell.SpellComponent;
 import fr.welltale.clazz.spell.SpellCooldownScheduler;
 import fr.welltale.clazz.spell.SpellManager;
-import fr.welltale.clazz.spell.SpellScheduler;
 import fr.welltale.clazz.spell.interaction.CastSpellInteraction;
+import fr.welltale.clazz.spell.system.DamageSystem;
 import fr.welltale.player.*;
 import fr.welltale.player.event.BreakBlockEvent;
 import fr.welltale.player.event.DropItemEvent;
@@ -75,7 +75,6 @@ public class Welltale extends JavaPlugin {
             this.getEntityStoreRegistry().registerSystem(new DropItemEvent(playerRepository, rankRepository, logger));
 
             //TODO ADD THIS EVENTS
-            // Disable Secondary Hand
             // Disable Join/Leave Messages
 
             //Class
@@ -93,11 +92,11 @@ public class Welltale extends JavaPlugin {
             logger.atInfo().log("Loading spells...");
             SpellComponent.spellComponentType = getEntityStoreRegistry().registerComponent(SpellComponent.class, SpellComponent::new);
 
-            SpellScheduler spellScheduler = new SpellScheduler();
-            SpellManager spellManager = new SpellManager(logger, universe, classRepository, spellScheduler);
+            SpellManager spellManager = new SpellManager(logger, universe, classRepository);
             CastSpellInteraction castSpellInteraction = new CastSpellInteraction();
             castSpellInteraction.initStatics(spellManager, playerRepository);
             SpellCooldownScheduler spellCooldownScheduler = new SpellCooldownScheduler();
+            DamageSystem damageSystem = new DamageSystem(playerRepository, logger);
 
 
             this.getCodecRegistry(Interaction.CODEC).register(
@@ -106,7 +105,8 @@ public class Welltale extends JavaPlugin {
                     CastSpellInteraction.CODEC
             );
 
-            this.getEntityStoreRegistry().registerSystem(spellScheduler);
+            this.getEntityStoreRegistry().registerSystem(damageSystem);
+
 
             this.getTaskRegistry().registerTask(spellCooldownScheduler.run(spellManager));
             logger.atInfo().log("Spells loaded!");

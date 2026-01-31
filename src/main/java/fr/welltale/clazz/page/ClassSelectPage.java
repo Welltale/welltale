@@ -178,7 +178,6 @@ public class ClassSelectPage extends InteractiveCustomUIPage<ClassSelectPage.Cla
             return;
         }
 
-        //TODO ENABLE IT TO UPDATE PLAYER WITH SELECTED CLASS IN DATABASE
         playerData.setClassUuid(selectedClass.getUuid());
 
         try {
