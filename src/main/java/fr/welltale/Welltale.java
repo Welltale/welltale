@@ -96,7 +96,7 @@ public class Welltale extends JavaPlugin {
             CastSpellInteraction castSpellInteraction = new CastSpellInteraction();
             castSpellInteraction.initStatics(spellManager, playerRepository);
             SpellCooldownScheduler spellCooldownScheduler = new SpellCooldownScheduler();
-            DamageSystem damageSystem = new DamageSystem(playerRepository, logger);
+            DamageSystem damageSystem = new DamageSystem(playerRepository);
 
 
             this.getCodecRegistry(Interaction.CODEC).register(

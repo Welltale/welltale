@@ -20,9 +20,11 @@ public class Characteristic {
     private final int health = 10;
     private final int mana = 20;
     private final int stamina = 10;
-    private final int damage = 10;
-    private final int critical = 0;
-    private final int defense = 0;
+    private final int damage = 10; //TODO REPLACE TO 0
+    private final int criticalDamage = 0;
+    private final int criticalPct = 0;
+    private final int criticalResistance = 0;
+    private final int resistancePct = 0;
 
     public static void setCharacteristicToPlayer(
             @Nonnull PlayerRef playerRef,
