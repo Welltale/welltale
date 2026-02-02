@@ -11,15 +11,18 @@ import com.hypixel.hytale.server.core.universe.Universe;
 import fr.welltale.clazz.Class;
 import fr.welltale.clazz.JsonClassFileLoader;
 import fr.welltale.clazz.JsonClassRepository;
-import fr.welltale.clazz.spell.SpellComponent;
-import fr.welltale.clazz.spell.SpellCooldownScheduler;
-import fr.welltale.clazz.spell.SpellManager;
-import fr.welltale.clazz.spell.interaction.CastSpellInteraction;
-import fr.welltale.clazz.spell.system.DamageSystem;
+import fr.welltale.level.LevelComponent;
+import fr.welltale.level.event.GiveXPEvent;
+import fr.welltale.level.event.LevelUpEvent;
+import fr.welltale.level.handler.GiveXPHandler;
+import fr.welltale.level.handler.LevelUpHandler;
+import fr.welltale.level.system.OnDeathSystem;
+import fr.welltale.level.system.PlayerJoinSystem;
+import fr.welltale.player.system.*;
+import fr.welltale.spell.SpellCooldownScheduler;
+import fr.welltale.spell.SpellManager;
+import fr.welltale.spell.CastSpellInteraction;
 import fr.welltale.player.*;
-import fr.welltale.player.event.BreakBlockEvent;
-import fr.welltale.player.event.DropItemEvent;
-import fr.welltale.player.event.PlaceBlockEvent;
 import fr.welltale.rank.JsonRankFileLoader;
 import fr.welltale.rank.JsonRankRepository;
 import fr.welltale.rank.Rank;
@@ -51,6 +54,7 @@ public class Welltale extends JavaPlugin {
             List<Rank> jsonRankData = jsonRankFileLoader.getJsonData(jsonRankFile);
             JsonRankRepository rankRepository = new JsonRankRepository(jsonRankData);
             logger.atInfo().log(jsonRankData.size() + " rank(s) loaded!");
+            //Rank
 
             //Player
             logger.atInfo().log("Loading players...");
@@ -58,24 +62,29 @@ public class Welltale extends JavaPlugin {
             File jsonPlayerFile = jsonPlayerFileLoader.loadJsonPlayersFile();
             List<Player> jsonPlayerData = jsonPlayerFileLoader.getJsonData(jsonPlayerFile);
             JsonPlayerRepository playerRepository = new JsonPlayerRepository(jsonPlayerData, jsonPlayerFile, logger);
+            DamageSystem damageSystem = new DamageSystem(playerRepository);
 
             //Remove this if you don't use JsonPlayerRepository
             this.playerRepository = playerRepository;
             PlayerSaveDataScheduler playerSaveDataScheduler = new PlayerSaveDataScheduler(playerRepository);
-            logger.atInfo().log(jsonPlayerData.size() + " player(s) loaded!");
 
             //TODO ENABLE IT
             //this.getTaskRegistry().registerTask(playerSaveDataScheduler.run());
-            this.getEventRegistry().registerGlobal(PlayerConnectEvent.class,
-                    new fr.welltale.player.event.PlayerConnectEvent(playerRepository, logger)::onPlayerConnect);
-            this.getEventRegistry().registerGlobal(PlayerReadyEvent.class,
-                    new fr.welltale.player.event.PlayerReadyEvent(playerRepository, rankRepository, logger, universe)::onPlayerReady);
-            this.getEntityStoreRegistry().registerSystem(new BreakBlockEvent(playerRepository, rankRepository, logger));
-            this.getEntityStoreRegistry().registerSystem(new PlaceBlockEvent(playerRepository, rankRepository, logger));
-            this.getEntityStoreRegistry().registerSystem(new DropItemEvent(playerRepository, rankRepository, logger));
+            this.getEntityStoreRegistry().registerSystem(damageSystem);
 
-            //TODO ADD THIS EVENTS
-            // Disable Join/Leave Messages
+            this.getEventRegistry().registerGlobal(
+                    PlayerConnectEvent.class,
+                    new fr.welltale.player.event.PlayerConnectEvent(playerRepository, logger)::onPlayerConnect
+            );
+            this.getEventRegistry().registerGlobal(
+                    PlayerReadyEvent.class,
+                    new fr.welltale.player.event.PlayerReadyEvent(playerRepository, rankRepository, logger, universe)::onPlayerReady
+            );
+            this.getEntityStoreRegistry().registerSystem(new BreakBlockEventSystem(playerRepository, rankRepository, logger));
+            this.getEntityStoreRegistry().registerSystem(new PlaceBlockEventSystem(playerRepository, rankRepository, logger));
+            this.getEntityStoreRegistry().registerSystem(new DropItemEventSystem(playerRepository, rankRepository, logger));
+            logger.atInfo().log(jsonPlayerData.size() + " player(s) loaded!");
+            //Player
 
             //Class
             logger.atInfo().log("Loading classes...");
@@ -85,19 +94,18 @@ public class Welltale extends JavaPlugin {
             JsonClassRepository classRepository = new JsonClassRepository(jsonClassData);
             logger.atInfo().log(jsonClassData.size() + " class(es) loaded!");
 
-            this.getEventRegistry().registerGlobal(PlayerReadyEvent.class,
-                    new fr.welltale.clazz.event.PlayerReadyEvent(playerRepository, classRepository, logger)::onPlayerReadyEvent);
+            this.getEventRegistry().registerGlobal(
+                    PlayerReadyEvent.class,
+                    new fr.welltale.clazz.event.PlayerReadyEvent(playerRepository, classRepository, logger)::onPlayerReadyEvent
+            );
+            //Class
 
             //Spell
             logger.atInfo().log("Loading spells...");
-            SpellComponent.spellComponentType = getEntityStoreRegistry().registerComponent(SpellComponent.class, SpellComponent::new);
-
             SpellManager spellManager = new SpellManager(logger, universe, classRepository);
             CastSpellInteraction castSpellInteraction = new CastSpellInteraction();
-            castSpellInteraction.initStatics(spellManager, playerRepository);
+            castSpellInteraction.initStatics(spellManager, playerRepository, logger);
             SpellCooldownScheduler spellCooldownScheduler = new SpellCooldownScheduler();
-            DamageSystem damageSystem = new DamageSystem(playerRepository);
-
 
             this.getCodecRegistry(Interaction.CODEC).register(
                     CastSpellInteraction.ROOT_INTERACTION,
@@ -105,15 +113,34 @@ public class Welltale extends JavaPlugin {
                     CastSpellInteraction.CODEC
             );
 
-            this.getEntityStoreRegistry().registerSystem(damageSystem);
-
-
             this.getTaskRegistry().registerTask(spellCooldownScheduler.run(spellManager));
             logger.atInfo().log("Spells loaded!");
+            //Spell
+
+            //Level
+            logger.atInfo().log("Loading Level...");
+            var levelType = this.getEntityStoreRegistry().registerComponent(
+                    LevelComponent.class,
+                    "LevelComponent",
+                    LevelComponent.CODEC
+            );
+            LevelComponent.setComponentType(levelType);
+
+            this.getEventRegistry().register(GiveXPEvent.class, new GiveXPHandler(logger));
+            this.getEventRegistry().register(LevelUpEvent.class, new LevelUpHandler(logger));
+            this.getEntityStoreRegistry().registerSystem(new OnDeathSystem(logger));
+            this.getEntityStoreRegistry().registerSystem(new PlayerJoinSystem(playerRepository, logger));
+            logger.atInfo().log("Level loaded!");
+            //Level
 
             //Chat
-            this.getEventRegistry().registerGlobal(PlayerChatEvent.class,
-                    new fr.welltale.chat.event.PlayerChatEvent(playerRepository, rankRepository, logger)::onPlayerChatEvent);
+            logger.atInfo().log("Loading chat...");
+            this.getEventRegistry().registerGlobal(
+                    PlayerChatEvent.class,
+                    new fr.welltale.chat.event.PlayerChatEvent(playerRepository, rankRepository, logger)::onPlayerChatEvent
+            );
+            logger.atInfo().log("Chat loaded!");
+            //Chat
         } catch (Exception e) {
             logger.atSevere().log("Failed to load Welltale Mod: " + e.getMessage());
         }

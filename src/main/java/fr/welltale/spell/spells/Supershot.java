@@ -1,51 +1,49 @@
-package fr.welltale.clazz.spell.spells;
+package fr.welltale.spell.spells;
 
-import com.hypixel.hytale.component.*;
-import com.hypixel.hytale.logger.HytaleLogger;
-import com.hypixel.hytale.protocol.*;
-import com.hypixel.hytale.server.core.Message;
-import com.hypixel.hytale.server.core.entity.*;
+import com.hypixel.hytale.component.CommandBuffer;
+import com.hypixel.hytale.component.Ref;
+import com.hypixel.hytale.component.Store;
+import com.hypixel.hytale.protocol.InteractionType;
+import com.hypixel.hytale.server.core.entity.InteractionChain;
+import com.hypixel.hytale.server.core.entity.InteractionContext;
+import com.hypixel.hytale.server.core.entity.InteractionManager;
 import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.modules.interaction.InteractionModule;
 import com.hypixel.hytale.server.core.modules.interaction.interaction.config.RootInteraction;
 import com.hypixel.hytale.server.core.universe.Universe;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
-import fr.welltale.clazz.spell.Spell;
-import lombok.AllArgsConstructor;
+import fr.welltale.spell.Spell;
 import org.jspecify.annotations.NonNull;
 
-@AllArgsConstructor
-public class Jump implements Spell {
-    private HytaleLogger logger;
-
+public class Supershot implements Spell {
     @Override
     public InteractionType getInteractionType() {
-        return InteractionType.Ability1;
+        return InteractionType.Ability2;
     }
 
     @Override
     public String getName() {
-        return "Bond";
+        return "Supershot";
     }
 
     @Override
     public String getSlug() {
-        return "jump";
+        return "supershot";
     }
 
     @Override
     public int getBaseDamage() {
-        return 5;
+        return 1;
     }
 
     @Override
     public int getManaCost() {
-        return 10;
+        return 15;
     }
 
     @Override
     public float getCooldown() {
-        return 5;
+        return 10;
     }
 
     @Override
@@ -58,25 +56,23 @@ public class Jump implements Spell {
     ) {
         InteractionManager manager = casterStore.getComponent(casterRef, InteractionModule.get().getInteractionManagerComponent());
         if (manager == null) {
-            caster.sendMessage(Message.raw("MANAGER IS NULL"));
             return;
         }
 
-        com.hypixel.hytale.server.core.modules.interaction.interaction.config.RootInteraction rootInteraction = RootInteraction.getAssetMap().getAsset("Mace_Swing_Down_Charged");
+        RootInteraction rootInteraction = RootInteraction.getAssetMap().getAsset("Bow_Bomb_Boomshot");
         if (rootInteraction == null) {
-            caster.sendMessage(Message.raw("Mace_Swing_Down_Charged IS NULL"));
             return;
         }
 
         InteractionContext interactionContext = InteractionContext.forInteraction(
                 manager,
                 casterRef,
-                InteractionType.Ability1,
+                this.getInteractionType(),
                 casterStore
         );
 
         InteractionChain interactionChain = manager.initChain(
-                InteractionType.Ability1,
+                this.getInteractionType(),
                 interactionContext,
                 rootInteraction,
                 true

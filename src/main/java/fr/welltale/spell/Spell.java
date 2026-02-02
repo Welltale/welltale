@@ -1,4 +1,4 @@
-package fr.welltale.clazz.spell;
+package fr.welltale.spell;
 
 import com.hypixel.hytale.component.CommandBuffer;
 import com.hypixel.hytale.component.Ref;

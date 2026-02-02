@@ -4,52 +4,52 @@ $Sounds = "Sound.ui";
 
 @CancelButtonStyle = TextButtonStyle(
   Default: (
-    Background: "Commons/CancelButton.png", LabelStyle: (FontSize: 13, TextColor: #ffffff, RenderBold: true, Alignment: Center)
+    Background: "Commons/Buttons/CancelButton.png", LabelStyle: (FontSize: 13, TextColor: #ffffff, RenderBold: true, Alignment: Center)
   ),
   Hovered: (
-    Background: "Commons/CancelButtonHovered.png", LabelStyle: (FontSize: 13, TextColor: #ffffff, RenderBold: true, Alignment: Center)
+    Background: "Commons/Buttons/CancelButtonHovered.png", LabelStyle: (FontSize: 13, TextColor: #ffffff, RenderBold: true, Alignment: Center)
   ),
   Pressed: (
-    Background: "Commons/CancelButtonPressed.png", LabelStyle: (FontSize: 13, TextColor: #ffffff, RenderBold: true, Alignment: Center)
+    Background: "Commons/Buttons/CancelButtonPressed.png", LabelStyle: (FontSize: 13, TextColor: #ffffff, RenderBold: true, Alignment: Center)
   ),
   Sounds: $Sounds.@ButtonsCancel,
 );
 
 @MainButtonStyle = TextButtonStyle(
   Default: (
-    Background: "Commons/Button.png", LabelStyle: (FontSize: 13, TextColor: #ffffff, RenderBold: true, Alignment: Center)
+    Background: "Commons/Buttons/Button.png", LabelStyle: (FontSize: 13, TextColor: #ffffff, RenderBold: true, Alignment: Center)
   ),
   Hovered: (
-    Background: "Commons/ButtonHovered.png", LabelStyle: (FontSize: 13, TextColor: #ffffff, RenderBold: true, Alignment: Center)
+    Background: "Commons/Buttons/ButtonHovered.png", LabelStyle: (FontSize: 13, TextColor: #ffffff, RenderBold: true, Alignment: Center)
   ),
   Pressed: (
-    Background: "Commons/ButtonPressed.png", LabelStyle: (FontSize: 13, TextColor: #ffffff, RenderBold: true, Alignment: Center)
+    Background: "Commons/Buttons/ButtonPressed.png", LabelStyle: (FontSize: 13, TextColor: #ffffff, RenderBold: true, Alignment: Center)
   ),
   Sounds: $Sounds.@ButtonsMain,
 );
 
 @EnterButtonStyle = TextButtonStyle(
   Default: (
-    Background: "Commons/Button.png", LabelStyle: (FontSize: 13, TextColor: #ffffff, RenderBold: true, Alignment: Center)
+    Background: "Commons/Buttons/Button.png", LabelStyle: (FontSize: 13, TextColor: #ffffff, RenderBold: true, Alignment: Center)
   ),
   Hovered: (
-    Background: "Commons/ButtonHovered.png", LabelStyle: (FontSize: 13, TextColor: #ffffff, RenderBold: true, Alignment: Center)
+    Background: "Commons/Buttons/ButtonHovered.png", LabelStyle: (FontSize: 13, TextColor: #ffffff, RenderBold: true, Alignment: Center)
   ),
   Pressed: (
-    Background: "Commons/ButtonPressed.png", LabelStyle: (FontSize: 13, TextColor: #ffffff, RenderBold: true, Alignment: Center)
+    Background: "Commons/Buttons/ButtonPressed.png", LabelStyle: (FontSize: 13, TextColor: #ffffff, RenderBold: true, Alignment: Center)
   ),
   Sounds: $Sounds.@EnterWorld,
 );
 
 @ClickableSlotButtonStyle = ButtonStyle(
   Default: (
-    Background: "Commons/Slot.png"
+    Background: "Commons/Slots/Slot.png"
   ),
   Hovered: (
-    Background: "Commons/SlotHovered.png"
+    Background: "Commons/Slots/SlotHovered.png"
   ),
   Pressed: (
-    Background: "Commons/SlotPressed.png"
+    Background: "Commons/Slots/SlotPressed.png"
   ),
   Sounds: $Sounds.@ButtonsLight,
 );

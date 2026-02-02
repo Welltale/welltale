@@ -9,7 +9,8 @@ import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.Universe;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import fr.welltale.constant.Constant;
-import fr.welltale.player.Characteristic;
+import fr.welltale.level.LevelComponent;
+import fr.welltale.player.Characteristics;
 import fr.welltale.player.PlayerRepository;
 import fr.welltale.rank.Rank;
 import fr.welltale.rank.RankRepository;
@@ -51,7 +52,7 @@ public class PlayerReadyEvent {
             return;
         }
 
-        Characteristic.setCharacteristicToPlayer(playerRef, ref, store, playerData, this.universe);
+        Characteristics.setCharacteristicToPlayer(playerRef, ref, store, playerData, this.universe);
         this.setNameplate(ref, store, playerData);
 
         if (playerData.getClassUuid() != null) {
@@ -66,6 +67,9 @@ public class PlayerReadyEvent {
             @NonNull Store<EntityStore> store,
             @Nonnull fr.welltale.player.Player playerData
     ) {
+        LevelComponent levelComponent = store.getComponent(ref, LevelComponent.getComponentType());
+        if (levelComponent == null) return;
+
         Nameplate nameplate = store.getComponent(ref, Nameplate.getComponentType());
         if (nameplate == null) {
             this.logger.atSevere()
@@ -74,13 +78,13 @@ public class PlayerReadyEvent {
         }
 
         if (playerData.getRankUuid() == null) {
-            nameplate.setText("[" + Constant.Prefix.LEVEL_PREFIX + playerData.getLevel() + "] " + playerData.getPlayerName());
+            nameplate.setText("[" + Constant.Prefix.LEVEL_PREFIX + levelComponent.getLevel() + "] " + playerData.getPlayerName());
             return;
         }
 
         Rank playerRank = this.rankRepository.getRank(playerData.getRankUuid());
         if (playerRank == null) return;
 
-        nameplate.setText("[" + Constant.Prefix.LEVEL_PREFIX + playerData.getLevel() + "] " + "[" + playerRank.getPrefix() + "] " + playerData.getPlayerName());
+        nameplate.setText("[" + Constant.Prefix.LEVEL_PREFIX + levelComponent.getLevel() + "] " + "[" + playerRank.getPrefix() + "] " + playerData.getPlayerName());
     }
 }

@@ -1,4 +1,4 @@
-package fr.welltale.player.event;
+package fr.welltale.player.system;
 
 import com.hypixel.hytale.component.*;
 import com.hypixel.hytale.component.query.Query;
@@ -17,13 +17,13 @@ import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 
-public class PlaceBlockEvent extends EntityEventSystem<EntityStore, com.hypixel.hytale.server.core.event.events.ecs.PlaceBlockEvent> {
+public class DropItemEventSystem extends EntityEventSystem<EntityStore, com.hypixel.hytale.server.core.event.events.ecs.DropItemEvent> {
     private final PlayerRepository playerRepository;
     private final RankRepository rankRepository;
     private final HytaleLogger logger;
 
-    public PlaceBlockEvent(PlayerRepository playerRepository, RankRepository rankRepository, HytaleLogger logger) {
-        super(com.hypixel.hytale.server.core.event.events.ecs.PlaceBlockEvent.class);
+    public DropItemEventSystem(PlayerRepository playerRepository, RankRepository rankRepository, HytaleLogger logger) {
+        super(com.hypixel.hytale.server.core.event.events.ecs.DropItemEvent.class);
         this.playerRepository = playerRepository;
         this.rankRepository = rankRepository;
         this.logger = logger;
@@ -35,20 +35,20 @@ public class PlaceBlockEvent extends EntityEventSystem<EntityStore, com.hypixel.
             @NonNull ArchetypeChunk<EntityStore> archetypeChunk,
             @NonNull Store<EntityStore> store,
             @NonNull CommandBuffer<EntityStore> commandBuffer,
-            com.hypixel.hytale.server.core.event.events.ecs.@NonNull PlaceBlockEvent event
+            com.hypixel.hytale.server.core.event.events.ecs.@NonNull DropItemEvent event
     ) {
         Ref<EntityStore> ref = archetypeChunk.getReferenceTo(i);
         PlayerRef playerRef = store.getComponent(ref, PlayerRef.getComponentType());
         if (playerRef == null) {
             this.logger.atSevere()
-                    .log("[PLAYER] BreakBlockEvent Handle Failed: PlayerRef is null");
+                    .log("[PLAYER] DropItemEvent Handle Failed: PlayerRef is null");
             return;
         }
 
         Player playerData = this.playerRepository.getPlayerByUuid(playerRef.getUuid());
         if (playerData == null) {
             this.logger.atSevere()
-                    .log("[PLAYER] PlaceBlockEvent Handle Failed: PlayerData is null");
+                    .log("[PLAYER] DropItemEvent Handle Failed: PlayerData is null");
             return;
         }
 
@@ -64,11 +64,11 @@ public class PlaceBlockEvent extends EntityEventSystem<EntityStore, com.hypixel.
         Rank rank = this.rankRepository.getRank(playerData.getRankUuid());
         if (rank == null) {
             this.logger.atSevere()
-                    .log("[PLAYER] PlaceBlockEvent Handle Failed: PlayerData is null");
+                    .log("[PLAYER] DropItemEvent Handle Failed: Rank is null");
             return;
         }
 
-        boolean ok = Permission.hasPermissions(rank.getPermissions(), List.of(Constant.Permission.Global.PLACE_BLOCK, Constant.Permission.Global.OPERATOR));
+        boolean ok = Permission.hasPermissions(rank.getPermissions(), List.of(Constant.Permission.Global.ITEM_DROP, Constant.Permission.Global.OPERATOR));
         if (!ok) {
             if (event.isCancelled()) {
                 return;

@@ -21,9 +21,6 @@ public class Player {
     private UUID classUuid;
 
     @Setter
-    private int level = 1;
-
-    @Setter
     private float experience;
 
     @Setter
@@ -38,7 +35,7 @@ public class Player {
     private List<UUID> friendsUuids;
 
     private SpawnPoint spawnPoint;
-    private Characteristic characteristic = new Characteristic();
+    private Characteristics characteristics = new Characteristics();
 
     @Getter
     @Setter

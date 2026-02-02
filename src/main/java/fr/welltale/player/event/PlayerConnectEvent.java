@@ -2,7 +2,7 @@ package fr.welltale.player.event;
 
 import com.hypixel.hytale.logger.HytaleLogger;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
-import fr.welltale.player.Characteristic;
+import fr.welltale.player.Characteristics;
 import fr.welltale.player.Player;
 import fr.welltale.player.PlayerRepository;
 import lombok.AllArgsConstructor;
@@ -41,13 +41,12 @@ public class PlayerConnectEvent {
                 playerRef.getUuid(),
                 playerRef.getUsername(),
                 null,
-                1,
                 0,
                 null,
                 null,
                 List.of(),
                 null,
-                new Characteristic()
+                new Characteristics()
         );
 
         this.playerRepository.addPlayer(newPlayer);

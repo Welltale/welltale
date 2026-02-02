@@ -1,9 +1,13 @@
 package fr.welltale.chat.event;
 
+import com.hypixel.hytale.component.Ref;
+import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.logger.HytaleLogger;
 import com.hypixel.hytale.server.core.Message;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
+import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import fr.welltale.constant.Constant;
+import fr.welltale.level.LevelComponent;
 import fr.welltale.player.Player;
 import fr.welltale.player.PlayerRepository;
 import fr.welltale.rank.Rank;
@@ -29,6 +33,21 @@ public class PlayerChatEvent {
 
         PlayerRef sender = event.getSender();
 
+        Ref<EntityStore> senderRef = sender.getReference();
+        if (senderRef == null) {
+            this.logger.atSevere()
+                    .log("[CHAT] PlayerChatEvent ReformatMessage Failed: SenderRef is null");
+            return;
+        }
+
+        Store<EntityStore> senderStore = senderRef.getStore();
+        LevelComponent senderLevelComponent = senderStore.getComponent(senderRef, LevelComponent.getComponentType());
+        if (senderLevelComponent == null) {
+            this.logger.atSevere()
+                    .log("[CHAT] PlayerChatEvent ReformatMessage Failed: LevelComponent is null");
+            return;
+        }
+
         Player playerData = this.playerRepository.getPlayerByUuid(sender.getUuid());
         if (playerData == null) {
             this.logger.atSevere()
@@ -41,7 +60,7 @@ public class PlayerChatEvent {
 
         event.setCancelled(true);
 
-        Message level = Message.raw("[" + Constant.Prefix.LEVEL_PREFIX + playerData.getLevel() + "] ")
+        Message level = Message.raw("[" + Constant.Prefix.LEVEL_PREFIX + senderLevelComponent.getLevel() + "] ")
                 .color(Constant.Prefix.LEVEL_PREFIX_COLOR)
                 .bold(true);
 

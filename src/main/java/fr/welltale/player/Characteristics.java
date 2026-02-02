@@ -15,8 +15,9 @@ import lombok.NonNull;
 
 import javax.annotation.Nonnull;
 
+//TODO ADD SETTER
 @Getter
-public class Characteristic {
+public class Characteristics {
     private final int health = 10;
     private final int mana = 20;
     private final int stamina = 10;
@@ -43,7 +44,7 @@ public class Characteristic {
         StaticModifier staticModifierHealth = new StaticModifier(
                 Modifier.ModifierTarget.MAX,
                 StaticModifier.CalculationType.ADDITIVE,
-                playerData.getCharacteristic().getHealth() - Constant.Player.Stat.DEFAULT_HEALTH_AMOUNT
+                playerData.getCharacteristics().getHealth() - Constant.Player.Stat.DEFAULT_HEALTH_AMOUNT
         );
         playerStatMap.putModifier(
                 DefaultEntityStatTypes.getHealth(),
@@ -54,7 +55,7 @@ public class Characteristic {
         StaticModifier staticModifierMana = new StaticModifier(
                 Modifier.ModifierTarget.MAX,
                 StaticModifier.CalculationType.ADDITIVE,
-                playerData.getCharacteristic().getMana() - Constant.Player.Stat.DEFAULT_MANA_AMOUNT
+                playerData.getCharacteristics().getMana() - Constant.Player.Stat.DEFAULT_MANA_AMOUNT
         );
         playerStatMap.putModifier(
                 DefaultEntityStatTypes.getMana(),
@@ -65,7 +66,7 @@ public class Characteristic {
         StaticModifier staticModifierStamina = new StaticModifier(
                 Modifier.ModifierTarget.MAX,
                 StaticModifier.CalculationType.ADDITIVE,
-                playerData.getCharacteristic().getStamina() - Constant.Player.Stat.DEFAULT_STAMINA_AMOUNT
+                playerData.getCharacteristics().getStamina() - Constant.Player.Stat.DEFAULT_STAMINA_AMOUNT
         );
         playerStatMap.putModifier(
                 DefaultEntityStatTypes.getStamina(),

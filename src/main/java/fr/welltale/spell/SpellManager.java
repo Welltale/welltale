@@ -1,4 +1,4 @@
-package fr.welltale.clazz.spell;
+package fr.welltale.spell;
 
 import com.hypixel.hytale.component.CommandBuffer;
 import com.hypixel.hytale.component.Ref;
@@ -14,8 +14,8 @@ import com.hypixel.hytale.server.core.universe.Universe;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import fr.welltale.clazz.Class;
 import fr.welltale.clazz.ClassRepository;
-import fr.welltale.clazz.spell.spells.Jump;
-import fr.welltale.clazz.spell.spells.Supershot;
+import fr.welltale.spell.spells.Jump;
+import fr.welltale.spell.spells.Supershot;
 import fr.welltale.util.Color;
 
 import javax.annotation.Nonnull;
@@ -23,7 +23,7 @@ import javax.annotation.Nullable;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static fr.welltale.clazz.spell.SpellCooldownScheduler.COOLDOWN_DELAY;
+import static fr.welltale.spell.SpellCooldownScheduler.COOLDOWN_DELAY;
 
 public class SpellManager {
     private static final List<Spell> spellRegistry = new ArrayList<>();
@@ -45,8 +45,9 @@ public class SpellManager {
     }
 
     void registerSpells() {
-        spellRegistry.add(new Jump(logger));
+        spellRegistry.add(new Jump());
         spellRegistry.add(new Supershot());
+
         this.logger.atInfo().log("Spells registered: " + spellRegistry.size());
     }
 
@@ -57,7 +58,11 @@ public class SpellManager {
             @Nonnull CommandBuffer<EntityStore> cmdBuffer
     ) {
         Class casterClass = this.classRepository.getClass(casterData.getClassUuid());
-        if (casterClass == null) return;
+        if (casterClass == null) {
+            this.logger.atSevere()
+                    .log("[SPELL] SpellManager Cast Failed: Caster Class is null");
+            return;
+        }
 
         Spell spell = this.getSpell(casterClass, type);
         if (spell == null) {
@@ -65,17 +70,25 @@ public class SpellManager {
             return;
         }
 
-        Ref<EntityStore> ref = caster.getReference();
-        if (ref == null) return;
+        Ref<EntityStore> casterRef = caster.getReference();
+        if (casterRef == null) {
+            this.logger.atSevere()
+                    .log("[SPELL] SpellManager Cast Failed: CasterRef is null");
+            return;
+        }
 
-        Store<EntityStore> store = ref.getStore();
-        EntityStatMap casterStatMap = store.getComponent(ref, EntityStatMap.getComponentType());
-        if (casterStatMap == null) return;
+        Store<EntityStore> casterStore = casterRef.getStore();
+        EntityStatMap casterStatMap = casterStore.getComponent(casterRef, EntityStatMap.getComponentType());
+        if (casterStatMap == null) {
+            this.logger.atSevere()
+                    .log("[SPELL] SpellManager Cast Failed: Caster Stat Map is null");
+            return;
+        }
 
         if (!canCast(caster, casterData, casterClass, spell, casterStatMap)) return;
 
         this.consumeMana(casterStatMap, spell.getManaCost());
-        spell.run(caster, ref, store, this.universe, cmdBuffer);
+        spell.run(caster, casterRef, casterStore, this.universe, cmdBuffer);
         playerCooldowns.put(casterData.getUuid().toString() + "_" + spell.getSlug(), spell.getCooldown());
         this.startCooldown(casterData.getUuid(), spell.getSlug(), spell.getCooldown());
 
@@ -93,7 +106,11 @@ public class SpellManager {
         if (!casterClass.getSpellSlugs().contains(spell.getSlug())) return false;
 
         EntityStatValue casterCurrentMana = casterStatMap.get(DefaultEntityStatTypes.getMana());
-        if (casterCurrentMana == null) return false;
+        if (casterCurrentMana == null) {
+            this.logger.atSevere()
+                    .log("[SPELL] SpellManager CanCast Failed: Caster Mana is null");
+            return false;
+        }
 
         if (casterCurrentMana.get() < spell.getManaCost()) {
             caster.sendMessage(Message.raw("Cannot cast spell: " + spell.getName() + " no enough mana").color(Color.DARK_RED));
@@ -112,7 +129,11 @@ public class SpellManager {
 
     private void consumeMana(@Nonnull EntityStatMap casterStatMap, float manaCost) {
         EntityStatValue casterCurrentMana = casterStatMap.get(DefaultEntityStatTypes.getMana());
-        if (casterCurrentMana == null) return;
+        if (casterCurrentMana == null) {
+            this.logger.atSevere()
+                    .log("[SPELL] SpellManager ConsumeMana Failed: Caster Mana is null");
+            return;
+        }
 
         casterStatMap.setStatValue(DefaultEntityStatTypes.getMana(), casterCurrentMana.get() - manaCost);
     }
