@@ -1,7 +1,5 @@
 package fr.welltale.player;
 
-import com.hypixel.hytale.math.vector.Vector3d;
-import com.hypixel.hytale.math.vector.Vector3f;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,16 +13,23 @@ import java.util.UUID;
 @Getter
 public class Player {
     private UUID uuid;
-    private String playerName;
 
     @Setter
     private UUID classUuid;
 
     @Setter
-    private float experience;
+    private long experience;
 
     @Setter
     private UUID rankUuid;
+
+    @Getter
+    @Setter
+    private Characteristics.EditableCharacteristics editableCharacteristics;
+
+    @Getter
+    @Setter
+    private int characteristicPoints;
 
     @Getter
     @Setter
@@ -34,14 +39,8 @@ public class Player {
     @Setter
     private List<UUID> friendsUuids;
 
-    private SpawnPoint spawnPoint;
-    private Characteristics characteristics = new Characteristics();
-
     @Getter
     @Setter
-    public static class SpawnPoint {
-        private Vector3f position;
-        private Vector3d rotation;
-    }
+    private long golds;
 }
 

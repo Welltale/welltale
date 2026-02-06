@@ -11,21 +11,30 @@ import com.hypixel.hytale.server.core.universe.Universe;
 import fr.welltale.clazz.Class;
 import fr.welltale.clazz.JsonClassFileLoader;
 import fr.welltale.clazz.JsonClassRepository;
-import fr.welltale.level.LevelComponent;
+import fr.welltale.level.PlayerLevelComponent;
 import fr.welltale.level.event.GiveXPEvent;
 import fr.welltale.level.event.LevelUpEvent;
 import fr.welltale.level.handler.GiveXPHandler;
 import fr.welltale.level.handler.LevelUpHandler;
 import fr.welltale.level.system.OnDeathSystem;
 import fr.welltale.level.system.PlayerJoinSystem;
-import fr.welltale.player.system.*;
-import fr.welltale.spell.SpellCooldownScheduler;
-import fr.welltale.spell.SpellManager;
-import fr.welltale.spell.CastSpellInteraction;
+import fr.welltale.mob.JsonMobFileLoader;
+import fr.welltale.mob.JsonMobRepository;
+import fr.welltale.mob.Mob;
+import fr.welltale.mob.MobStatsComponent;
+import fr.welltale.mob.system.MobNameplateAssignSystem;
+import fr.welltale.mob.system.MobStatsAssignSystem;
 import fr.welltale.player.*;
+import fr.welltale.player.system.BreakBlockEventSystem;
+import fr.welltale.player.system.DamageSystem;
+import fr.welltale.player.system.DropItemEventSystem;
+import fr.welltale.player.system.PlaceBlockEventSystem;
 import fr.welltale.rank.JsonRankFileLoader;
 import fr.welltale.rank.JsonRankRepository;
 import fr.welltale.rank.Rank;
+import fr.welltale.spell.CastSpellInteraction;
+import fr.welltale.spell.SpellCooldownScheduler;
+import fr.welltale.spell.SpellManager;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -62,7 +71,7 @@ public class Welltale extends JavaPlugin {
             File jsonPlayerFile = jsonPlayerFileLoader.loadJsonPlayersFile();
             List<Player> jsonPlayerData = jsonPlayerFileLoader.getJsonData(jsonPlayerFile);
             JsonPlayerRepository playerRepository = new JsonPlayerRepository(jsonPlayerData, jsonPlayerFile, logger);
-            DamageSystem damageSystem = new DamageSystem(playerRepository);
+            DamageSystem damageSystem = new DamageSystem();
 
             //Remove this if you don't use JsonPlayerRepository
             this.playerRepository = playerRepository;
@@ -83,6 +92,11 @@ public class Welltale extends JavaPlugin {
             this.getEntityStoreRegistry().registerSystem(new BreakBlockEventSystem(playerRepository, rankRepository, logger));
             this.getEntityStoreRegistry().registerSystem(new PlaceBlockEventSystem(playerRepository, rankRepository, logger));
             this.getEntityStoreRegistry().registerSystem(new DropItemEventSystem(playerRepository, rankRepository, logger));
+
+            this.getEventRegistry().registerGlobal(
+                    PlayerChatEvent.class,
+                    new fr.welltale.player.event.PlayerChatEvent(playerRepository, rankRepository, logger, universe)::onPlayerChatEvent
+            );
             logger.atInfo().log(jsonPlayerData.size() + " player(s) loaded!");
             //Player
 
@@ -120,27 +134,39 @@ public class Welltale extends JavaPlugin {
             //Level
             logger.atInfo().log("Loading Level...");
             var levelType = this.getEntityStoreRegistry().registerComponent(
-                    LevelComponent.class,
+                    PlayerLevelComponent.class,
                     "LevelComponent",
-                    LevelComponent.CODEC
+                    PlayerLevelComponent.CODEC
             );
-            LevelComponent.setComponentType(levelType);
+            PlayerLevelComponent.setComponentType(levelType);
 
-            this.getEventRegistry().register(GiveXPEvent.class, new GiveXPHandler(logger));
-            this.getEventRegistry().register(LevelUpEvent.class, new LevelUpHandler(logger));
+            this.getEventRegistry().register(GiveXPEvent.class, new GiveXPHandler(playerRepository, logger));
+            this.getEventRegistry().register(LevelUpEvent.class, new LevelUpHandler(playerRepository, logger));
             this.getEntityStoreRegistry().registerSystem(new OnDeathSystem(logger));
             this.getEntityStoreRegistry().registerSystem(new PlayerJoinSystem(playerRepository, logger));
             logger.atInfo().log("Level loaded!");
             //Level
 
-            //Chat
-            logger.atInfo().log("Loading chat...");
-            this.getEventRegistry().registerGlobal(
-                    PlayerChatEvent.class,
-                    new fr.welltale.chat.event.PlayerChatEvent(playerRepository, rankRepository, logger)::onPlayerChatEvent
+            //Mob
+            logger.atInfo().log("Loading mobs...");
+            JsonMobFileLoader jsonMobFileLoader = new JsonMobFileLoader();
+            File jsonMobFile = jsonMobFileLoader.loadJsonMobsFile();
+            List<Mob> jsonMobData = jsonMobFileLoader.getJsonData(jsonMobFile);
+            JsonMobRepository jsonMobRepository = new JsonMobRepository(jsonMobData);
+            MobStatsAssignSystem mobStatsAssignSystem = new MobStatsAssignSystem(jsonMobRepository);
+            MobNameplateAssignSystem mobNameplateAssignSystem = new MobNameplateAssignSystem(jsonMobRepository);
+
+            this.getEntityStoreRegistry().registerSystem(mobNameplateAssignSystem);
+            this.getEntityStoreRegistry().registerSystem(mobStatsAssignSystem);
+
+            var mobLevelType = this.getEntityStoreRegistry().registerComponent(
+                    MobStatsComponent.class,
+                    "MobLevelComponent",
+                    MobStatsComponent.CODEC
             );
-            logger.atInfo().log("Chat loaded!");
-            //Chat
+            MobStatsComponent.setComponentType(mobLevelType);
+            logger.atInfo().log("Mobs loaded!");
+            //Mob
         } catch (Exception e) {
             logger.atSevere().log("Failed to load Welltale Mod: " + e.getMessage());
         }
@@ -154,9 +180,10 @@ public class Welltale extends JavaPlugin {
     @Override
     protected void shutdown() {
         //Remove this if you don't use JsonPlayerRepository
-        if (this.playerRepository != null) {
-            this.playerRepository.saveData();
-        }
+        //TODO ENABLE IT
+        //if (this.playerRepository != null) {
+        //    this.playerRepository.saveData();
+        //}
 
         this.getLogger().atInfo().log("Welltale Mod shutting down!");
     }

@@ -1,2 +1,7 @@
 items.Weapon_Sword_Beginner.name = Épée du débutant
 items.Weapon_Sword_Beginner.description = DESCRIPTION
+
+items.Armor_Beginner_Chest.name = Plastron du débutant
+items.Armor_Beginner_Head.name = Casque du débutant
+items.Armor_Beginner_Hands.name = Gants du débutant
+items.Armor_Beginner_Legs.name = Jambières du débutant

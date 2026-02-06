@@ -5,16 +5,14 @@ import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.component.query.Query;
 import com.hypixel.hytale.logger.HytaleLogger;
-import com.hypixel.hytale.protocol.packets.interface_.NotificationStyle;
-import com.hypixel.hytale.server.core.Message;
 import com.hypixel.hytale.server.core.modules.entity.damage.Damage;
 import com.hypixel.hytale.server.core.modules.entity.damage.DeathComponent;
 import com.hypixel.hytale.server.core.modules.entity.damage.DeathSystems;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
-import com.hypixel.hytale.server.core.util.NotificationUtil;
-import fr.welltale.level.LevelComponent;
+import fr.welltale.level.PlayerLevelComponent;
 import fr.welltale.level.event.GiveXPEvent;
+import fr.welltale.mob.MobStatsComponent;
 import lombok.AllArgsConstructor;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -22,8 +20,6 @@ import org.jspecify.annotations.Nullable;
 @AllArgsConstructor
 public class OnDeathSystem extends DeathSystems.OnDeathSystem {
     private final HytaleLogger logger;
-
-    private static final long XP_PER_KILL = 50L; //TODO DO THIS FLEXIBLE
 
     @Override
     public void onComponentAdded(
@@ -46,21 +42,19 @@ public class OnDeathSystem extends DeathSystems.OnDeathSystem {
         PlayerRef killerPlayerRef = store.getComponent(killerRef, PlayerRef.getComponentType());
         if (killerPlayerRef == null) return;
 
-        LevelComponent killerLevelComponent = store.getComponent(killerRef, LevelComponent.getComponentType());
+        PlayerLevelComponent killerLevelComponent = store.getComponent(killerRef, PlayerLevelComponent.getComponentType());
         if (killerLevelComponent == null) {
             this.logger.atSevere()
                     .log("[LEVEL] OnDeathSystem OnComponentAdded Failed: KillerLevelComponent is null");
             return;
         }
 
+        MobStatsComponent mobStatsComponent = store.getComponent(ref, MobStatsComponent.getComponentType());
+        if (mobStatsComponent == null) return;
 
-        GiveXPEvent.dispatch(killerRef, XP_PER_KILL);
-        NotificationUtil.sendNotification(
-                killerPlayerRef.getPacketHandler(),
-                Message.raw("Vous avez gagné " + XP_PER_KILL + "XP !"),
-                "Icons/Notifications/XP.png",
-                NotificationStyle.Success
-        );
+        //TODO ADD THE XP DISPATCH LOGIC IN A RADIUS AROUND THE ENTITY KILL FOR KILLER PLAYERS GROUP
+        //TODO ADD XP BONUS LOGIC BASED ON THE LEVEL DIFFERENCE BETWEEN PLAYERS AND THE ENTITY
+        GiveXPEvent.dispatch(killerRef, mobStatsComponent.getBaseXP());
     }
 
     @Override

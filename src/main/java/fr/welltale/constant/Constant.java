@@ -14,6 +14,11 @@ public class Constant {
             public static final String STATIC_MODIFIER_STAMINA_KEY = "Stamina";
             public static final String STATIC_MODIFIER_HEALTH_KEY = "Health";
             public static final String STATIC_MODIFIER_MANA_KEY = "Mana";
+            public static final String STATIC_MODIFIER_DAMAGE_KEY = "Damage";
+            public static final String STATIC_MODIFIER_CRITICAL_DAMAGE_KEY = "CriticalDamage";
+            public static final String STATIC_MODIFIER_CRITICAL_RESISTANCE_KEY = "CriticalResistance";
+            public static final String STATIC_MODIFIER_CRITICAL_PCT_KEY = "Critical";
+            public static final String STATIC_MODIFIER_BONUS_XP_KEY = "BonusXP";
         }
     }
 
@@ -24,12 +29,11 @@ public class Constant {
     }
 
     public static class Permission {
-        public static class Global {
-            public static String OPERATOR = "*";
-            public static String BREAK_BLOCK = "break_block.permission";
-            public static String PLACE_BLOCK = "place_block.permission";
-            public static String ITEM_DROP = "item_drop.permission";
-        }
+        public static String OPERATOR = "*";
+        public static String STAFF = "welltall.staff";
+        public static String BREAK_BLOCK = "break_block.permission";
+        public static String PLACE_BLOCK = "place_block.permission";
+        public static String ITEM_DROP = "item_drop.permission";
     }
 
     public static class Prefix {
@@ -39,15 +43,15 @@ public class Constant {
 
         // Server
         public static String SERVER_PREFIX = "Welltale";
-        public static Color SERVER_PREFIX_COLOR = fr.welltale.util.Color.BLUE;
+        public static Color SERVER_PREFIX_COLOR = fr.welltale.util.Color.WELLTALE;
     }
 
     public static class Particle {
         public static String PLAYER_SPAWN_SPAWN = "PlayerSpawn_Spawn";
-        public static String BLOCK_BREAK_MUD = "Block_Break_Mud";
     }
 
     public static class SoundIndex {
-        public static int SFX_BATTLEAXE_T1_SWING_CHARGED = SoundEvent.getAssetMap().getIndex("SFX_Battleaxe_T1_Swing_Charged");
+        public static int LEVEL_UP = SoundEvent.getAssetMap().getIndex("LevelUp");
+        public static int XP_GAINED = SoundEvent.getAssetMap().getIndex("XPGained");
     }
 }

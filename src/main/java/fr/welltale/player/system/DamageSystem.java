@@ -6,24 +6,18 @@ import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.component.query.Query;
 import com.hypixel.hytale.component.system.EntityEventSystem;
-import com.hypixel.hytale.server.core.Message;
-import com.hypixel.hytale.server.core.entity.UUIDComponent;
 import com.hypixel.hytale.server.core.modules.entity.damage.Damage;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
+import fr.welltale.mob.MobStatsComponent;
 import fr.welltale.player.Characteristics;
-import fr.welltale.player.Player;
-import fr.welltale.player.PlayerRepository;
 import org.jspecify.annotations.NonNull;
 
 import java.util.concurrent.ThreadLocalRandom;
 
 public class DamageSystem extends EntityEventSystem<EntityStore, Damage> {
-    private final PlayerRepository playerRepository;
-
-    public DamageSystem(@NonNull PlayerRepository playerRepository) {
+    public DamageSystem() {
         super(Damage.class);
-        this.playerRepository = playerRepository;
     }
 
     @Override
@@ -34,44 +28,40 @@ public class DamageSystem extends EntityEventSystem<EntityStore, Damage> {
             @NonNull CommandBuffer<EntityStore> commandBuffer,
             @NonNull Damage damage
     ) {
-        if (!(damage.getSource() instanceof Damage.EntitySource casterEntity)) return;
-        Ref<EntityStore> damageSourceRef = casterEntity.getRef();
-        com.hypixel.hytale.server.core.entity.entities.Player damager = store.getComponent(damageSourceRef, com.hypixel.hytale.server.core.entity.entities.Player.getComponentType());
-        if (damager == null) return;
+        float damageAmount = damage.getAmount();
+        if (!(damage.getSource() instanceof Damage.EntitySource damager)) return;
+        Ref<EntityStore> damagerSourceRef = damager.getRef();
 
-        UUIDComponent damagerUuidComponent = store.getComponent(damageSourceRef, UUIDComponent.getComponentType());
-        if (damagerUuidComponent == null) return;
+        if (!damagerSourceRef.isValid()) {
+            return;
+        }
 
-        Player damagerData = this.playerRepository.getPlayerByUuid(damagerUuidComponent.getUuid());
-        if (damagerData == null) return;
+        PlayerRef damagerPlayerRef = store.getComponent(damagerSourceRef, PlayerRef.getComponentType());
+        if (damagerPlayerRef == null) {
+            Ref<EntityStore> damagedRef = archetypeChunk.getReferenceTo(i);
+            PlayerRef damagedPlayerRef = store.getComponent(damagedRef, PlayerRef.getComponentType());
+            if (damagedPlayerRef == null) return;
+
+            float newDamageAmount = this.applyEntityWithRefDamageToPlayer(store, damagerSourceRef, damagedRef, damageAmount);
+            damage.setAmount(newDamageAmount);
+            return;
+        }
 
         Ref<EntityStore> damagedRef = archetypeChunk.getReferenceTo(i);
+        if (!damagedRef.isValid()) {
+            float newDamageAmount = this.applyPlayerDamageToEntity(store, damagerSourceRef, damagedRef, damageAmount);
+            damage.setAmount(newDamageAmount);
+            return;
+        }
+
         PlayerRef damagedPlayerRef = store.getComponent(damagedRef, PlayerRef.getComponentType());
-
-        float damageAmount = damage.getAmount();
         if (damagedPlayerRef == null) {
-            float newDamageAmount = this.applyDamageWithoutDamagedPlayer(damagerData.getCharacteristics(), damageAmount);
+            float newDamageAmount = this.applyPlayerDamageToEntity(store, damagerSourceRef, damagedRef, damageAmount);
             damage.setAmount(newDamageAmount);
-
-            damager.sendMessage(Message.raw("DAMAGE AMOUNT: " + damageAmount));
-            damager.sendMessage(Message.raw("NEW DAMAGE AMOUNT: " + newDamageAmount));
             return;
         }
 
-        Player damagedPlayerData = this.playerRepository.getPlayerByUuid(damagedPlayerRef.getUuid());
-        if (damagedPlayerData == null) {
-            float newDamageAmount = this.applyDamageWithoutDamagedPlayer(damagerData.getCharacteristics(), damageAmount);
-            damage.setAmount(newDamageAmount);
-
-            damager.sendMessage(Message.raw("DAMAGE AMOUNT: " + damageAmount));
-            damager.sendMessage(Message.raw("NEW DAMAGE AMOUNT: " + newDamageAmount));
-            return;
-        }
-
-        float newDamageAmount = this.applyDamageWithDamagedPlayer(damagerData.getCharacteristics(), damagedPlayerData.getCharacteristics(), damageAmount);
-
-        damager.sendMessage(Message.raw("DAMAGE AMOUNT: " + damageAmount));
-        damager.sendMessage(Message.raw("NEW DAMAGE AMOUNT: " + newDamageAmount));
+        float newDamageAmount = this.applyPlayerDamageToAnotherPlayer(store, damagerSourceRef, damagedRef, damageAmount);
         damage.setAmount(newDamageAmount);
     }
 
@@ -80,34 +70,70 @@ public class DamageSystem extends EntityEventSystem<EntityStore, Damage> {
         return Query.any();
     }
 
-    private float applyDamageWithDamagedPlayer(
-            @NonNull Characteristics damagerCharacteristics,
-            @NonNull Characteristics damagedPlayerCharacteristics,
+    private float applyEntityWithRefDamageToPlayer(
+            @NonNull Store<EntityStore> store,
+            @NonNull Ref<EntityStore> entityDamagerRef,
+            @NonNull Ref<EntityStore> damagedRef,
             float initialDamage
     ) {
-        float newDamageAmount = initialDamage + damagerCharacteristics.getDamage();
+        MobStatsComponent mobStatsComponent = store.getComponent(entityDamagerRef, MobStatsComponent.getComponentType());
+        if (mobStatsComponent == null) return initialDamage;
 
-        boolean isCrit = ThreadLocalRandom.current().nextFloat() < damagerCharacteristics.getCriticalPct();
+        Characteristics.AdditionalCharacteristics additionalCharacteristicsFromDamaged = Characteristics.getAdditionalCharacteristicsFromPlayer(damagedRef, store);
+
+        boolean isCrit = ThreadLocalRandom.current().nextFloat() < mobStatsComponent.getCriticalPct();
 
         if (isCrit) {
-            newDamageAmount += damagerCharacteristics.getCriticalDamage();
-            newDamageAmount -= damagedPlayerCharacteristics.getCriticalResistance();
+            initialDamage += mobStatsComponent.getCriticalDamage();
+            initialDamage -= (additionalCharacteristicsFromDamaged.getCriticalResistance() + Characteristics.DEFAULT_CRITICAL_RESISTANCE);
         }
 
-        newDamageAmount = newDamageAmount * (100f - damagedPlayerCharacteristics.getResistancePct()) / 100f;
+        return initialDamage;
+    }
+
+    private float applyPlayerDamageToAnotherPlayer(
+            @NonNull Store<EntityStore> store,
+            @NonNull Ref<EntityStore> damagerRef,
+            @NonNull Ref<EntityStore> damagedRef,
+            float initialDamage
+    ) {
+        Characteristics.AdditionalCharacteristics additionalCharacteristicsFromDamager = Characteristics.getAdditionalCharacteristicsFromPlayer(damagerRef, store);
+        Characteristics.AdditionalCharacteristics additionalCharacteristicsFromDamaged = Characteristics.getAdditionalCharacteristicsFromPlayer(damagedRef, store);
+
+        float newDamageAmount = initialDamage + (Characteristics.DEFAULT_DAMAGE + additionalCharacteristicsFromDamager.getDamage());
+
+        boolean isCrit = ThreadLocalRandom.current().nextFloat() < (Characteristics.DEFAULT_CRITICAL_PCT + additionalCharacteristicsFromDamager.getCriticalPct());
+
+        if (isCrit) {
+            newDamageAmount += (additionalCharacteristicsFromDamager.getCriticalDamage() + Characteristics.DEFAULT_CRITICAL_DAMAGE);
+            newDamageAmount -= (additionalCharacteristicsFromDamaged.getCriticalResistance() + Characteristics.DEFAULT_CRITICAL_RESISTANCE);
+        }
+
         return newDamageAmount;
     }
 
-    private float applyDamageWithoutDamagedPlayer(
-            @NonNull Characteristics damagerCharacteristics,
+    private float applyPlayerDamageToEntity(
+            @NonNull Store<EntityStore> store,
+            @NonNull Ref<EntityStore> damagerRef,
+            @NonNull Ref<EntityStore> entityDamagedRef,
             float initialDamage
     ) {
-        float newDamageAmount = initialDamage + damagerCharacteristics.getDamage();
+        Characteristics.AdditionalCharacteristics additionalCharacteristicsFromDamager = Characteristics.getAdditionalCharacteristicsFromPlayer(damagerRef, store);
+        MobStatsComponent mobStatsComponent = store.getComponent(entityDamagedRef, MobStatsComponent.getComponentType());
 
-        boolean isCrit = ThreadLocalRandom.current().nextFloat() < damagerCharacteristics.getCriticalPct();
+        float newDamageAmount = initialDamage + (additionalCharacteristicsFromDamager.getDamage() + Characteristics.DEFAULT_DAMAGE);
+
+        boolean isCrit = ThreadLocalRandom.current().nextFloat() < (Characteristics.DEFAULT_CRITICAL_PCT + additionalCharacteristicsFromDamager.getCriticalPct());
 
         if (isCrit) {
-            newDamageAmount += damagerCharacteristics.getCriticalDamage();
+            newDamageAmount += (additionalCharacteristicsFromDamager.getCriticalDamage() + Characteristics.DEFAULT_CRITICAL_DAMAGE);
+            if (mobStatsComponent != null) {
+                newDamageAmount -= mobStatsComponent.getCriticalResistance();
+            }
+        }
+
+        if (mobStatsComponent != null) {
+            newDamageAmount = newDamageAmount * (100f - mobStatsComponent.getResistancePct()) / 100f;
         }
 
         return newDamageAmount;

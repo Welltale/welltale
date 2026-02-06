@@ -1,2 +1,7 @@
 items.Weapon_Sword_Beginner.name = Beginner's Sword
 items.Weapon_Sword_Beginner.description = DESCRIPTION
+
+items.Armor_Beginner_Chest.name = Beginner's Chest
+items.Armor_Beginner_Head.name = Beginner's Head
+items.Armor_Beginner_Hands.name = Beginner's Hands
+items.Armor_Beginner_Legs.name = Beginner's Legs

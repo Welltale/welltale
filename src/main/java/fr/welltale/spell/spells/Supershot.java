@@ -38,7 +38,7 @@ public class Supershot implements Spell {
 
     @Override
     public int getManaCost() {
-        return 15;
+        return 5;
     }
 
     @Override

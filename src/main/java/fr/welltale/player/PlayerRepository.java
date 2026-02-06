@@ -14,8 +14,6 @@ public interface PlayerRepository {
 
     @Nullable Player getPlayerByUuid(@Nonnull UUID playerUuid);
 
-    @Nullable Player getPlayerByUsername(@Nonnull String playerName);
-
     List<Player> getCachedPlayers();
 
     void updatePlayer(@Nonnull Player player) throws Exception;

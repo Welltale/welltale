@@ -9,7 +9,7 @@ import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.Universe;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import fr.welltale.constant.Constant;
-import fr.welltale.level.LevelComponent;
+import fr.welltale.level.PlayerLevelComponent;
 import fr.welltale.player.Characteristics;
 import fr.welltale.player.PlayerRepository;
 import fr.welltale.rank.Rank;
@@ -52,8 +52,8 @@ public class PlayerReadyEvent {
             return;
         }
 
-        Characteristics.setCharacteristicToPlayer(playerRef, ref, store, playerData, this.universe);
-        this.setNameplate(ref, store, playerData);
+        Characteristics.setCharacteristicsToPlayer(playerRef, ref, store, playerData.getEditableCharacteristics(), this.universe);
+        this.setNameplate(ref, store, playerData, playerRef);
 
         if (playerData.getClassUuid() != null) {
             return;
@@ -65,10 +65,11 @@ public class PlayerReadyEvent {
     private void setNameplate(
             @Nonnull Ref<EntityStore> ref,
             @NonNull Store<EntityStore> store,
-            @Nonnull fr.welltale.player.Player playerData
+            @Nonnull fr.welltale.player.Player playerData,
+            @Nonnull PlayerRef playerRef
     ) {
-        LevelComponent levelComponent = store.getComponent(ref, LevelComponent.getComponentType());
-        if (levelComponent == null) return;
+        PlayerLevelComponent playerLevelComponent = store.getComponent(ref, PlayerLevelComponent.getComponentType());
+        if (playerLevelComponent == null) return;
 
         Nameplate nameplate = store.getComponent(ref, Nameplate.getComponentType());
         if (nameplate == null) {
@@ -78,13 +79,18 @@ public class PlayerReadyEvent {
         }
 
         if (playerData.getRankUuid() == null) {
-            nameplate.setText("[" + Constant.Prefix.LEVEL_PREFIX + levelComponent.getLevel() + "] " + playerData.getPlayerName());
+            nameplate.setText("[" + Constant.Prefix.LEVEL_PREFIX + playerLevelComponent.getLevel() + "] " + playerRef.getUsername());
             return;
         }
 
         Rank playerRank = this.rankRepository.getRank(playerData.getRankUuid());
         if (playerRank == null) return;
 
-        nameplate.setText("[" + Constant.Prefix.LEVEL_PREFIX + levelComponent.getLevel() + "] " + "[" + playerRank.getPrefix() + "] " + playerData.getPlayerName());
+        if (playerRank.getPermissions().contains(Constant.Permission.STAFF)) {
+            nameplate.setText("[" + playerRef.getUsername() + "] [" + Constant.Prefix.LEVEL_PREFIX + playerLevelComponent.getLevel() + "]");
+            return;
+        }
+
+        nameplate.setText(playerRef.getUsername() + " [" + Constant.Prefix.LEVEL_PREFIX + playerLevelComponent.getLevel() + "]");
     }
 }

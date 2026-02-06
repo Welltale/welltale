@@ -6,7 +6,7 @@ import com.hypixel.hytale.component.system.RefSystem;
 import com.hypixel.hytale.logger.HytaleLogger;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
-import fr.welltale.level.LevelComponent;
+import fr.welltale.level.PlayerLevelComponent;
 import fr.welltale.player.Player;
 import fr.welltale.player.PlayerRepository;
 import lombok.AllArgsConstructor;
@@ -25,18 +25,30 @@ public class PlayerJoinSystem extends RefSystem<EntityStore> {
             @NonNull Store<EntityStore> store,
             @NonNull CommandBuffer<EntityStore> commandBuffer
     ) {
-        if (addReason != AddReason.LOAD) return;
-
         PlayerRef playerRef = store.getComponent(ref, PlayerRef.getComponentType());
         if (playerRef == null) return;
 
-        LevelComponent playerLevelComponent = store.getComponent(ref, LevelComponent.getComponentType());
-        if (playerLevelComponent == null) {
-            commandBuffer.addComponent(ref, LevelComponent.getComponentType(), new LevelComponent());
+        Player playerData = this.playerRepository.getPlayerByUuid(playerRef.getUuid());
+        if (playerData == null) return;
+
+        PlayerLevelComponent playerLevelComponent = store.getComponent(ref, PlayerLevelComponent.getComponentType());
+        if (playerLevelComponent != null) {
+            if (playerData.getExperience() > playerLevelComponent.getTotalExperience()) {
+                playerLevelComponent.setTotalExperience(playerData.getExperience());
+                return;
+            }
+
+            if (playerData.getExperience() < playerLevelComponent.getTotalExperience()) {
+                playerData.setExperience(playerLevelComponent.getTotalExperience());
+                return;
+            }
         }
+
+        playerLevelComponent = new PlayerLevelComponent();
+        commandBuffer.addComponent(ref, PlayerLevelComponent.getComponentType(), playerLevelComponent);
+        playerLevelComponent.addExperience(playerLevelComponent.getTotalExperience());
     }
 
-    //TODO CREATE TASK TO SAVE PLAYER EXPERIENCE
     @Override
     public void onEntityRemove(
             @NonNull Ref<EntityStore> ref,
@@ -44,12 +56,10 @@ public class PlayerJoinSystem extends RefSystem<EntityStore> {
             @NonNull Store<EntityStore> store,
             @NonNull CommandBuffer<EntityStore> commandBuffer
     ) {
-        if (removeReason != RemoveReason.UNLOAD) return;
-
         PlayerRef playerRef = store.getComponent(ref, PlayerRef.getComponentType());
         if (playerRef == null) return;
 
-        LevelComponent playerLevelComponent = store.getComponent(ref, LevelComponent.getComponentType());
+        PlayerLevelComponent playerLevelComponent = store.getComponent(ref, PlayerLevelComponent.getComponentType());
         if (playerLevelComponent == null) {
             this.logger.atSevere()
                     .log("[PLAYER] PlayerJoinSystem OnEntityRemove Failed: PlayerLevelComponent is null");

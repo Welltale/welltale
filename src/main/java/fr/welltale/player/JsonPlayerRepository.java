@@ -5,7 +5,6 @@ import com.hypixel.hytale.logger.HytaleLogger;
 import lombok.AllArgsConstructor;
 import org.jspecify.annotations.NonNull;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
@@ -39,14 +38,6 @@ public class JsonPlayerRepository implements PlayerRepository {
     public @Nullable Player getPlayerByUuid(@NonNull UUID playerUuid) {
         return cachedPlayers.stream()
                 .filter(p -> p.getUuid().equals(playerUuid))
-                .findFirst()
-                .orElse(null);
-    }
-
-    @Override
-    public @Nullable Player getPlayerByUsername(@Nonnull String playerName) {
-        return cachedPlayers.stream()
-                .filter(p -> p.getPlayerName().equalsIgnoreCase(playerName))
                 .findFirst()
                 .orElse(null);
     }

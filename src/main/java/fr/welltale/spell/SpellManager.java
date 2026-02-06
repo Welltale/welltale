@@ -3,10 +3,10 @@ package fr.welltale.spell;
 import com.hypixel.hytale.component.CommandBuffer;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;
+import com.hypixel.hytale.logger.HytaleLogger;
 import com.hypixel.hytale.protocol.InteractionType;
 import com.hypixel.hytale.server.core.Message;
 import com.hypixel.hytale.server.core.entity.entities.Player;
-import com.hypixel.hytale.logger.HytaleLogger;
 import com.hypixel.hytale.server.core.modules.entitystats.EntityStatMap;
 import com.hypixel.hytale.server.core.modules.entitystats.EntityStatValue;
 import com.hypixel.hytale.server.core.modules.entitystats.asset.DefaultEntityStatTypes;
@@ -96,7 +96,6 @@ public class SpellManager {
     }
 
     private boolean canCast(
-            //TODO REMOVE @Nonnull Player caster
             @Nonnull Player caster,
             @Nonnull fr.welltale.player.Player casterData,
             @Nonnull Class casterClass,

@@ -11,8 +11,13 @@ public class XPTable {
 
     public static int getLevelForXP(long totalXP) {
         if (totalXP <= 0) return START_LEVEL;
-        double lvl = Math.pow(totalXP / A, 1.0 / EXPONENT);
-        return Math.min((int)Math.ceil(lvl), MAX_LEVEL);
+
+        int level = START_LEVEL;
+        while (level < MAX_LEVEL && getXPForLevel(level + 1) <= totalXP) {
+            level++;
+        }
+
+        return level;
     }
 
     public static long getXPForLevel(int level) {

@@ -9,19 +9,21 @@ import lombok.Getter;
 import org.jspecify.annotations.Nullable;
 
 @Getter
-public class LevelComponent implements Component<EntityStore> {
-    private static ComponentType<EntityStore, LevelComponent> TYPE;
+public class PlayerLevelComponent implements Component<EntityStore> {
+    private long totalExperience = 0;
 
-    public static void setComponentType(ComponentType<EntityStore, LevelComponent> type) {
+    private static ComponentType<EntityStore, PlayerLevelComponent> TYPE;
+
+    public static void setComponentType(ComponentType<EntityStore, PlayerLevelComponent> type) {
         TYPE = type;
     }
 
-    public static ComponentType<EntityStore, LevelComponent> getComponentType() {
+    public static ComponentType<EntityStore, PlayerLevelComponent> getComponentType() {
         return TYPE;
     }
 
-    public static final BuilderCodec<LevelComponent> CODEC = BuilderCodec
-            .builder(LevelComponent.class, LevelComponent::new)
+    public static final BuilderCodec<PlayerLevelComponent> CODEC = BuilderCodec
+            .builder(PlayerLevelComponent.class, PlayerLevelComponent::new)
             .append(
                     new KeyedCodec<>("TotalExperience", BuilderCodec.LONG),
                     (component, value) -> component.totalExperience = value,
@@ -29,11 +31,9 @@ public class LevelComponent implements Component<EntityStore> {
             ).add()
             .build();
 
-    private long totalExperience = 0;
+    public PlayerLevelComponent() {}
 
-    public LevelComponent() {}
-
-    public LevelComponent(long totalExperience) {
+    public PlayerLevelComponent(long totalExperience) {
         this.totalExperience = Math.max(0L, totalExperience);
     }
 
@@ -73,7 +73,7 @@ public class LevelComponent implements Component<EntityStore> {
 
     @Override
     public @Nullable Component<EntityStore> clone() {
-        return new LevelComponent(this.totalExperience);
+        return new PlayerLevelComponent(this.totalExperience);
     }
 
     @Override

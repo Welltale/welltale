@@ -1,0 +1,20 @@
+{
+  "Layers": [
+    {
+      "Files": [
+        "Sounds/LevelUp.ogg"
+      ],
+      "RandomSettings": {
+        "MinVolume": -1,
+        "MinPitch": 0,
+        "MaxPitch": 0
+      },
+      "StartDelay": 0,
+      "Volume": 10
+    }
+  ],
+  "PreventSoundInterruption": true,
+  "Volume": 10,
+  "MaxInstance": 100,
+  "Parent": "SFX_Attn_Quiet"
+}

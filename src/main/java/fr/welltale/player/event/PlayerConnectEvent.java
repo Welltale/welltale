@@ -39,14 +39,14 @@ public class PlayerConnectEvent {
 
         Player newPlayer = new Player(
                 playerRef.getUuid(),
-                playerRef.getUsername(),
                 null,
                 0,
                 null,
+                new Characteristics.EditableCharacteristics(),
+                0,
                 null,
                 List.of(),
-                null,
-                new Characteristics()
+                0
         );
 
         this.playerRepository.addPlayer(newPlayer);

@@ -37,6 +37,12 @@ public class BreakBlockEventSystem extends EntityEventSystem<EntityStore, com.hy
             com.hypixel.hytale.server.core.event.events.ecs.@NonNull BreakBlockEvent event
     ) {
         Ref<EntityStore> ref = archetypeChunk.getReferenceTo(i);
+        if (!ref.isValid()) {
+            this.logger.atSevere()
+                    .log("[PLAYER] BreakBlockEvent Handle Failed: Ref is not valid");
+            return;
+        }
+
         PlayerRef playerRef = store.getComponent(ref, PlayerRef.getComponentType());
         if (playerRef == null) {
             this.logger.atSevere()
@@ -67,7 +73,7 @@ public class BreakBlockEventSystem extends EntityEventSystem<EntityStore, com.hy
             return;
         }
 
-        boolean ok = Permission.hasPermissions(rank.getPermissions(), List.of(Constant.Permission.Global.BREAK_BLOCK, Constant.Permission.Global.OPERATOR));
+        boolean ok = Permission.hasPermissions(rank.getPermissions(), List.of(Constant.Permission.BREAK_BLOCK, Constant.Permission.OPERATOR));
         if (!ok) {
             if (event.isCancelled()) {
                 return;

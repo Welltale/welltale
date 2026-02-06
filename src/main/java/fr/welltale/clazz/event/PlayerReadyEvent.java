@@ -21,6 +21,12 @@ public class PlayerReadyEvent {
 
     public void onPlayerReadyEvent(@Nonnull com.hypixel.hytale.server.core.event.events.player.PlayerReadyEvent event) {
         Ref<EntityStore> ref = event.getPlayerRef();
+        if (!ref.isValid()) {
+            this.logger.atSevere()
+                    .log("[CLASS] PlayerReadyEvent OnPlayerReadyEvent Failed: Ref is not valid");
+            return;
+        }
+
         Store<EntityStore> store = ref.getStore();
         com.hypixel.hytale.server.core.entity.entities.Player player = store.getComponent(ref, com.hypixel.hytale.server.core.entity.entities.Player.getComponentType());
         if (player == null) {

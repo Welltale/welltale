@@ -38,6 +38,12 @@ public class DropItemEventSystem extends EntityEventSystem<EntityStore, com.hypi
             com.hypixel.hytale.server.core.event.events.ecs.@NonNull DropItemEvent event
     ) {
         Ref<EntityStore> ref = archetypeChunk.getReferenceTo(i);
+        if (!ref.isValid()) {
+            this.logger.atSevere()
+                    .log("[PLAYER] DropItemEvent Handle Failed: Ref is not valid");
+            return;
+        }
+
         PlayerRef playerRef = store.getComponent(ref, PlayerRef.getComponentType());
         if (playerRef == null) {
             this.logger.atSevere()
@@ -68,7 +74,7 @@ public class DropItemEventSystem extends EntityEventSystem<EntityStore, com.hypi
             return;
         }
 
-        boolean ok = Permission.hasPermissions(rank.getPermissions(), List.of(Constant.Permission.Global.ITEM_DROP, Constant.Permission.Global.OPERATOR));
+        boolean ok = Permission.hasPermissions(rank.getPermissions(), List.of(Constant.Permission.ITEM_DROP, Constant.Permission.OPERATOR));
         if (!ok) {
             if (event.isCancelled()) {
                 return;
