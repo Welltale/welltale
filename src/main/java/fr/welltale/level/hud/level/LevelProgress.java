@@ -20,7 +20,8 @@ public class LevelProgress extends CustomUIHud {
     @Override
     protected void build(@NonNull UICommandBuilder uiCommandBuilder) {
         uiCommandBuilder.append("Hud/Level/LevelProgress.ui");
-        uiCommandBuilder.set("#LevelLabel.Text", "[LV." + this.playerLevelComponent.getLevel() + "] XP: " + this.playerLevelComponent.getCurrentLevelExp() + " / " + this.playerLevelComponent.getXPToNextLevel());
+        uiCommandBuilder.set("#LevelLabel.Text", "LV." + this.playerLevelComponent.getLevel());
+        uiCommandBuilder.set("#XPLabel.Text", "XP: " + this.playerLevelComponent.getCurrentLevelExp() + " / " + this.playerLevelComponent.getXPToNextLevel());
         uiCommandBuilder.set("#ProgressBar.Value", this.playerLevelComponent.getProgress());
     }
 }

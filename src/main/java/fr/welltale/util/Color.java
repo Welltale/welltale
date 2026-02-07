@@ -19,7 +19,7 @@ public class Color {
     public static final java.awt.Color LIGHT_PURPLE = new java.awt.Color(255, 85, 255);
     public static final java.awt.Color YELLOW = new java.awt.Color(255, 255, 85);
     public static final java.awt.Color WHITE = new java.awt.Color(255, 255, 255);
-    public static final java.awt.Color WELLTALE = new java.awt.Color(62, 121, 246);
+    public static final java.awt.Color WELLTALE = new java.awt.Color(123, 169, 255);
 
     public static java.awt.Color getColor(@Nonnull String color) {
         return switch (color.toUpperCase()) {

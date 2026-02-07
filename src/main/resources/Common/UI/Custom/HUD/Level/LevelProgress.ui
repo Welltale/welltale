@@ -1,29 +1,44 @@
 Group #LevelProgressHud {
   LayoutMode: Bottom;
-  Anchor: (Bottom: 0, Width: 500, Height: 38);
+  Anchor: (Bottom: 2, Width: 350, Height: 38);
 
-  Label #LevelLabel {
-    Style: (
-      FontSize: 10,
-      TextColor: #ffffff,
-      RenderBold: true,
-      Alignment: Center
-    );
-    Anchor: (Width: 500, Height: 18, Top: -4);
-    Text: "";
+  Group {
+    LayoutMode: Left;
+
+    Label #LevelLabel {
+      Style: (
+        FontSize: 10,
+        TextColor: #ffffff,
+        RenderBold: true,
+        Alignment: Center
+      );
+      Text: "LV.1";
+    }
+
+    Group { FlexWeight: 1; }
+
+    Label #XPLabel {
+      Style: (
+        FontSize: 10,
+        TextColor: #ffffff,
+        RenderBold: true,
+        Alignment: Center
+      );
+      Text: "XP: 0 / 0";
+    }
   }
 
   Group {
     LayoutMode: Left;
-    Anchor: (Left: -3, Width: 500, Height: 18);
+    Anchor: (Left: -3, Width: 350, Height: 10);
 
     Group {
-      Anchor: (Left: 0, Width: 500, Height: 18);
-      Background: "XPBackground.png";
+      Anchor: (Left: 0, Width: 350, Height: 10);
+      Background: "XPBarBackground.png";
 
       ProgressBar #ProgressBar {
-        Anchor: (Width: 500, Height: 17);
-        BarTexturePath: "XPFill.png";
+        Anchor: (Width: 350, Height: 9);
+        BarTexturePath: "XPBarFill.png";
         Value: 0.0;
       }
     }
