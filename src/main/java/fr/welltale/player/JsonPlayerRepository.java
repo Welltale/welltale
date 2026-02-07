@@ -3,6 +3,7 @@ package fr.welltale.player;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hypixel.hytale.logger.HytaleLogger;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import org.jspecify.annotations.NonNull;
 
 import javax.annotation.Nullable;
@@ -13,6 +14,7 @@ import java.util.UUID;
 
 @AllArgsConstructor
 public class JsonPlayerRepository implements PlayerRepository {
+    @Getter
     private List<Player> cachedPlayers;
     private File jsonFile;
     private HytaleLogger logger;
@@ -40,10 +42,6 @@ public class JsonPlayerRepository implements PlayerRepository {
                 .filter(p -> p.getUuid().equals(playerUuid))
                 .findFirst()
                 .orElse(null);
-    }
-
-    public List<Player> getCachedPlayers() {
-        return this.cachedPlayers;
     }
 
     @Override

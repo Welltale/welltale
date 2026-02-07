@@ -2,7 +2,8 @@ package fr.welltale.player.event;
 
 import com.hypixel.hytale.logger.HytaleLogger;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
-import fr.welltale.player.Characteristics;
+import com.hypixel.hytale.server.core.universe.Universe;
+import fr.welltale.characteristic.Characteristics;
 import fr.welltale.player.Player;
 import fr.welltale.player.PlayerRepository;
 import lombok.AllArgsConstructor;
@@ -14,6 +15,7 @@ import java.util.List;
 public class PlayerConnectEvent {
     private final PlayerRepository playerRepository;
     private final HytaleLogger logger;
+    private final Universe universe;
 
     public void onPlayerConnect(@Nonnull com.hypixel.hytale.server.core.event.events.player.PlayerConnectEvent event) {
         PlayerRef playerRef = event.getPlayerRef();
@@ -26,6 +28,7 @@ public class PlayerConnectEvent {
         try {
             this.addNewPlayerToDatabase(playerRef);
         } catch (Exception e) {
+            universe.removePlayer(playerRef);
             this.logger.atSevere()
                     .log("[PLAYER] PlayerConnectEvent OnPlayerConnectEvent Failed (PlayerID: " + playerRef.getUuid() + "): " + e.getMessage());
         }

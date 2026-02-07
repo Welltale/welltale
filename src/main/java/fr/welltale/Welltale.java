@@ -8,6 +8,7 @@ import com.hypixel.hytale.server.core.modules.interaction.interaction.config.Int
 import com.hypixel.hytale.server.core.plugin.JavaPlugin;
 import com.hypixel.hytale.server.core.plugin.JavaPluginInit;
 import com.hypixel.hytale.server.core.universe.Universe;
+import fr.welltale.characteristic.system.DamageSystem;
 import fr.welltale.clazz.Class;
 import fr.welltale.clazz.JsonClassFileLoader;
 import fr.welltale.clazz.JsonClassRepository;
@@ -26,7 +27,6 @@ import fr.welltale.mob.system.MobNameplateAssignSystem;
 import fr.welltale.mob.system.MobStatsAssignSystem;
 import fr.welltale.player.*;
 import fr.welltale.player.system.BreakBlockEventSystem;
-import fr.welltale.player.system.DamageSystem;
 import fr.welltale.player.system.DropItemEventSystem;
 import fr.welltale.player.system.PlaceBlockEventSystem;
 import fr.welltale.rank.JsonRankFileLoader;
@@ -71,7 +71,6 @@ public class Welltale extends JavaPlugin {
             File jsonPlayerFile = jsonPlayerFileLoader.loadJsonPlayersFile();
             List<Player> jsonPlayerData = jsonPlayerFileLoader.getJsonData(jsonPlayerFile);
             JsonPlayerRepository playerRepository = new JsonPlayerRepository(jsonPlayerData, jsonPlayerFile, logger);
-            DamageSystem damageSystem = new DamageSystem();
 
             //Remove this if you don't use JsonPlayerRepository
             this.playerRepository = playerRepository;
@@ -79,11 +78,10 @@ public class Welltale extends JavaPlugin {
 
             //TODO ENABLE IT
             //this.getTaskRegistry().registerTask(playerSaveDataScheduler.run());
-            this.getEntityStoreRegistry().registerSystem(damageSystem);
 
             this.getEventRegistry().registerGlobal(
                     PlayerConnectEvent.class,
-                    new fr.welltale.player.event.PlayerConnectEvent(playerRepository, logger)::onPlayerConnect
+                    new fr.welltale.player.event.PlayerConnectEvent(playerRepository, logger, universe)::onPlayerConnect
             );
             this.getEventRegistry().registerGlobal(
                     PlayerReadyEvent.class,
@@ -99,6 +97,11 @@ public class Welltale extends JavaPlugin {
             );
             logger.atInfo().log(jsonPlayerData.size() + " player(s) loaded!");
             //Player
+
+            //Characteristic
+            DamageSystem damageSystem = new DamageSystem();
+            this.getEntityStoreRegistry().registerSystem(damageSystem);
+            //Characteristic
 
             //Class
             logger.atInfo().log("Loading classes...");
@@ -143,7 +146,7 @@ public class Welltale extends JavaPlugin {
             this.getEventRegistry().register(GiveXPEvent.class, new GiveXPHandler(playerRepository, logger));
             this.getEventRegistry().register(LevelUpEvent.class, new LevelUpHandler(playerRepository, logger));
             this.getEntityStoreRegistry().registerSystem(new OnDeathSystem(logger));
-            this.getEntityStoreRegistry().registerSystem(new PlayerJoinSystem(playerRepository, logger));
+            this.getEntityStoreRegistry().registerSystem(new PlayerJoinSystem(playerRepository, logger, universe));
             logger.atInfo().log("Level loaded!");
             //Level
 
@@ -165,7 +168,7 @@ public class Welltale extends JavaPlugin {
                     MobStatsComponent.CODEC
             );
             MobStatsComponent.setComponentType(mobLevelType);
-            logger.atInfo().log("Mobs loaded!");
+            logger.atInfo().log(jsonMobData.size() + " mob(s) loaded!");
             //Mob
         } catch (Exception e) {
             logger.atSevere().log("Failed to load Welltale Mod: " + e.getMessage());

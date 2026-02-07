@@ -1,4 +1,4 @@
-package fr.welltale.player;
+package fr.welltale.characteristic;
 
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;
@@ -8,8 +8,6 @@ import com.hypixel.hytale.server.core.modules.entitystats.asset.DefaultEntitySta
 import com.hypixel.hytale.server.core.modules.entitystats.asset.EntityStatType;
 import com.hypixel.hytale.server.core.modules.entitystats.modifier.Modifier;
 import com.hypixel.hytale.server.core.modules.entitystats.modifier.StaticModifier;
-import com.hypixel.hytale.server.core.universe.PlayerRef;
-import com.hypixel.hytale.server.core.universe.Universe;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import fr.welltale.constant.Constant;
 import lombok.Getter;
@@ -29,6 +27,7 @@ public class Characteristics {
     public static final float DEFAULT_CRITICAL_PCT = 0;
     public static final int DEFAULT_CRITICAL_RESISTANCE = 0;
     public static final int DEFAULT_BONUS_XP = 0;
+    //TODO ADD MOVE SPEED
 
     @Getter
     @Setter
@@ -54,6 +53,10 @@ public class Characteristics {
             @Nonnull Ref<EntityStore> ref,
             @NonNull Store<EntityStore> store
     ) {
+        if (!ref.isValid()) {
+            return new AdditionalCharacteristics();
+        }
+
         EntityStatMap playerStatMap = store.getComponent(ref, EntityStatMap.getComponentType());
         if (playerStatMap == null) {
             return new AdditionalCharacteristics();
@@ -90,15 +93,16 @@ public class Characteristics {
     }
 
     public static void setCharacteristicsToPlayer(
-            @Nonnull PlayerRef playerRef,
             @Nonnull Ref<EntityStore> ref,
             @NonNull Store<EntityStore> store,
-            @Nonnull EditableCharacteristics playerEditableCharacteristics,
-            @Nonnull Universe universe
+            @Nonnull EditableCharacteristics playerEditableCharacteristics
     ) {
+        if (!ref.isValid()) {
+            return;
+        }
+
         EntityStatMap playerStatMap = store.getComponent(ref, EntityStatMap.getComponentType());
         if (playerStatMap == null) {
-            universe.removePlayer(playerRef);
             return;
         }
 

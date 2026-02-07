@@ -1,5 +1,6 @@
 package fr.welltale.player;
 
+import fr.welltale.characteristic.Characteristics;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

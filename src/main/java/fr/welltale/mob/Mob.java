@@ -15,4 +15,5 @@ public class Mob {
     private int criticalPct;
     private int criticalResistance;
     private int resistancePct;
+    //TODO ADD DROPPABLE RESOURCES
 }

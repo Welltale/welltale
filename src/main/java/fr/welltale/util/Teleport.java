@@ -27,6 +27,12 @@ public class Teleport {
             @Nonnull String worldName,
             @Nullable String particle
     ) {
+        if (!ref.isValid()) {
+            logger.atSevere()
+                    .log("[PLAYER] onPlayerConnectEvent TeleportPlayerToSpawn Failed (PlayerID: " + playerUuid + "): Ref is invalid");
+            return;
+        }
+
         com.hypixel.hytale.server.core.universe.world.World world = universe.getWorld(worldName);
         if (world == null) {
             logger.atSevere()

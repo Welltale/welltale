@@ -1,4 +1,4 @@
-package fr.welltale.player.system;
+package fr.welltale.characteristic.system;
 
 import com.hypixel.hytale.component.ArchetypeChunk;
 import com.hypixel.hytale.component.CommandBuffer;
@@ -9,8 +9,8 @@ import com.hypixel.hytale.component.system.EntityEventSystem;
 import com.hypixel.hytale.server.core.modules.entity.damage.Damage;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
+import fr.welltale.characteristic.Characteristics;
 import fr.welltale.mob.MobStatsComponent;
-import fr.welltale.player.Characteristics;
 import org.jspecify.annotations.NonNull;
 
 import java.util.concurrent.ThreadLocalRandom;

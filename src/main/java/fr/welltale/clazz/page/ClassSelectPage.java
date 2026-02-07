@@ -74,6 +74,12 @@ public class ClassSelectPage extends InteractiveCustomUIPage<ClassSelectPage.Cla
 
     @Override
     public void build(@NonNull Ref<EntityStore> ref, @NonNull UICommandBuilder cmd, @NonNull UIEventBuilder event, @NonNull Store<EntityStore> store) {
+        if (!ref.isValid()) {
+            this.logger.atSevere()
+                    .log("[CLASS] ClassSelectPage Build Failed: Ref is invalid");
+            return;
+        }
+
         cmd.append("Pages/Class/ClassSelectPage.ui");
 
         List<Class> classes = this.classRepository.getClasses();
@@ -81,7 +87,7 @@ public class ClassSelectPage extends InteractiveCustomUIPage<ClassSelectPage.Cla
             Player player = ref.getStore().getComponent(ref, Player.getComponentType());
             if (player == null) {
                 this.logger.atSevere()
-                        .log("[CLASS] ClassSelectPage Build Failed Exception: Player is null");
+                        .log("[CLASS] ClassSelectPage Build Failed: Player is null");
                 return;
             }
 
@@ -108,6 +114,12 @@ public class ClassSelectPage extends InteractiveCustomUIPage<ClassSelectPage.Cla
             @NonNull Store<EntityStore> store,
             @NonNull ClassSelectPageEventData data
     ) {
+        if (!ref.isValid()) {
+            this.logger.atSevere()
+                    .log("[CLASS] ClassSelectPage Build Failed: Ref is invalid");
+            return;
+        }
+
         Player player = store.getComponent(ref, Player.getComponentType());
         if (player == null) {
             this.logger.atSevere()
@@ -150,6 +162,12 @@ public class ClassSelectPage extends InteractiveCustomUIPage<ClassSelectPage.Cla
             @NonNull Store<EntityStore> store,
             @NonNull Player player
     ) {
+        if (!ref.isValid()) {
+            this.logger.atSevere()
+                    .log("[CLASS] ClassSelectPage HandlePlay Failed: Ref is invalid");
+            return;
+        }
+
         if (this.classSelectedUuid == null) {
             this.sendUpdate();
             return;
@@ -184,7 +202,8 @@ public class ClassSelectPage extends InteractiveCustomUIPage<ClassSelectPage.Cla
             playerRepository.updatePlayer(playerData);
         } catch (Exception e) {
             this.logger.atSevere().log("[CLASS] ClassSelectPage HandlePlayer Failed: " + e.getMessage());
-
+            player.remove();
+            return;
         }
 
         player.getPageManager().setPage(ref, store, Page.None);

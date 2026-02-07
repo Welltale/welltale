@@ -5,6 +5,7 @@ import com.hypixel.hytale.component.query.Query;
 import com.hypixel.hytale.component.system.RefSystem;
 import com.hypixel.hytale.logger.HytaleLogger;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
+import com.hypixel.hytale.server.core.universe.Universe;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import fr.welltale.level.PlayerLevelComponent;
 import fr.welltale.level.hud.level.LevelProgress;
@@ -18,6 +19,7 @@ import org.jspecify.annotations.Nullable;
 public class PlayerJoinSystem extends RefSystem<EntityStore> {
     private final PlayerRepository playerRepository;
     private final HytaleLogger logger;
+    private final Universe universe;
 
     @Override
     public void onEntityAdded(
@@ -26,24 +28,34 @@ public class PlayerJoinSystem extends RefSystem<EntityStore> {
             @NonNull Store<EntityStore> store,
             @NonNull CommandBuffer<EntityStore> commandBuffer
     ) {
+        if (!ref.isValid()) {
+            this.logger.atSevere()
+                    .log("[PLAYER] PlayerJoinSystem OnEntityAdded Failed: Ref is invalid");
+            return;
+        }
+
         PlayerRef playerRef = store.getComponent(ref, PlayerRef.getComponentType());
-        if (playerRef == null) return;
+        if (playerRef == null) {
+            this.logger.atSevere()
+                    .log("[PLAYER] PlayerJoinSystem OnEntityAdded Failed: PlayerRef is null");
+            return;
+        }
 
         Player playerData = this.playerRepository.getPlayerByUuid(playerRef.getUuid());
-        if (playerData == null) return;
+        if (playerData == null) {
+            universe.removePlayer(playerRef);
+            this.logger.atSevere()
+                    .log("[PLAYER] PlayerJoinSystem OnEntityAdded Failed: PlayerData is null");
+            return;
+        }
 
         PlayerLevelComponent playerLevelComponent = store.getComponent(ref, PlayerLevelComponent.getComponentType());
         if (playerLevelComponent != null) {
-            if (playerData.getExperience() < playerLevelComponent.getTotalExperience()) {
+            if (playerData.getExperience() != playerLevelComponent.getTotalExperience()) {
                 playerData.setExperience(playerLevelComponent.getTotalExperience());
-            }
-
-            if (playerData.getExperience() > playerLevelComponent.getTotalExperience()) {
-                playerLevelComponent.setTotalExperience(playerData.getExperience());
             }
         } else {
             playerLevelComponent = new PlayerLevelComponent();
-            playerLevelComponent.addExperience(playerLevelComponent.getTotalExperience());
             commandBuffer.addComponent(ref, PlayerLevelComponent.getComponentType(), playerLevelComponent);
         }
 
@@ -60,6 +72,12 @@ public class PlayerJoinSystem extends RefSystem<EntityStore> {
             @NonNull Store<EntityStore> store,
             @NonNull CommandBuffer<EntityStore> commandBuffer
     ) {
+        if (!ref.isValid()) {
+            this.logger.atSevere()
+                    .log("[PLAYER] PlayerJoinSystem OnEntityRemove Failed: Ref is invalid");
+            return;
+        }
+
         PlayerRef playerRef = store.getComponent(ref, PlayerRef.getComponentType());
         if (playerRef == null) return;
 

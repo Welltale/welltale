@@ -29,6 +29,12 @@ public class OnDeathSystem extends DeathSystems.OnDeathSystem {
             @NonNull Store<EntityStore> store,
             @NonNull CommandBuffer<EntityStore> commandBuffer
     ) {
+        if (!ref.isValid()) {
+            this.logger.atSevere()
+                    .log("[LEVEL] OnDeathSystem OnComponentAdded Failed: Ref is invalid");
+            return;
+        }
+
         Damage deathInfo = deathComponent.getDeathInfo();
         if (deathInfo == null) return;
 

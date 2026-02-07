@@ -64,6 +64,11 @@ public class PlayerChatEvent {
             @Nonnull Ref<EntityStore> ref,
             @Nonnull String content
     ) {
+        if (!ref.isValid()) {
+            this.logger.atSevere()
+                    .log("[CHAT] PlayerChatEvent ReformatMessage Failed: Ref is invalid");
+            return;
+        }
 
         senderWorld.execute(() -> {
             PlayerLevelComponent senderLevelComponent = store.getComponent(ref, PlayerLevelComponent.getComponentType());
