@@ -37,7 +37,7 @@ Group #LevelProgressHud {
       Background: "XPBarBackground.png";
 
       ProgressBar #ProgressBar {
-        Anchor: (Width: 350, Height: 9);
+        Anchor: (Width: 350, Height: 7, Left: 1.5, Right: 1.5);
         BarTexturePath: "XPBarFill.png";
         Value: 0.0;
       }
