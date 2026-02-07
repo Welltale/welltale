@@ -12,6 +12,7 @@ import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import fr.welltale.level.PlayerLevelComponent;
 import fr.welltale.level.event.GiveXPEvent;
+import fr.welltale.level.hud.level.LevelProgress;
 import fr.welltale.mob.MobStatsComponent;
 import lombok.AllArgsConstructor;
 import org.jspecify.annotations.NonNull;
@@ -55,6 +56,11 @@ public class OnDeathSystem extends DeathSystems.OnDeathSystem {
         //TODO ADD THE XP DISPATCH LOGIC IN A RADIUS AROUND THE ENTITY KILL FOR KILLER PLAYERS GROUP
         //TODO ADD XP BONUS LOGIC BASED ON THE LEVEL DIFFERENCE BETWEEN PLAYERS AND THE ENTITY
         GiveXPEvent.dispatch(killerRef, mobStatsComponent.getBaseXP());
+
+        com.hypixel.hytale.server.core.entity.entities.Player killerPlayer = store.getComponent(killerRef, com.hypixel.hytale.server.core.entity.entities.Player.getComponentType());
+        if (killerPlayer != null) {
+            killerPlayer.getHudManager().setCustomHud(killerPlayerRef, new LevelProgress(killerPlayerRef, killerLevelComponent));
+        }
     }
 
     @Override

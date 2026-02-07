@@ -1,0 +1,31 @@
+Group #LevelProgressHud {
+  LayoutMode: Bottom;
+  Anchor: (Bottom: 0, Width: 500, Height: 38);
+
+  Label #LevelLabel {
+    Style: (
+      FontSize: 10,
+      TextColor: #ffffff,
+      RenderBold: true,
+      Alignment: Center
+    );
+    Anchor: (Width: 500, Height: 18, Top: -4);
+    Text: "";
+  }
+
+  Group {
+    LayoutMode: Left;
+    Anchor: (Left: -3, Width: 500, Height: 18);
+
+    Group {
+      Anchor: (Left: 0, Width: 500, Height: 18);
+      Background: "XPBackground.png";
+
+      ProgressBar #ProgressBar {
+        Anchor: (Width: 500, Height: 17);
+        BarTexturePath: "XPFill.png";
+        Value: 0.0;
+      }
+    }
+  }
+}

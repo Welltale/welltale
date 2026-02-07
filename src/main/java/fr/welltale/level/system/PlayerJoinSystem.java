@@ -7,6 +7,7 @@ import com.hypixel.hytale.logger.HytaleLogger;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import fr.welltale.level.PlayerLevelComponent;
+import fr.welltale.level.hud.level.LevelProgress;
 import fr.welltale.player.Player;
 import fr.welltale.player.PlayerRepository;
 import lombok.AllArgsConstructor;
@@ -33,20 +34,23 @@ public class PlayerJoinSystem extends RefSystem<EntityStore> {
 
         PlayerLevelComponent playerLevelComponent = store.getComponent(ref, PlayerLevelComponent.getComponentType());
         if (playerLevelComponent != null) {
-            if (playerData.getExperience() > playerLevelComponent.getTotalExperience()) {
-                playerLevelComponent.setTotalExperience(playerData.getExperience());
-                return;
-            }
-
             if (playerData.getExperience() < playerLevelComponent.getTotalExperience()) {
                 playerData.setExperience(playerLevelComponent.getTotalExperience());
-                return;
             }
+
+            if (playerData.getExperience() > playerLevelComponent.getTotalExperience()) {
+                playerLevelComponent.setTotalExperience(playerData.getExperience());
+            }
+        } else {
+            playerLevelComponent = new PlayerLevelComponent();
+            playerLevelComponent.addExperience(playerLevelComponent.getTotalExperience());
+            commandBuffer.addComponent(ref, PlayerLevelComponent.getComponentType(), playerLevelComponent);
         }
 
-        playerLevelComponent = new PlayerLevelComponent();
-        commandBuffer.addComponent(ref, PlayerLevelComponent.getComponentType(), playerLevelComponent);
-        playerLevelComponent.addExperience(playerLevelComponent.getTotalExperience());
+        com.hypixel.hytale.server.core.entity.entities.Player player = store.getComponent(ref, com.hypixel.hytale.server.core.entity.entities.Player.getComponentType());
+        if (player != null) {
+            player.getHudManager().setCustomHud(playerRef, new LevelProgress(playerRef, playerLevelComponent));
+        }
     }
 
     @Override
