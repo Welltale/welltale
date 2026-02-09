@@ -1,0 +1,36 @@
+{
+  "TranslationProperties": {
+    "Name": "server.items.Item_Quest_Book.name",
+    "Description": "server.items.Item_Quest_Book.description"
+  },
+  "Categories": [
+    "Items.Tools"
+  ],
+  "Quality": "Tool",
+  "Model": "Items/Quest_Book/Quest_Book.blockymodel",
+  "Texture": "Items/Quest_Book/quest_book.png",
+  "IconProperties": {
+    "Scale": 1.5,
+    "Rotation": [
+      24,
+      169,
+      0
+    ],
+    "Translation": [
+      0,
+      -5
+    ]
+  },
+  "Scale": 2.5,
+  "DroppedItemAnimation": "Items/Animations/Dropped/Dropped_Diagonal_Right.blockyanim",
+  "Tags": {
+    "Type": [
+      "Item"
+    ]
+  },
+  "Icon": "Icons/ItemsGenerated/Item_Quest_Book.png",
+  "UsePlayerAnimations": false,
+  "MaxStack": 1,
+  "DropOnDeath": false,
+  "PlayerAnimationsId": "Spellbook"
+}

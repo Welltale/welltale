@@ -8,7 +8,6 @@ import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.Universe;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import fr.welltale.level.PlayerLevelComponent;
-import fr.welltale.level.hud.level.LevelProgress;
 import fr.welltale.player.Player;
 import fr.welltale.player.PlayerRepository;
 import lombok.AllArgsConstructor;
@@ -57,11 +56,6 @@ public class PlayerJoinSystem extends RefSystem<EntityStore> {
         } else {
             playerLevelComponent = new PlayerLevelComponent();
             commandBuffer.addComponent(ref, PlayerLevelComponent.getComponentType(), playerLevelComponent);
-        }
-
-        com.hypixel.hytale.server.core.entity.entities.Player player = store.getComponent(ref, com.hypixel.hytale.server.core.entity.entities.Player.getComponentType());
-        if (player != null) {
-            player.getHudManager().setCustomHud(playerRef, new LevelProgress(playerRef, playerLevelComponent));
         }
     }
 

@@ -9,7 +9,6 @@ import com.hypixel.hytale.server.core.modules.entitystats.asset.EntityStatType;
 import com.hypixel.hytale.server.core.modules.entitystats.modifier.Modifier;
 import com.hypixel.hytale.server.core.modules.entitystats.modifier.StaticModifier;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
-import fr.welltale.constant.Constant;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -26,8 +25,20 @@ public class Characteristics {
     public static final int DEFAULT_CRITICAL_DAMAGE = 0;
     public static final float DEFAULT_CRITICAL_PCT = 0;
     public static final int DEFAULT_CRITICAL_RESISTANCE = 0;
-    public static final int DEFAULT_BONUS_XP = 0;
-    //TODO ADD MOVE SPEED
+    public static final float DEFAULT_BONUS_XP_PCT = 0;
+
+    public static final float DEFAULT_STAMINA_AMOUNT = 10;
+    public static final float DEFAULT_HEALTH_AMOUNT = 100;
+    public static final float DEFAULT_MANA_AMOUNT = 0;
+
+    public static final String STATIC_MODIFIER_STAMINA_KEY = "Stamina";
+    public static final String STATIC_MODIFIER_HEALTH_KEY = "Health";
+    public static final String STATIC_MODIFIER_MANA_KEY = "Mana";
+    public static final String STATIC_MODIFIER_DAMAGE_KEY = "Damage";
+    public static final String STATIC_MODIFIER_CRITICAL_DAMAGE_KEY = "CriticalDamage";
+    public static final String STATIC_MODIFIER_CRITICAL_RESISTANCE_KEY = "CriticalResistance";
+    public static final String STATIC_MODIFIER_CRITICAL_PCT_KEY = "Critical";
+    public static final String STATIC_MODIFIER_BONUS_XP_KEY = "BonusXP";
 
     @Getter
     @Setter
@@ -35,7 +46,7 @@ public class Characteristics {
         private int health;
         private int mana;
         private int stamina;
-        private int bonusXP;
+        private float bonusXPPct;
     }
 
     @Getter
@@ -45,7 +56,7 @@ public class Characteristics {
         private int criticalDamage;
         private float criticalPct;
         private int criticalResistance;
-        private int bonusXP;
+        private float bonusXPPct;
     }
 
     @Nonnull
@@ -64,29 +75,29 @@ public class Characteristics {
 
         AdditionalCharacteristics additionalCharacteristics = new AdditionalCharacteristics();
 
-        EntityStatValue damageStatValue = playerStatMap.get(EntityStatType.getAssetMap().getIndex(Constant.Player.Stat.STATIC_MODIFIER_DAMAGE_KEY));
+        EntityStatValue damageStatValue = playerStatMap.get(EntityStatType.getAssetMap().getIndex(STATIC_MODIFIER_DAMAGE_KEY));
         if (damageStatValue != null) {
             additionalCharacteristics.damage = (int) damageStatValue.getMax();
         }
 
-        EntityStatValue criticalDamageStatValue = playerStatMap.get(EntityStatType.getAssetMap().getIndex(Constant.Player.Stat.STATIC_MODIFIER_CRITICAL_DAMAGE_KEY));
+        EntityStatValue criticalDamageStatValue = playerStatMap.get(EntityStatType.getAssetMap().getIndex(STATIC_MODIFIER_CRITICAL_DAMAGE_KEY));
         if (criticalDamageStatValue != null) {
             additionalCharacteristics.criticalDamage = (int) criticalDamageStatValue.getMax();
         }
 
-        EntityStatValue criticalPctStatValue = playerStatMap.get(EntityStatType.getAssetMap().getIndex(Constant.Player.Stat.STATIC_MODIFIER_CRITICAL_PCT_KEY));
+        EntityStatValue criticalPctStatValue = playerStatMap.get(EntityStatType.getAssetMap().getIndex(STATIC_MODIFIER_CRITICAL_PCT_KEY));
         if (criticalPctStatValue != null) {
             additionalCharacteristics.criticalPct = criticalPctStatValue.getMax();
         }
 
-        EntityStatValue criticalResistanceStatValue = playerStatMap.get(EntityStatType.getAssetMap().getIndex(Constant.Player.Stat.STATIC_MODIFIER_CRITICAL_RESISTANCE_KEY));
+        EntityStatValue criticalResistanceStatValue = playerStatMap.get(EntityStatType.getAssetMap().getIndex(STATIC_MODIFIER_CRITICAL_RESISTANCE_KEY));
         if (criticalResistanceStatValue != null) {
             additionalCharacteristics.criticalResistance = (int) criticalResistanceStatValue.getMax();
         }
 
-        EntityStatValue bonusXPStatValue = playerStatMap.get(EntityStatType.getAssetMap().getIndex(Constant.Player.Stat.STATIC_MODIFIER_BONUS_XP_KEY));
+        EntityStatValue bonusXPStatValue = playerStatMap.get(EntityStatType.getAssetMap().getIndex(STATIC_MODIFIER_BONUS_XP_KEY));
         if (bonusXPStatValue != null) {
-            additionalCharacteristics.bonusXP = (int) bonusXPStatValue.getMax();
+            additionalCharacteristics.bonusXPPct = bonusXPStatValue.getMax();
         }
 
         return additionalCharacteristics;
@@ -109,33 +120,33 @@ public class Characteristics {
         StaticModifier staticModifierHealth = new StaticModifier(
                 Modifier.ModifierTarget.MAX,
                 StaticModifier.CalculationType.ADDITIVE,
-                (DEFAULT_HEALTH + playerEditableCharacteristics.health) - Constant.Player.Stat.DEFAULT_HEALTH_AMOUNT
+                (DEFAULT_HEALTH + playerEditableCharacteristics.health) - DEFAULT_HEALTH_AMOUNT
         );
         playerStatMap.putModifier(
                 DefaultEntityStatTypes.getHealth(),
-                staticModifierHealth.getCalculationType().createKey(Constant.Player.Stat.STATIC_MODIFIER_HEALTH_KEY),
+                staticModifierHealth.getCalculationType().createKey(STATIC_MODIFIER_HEALTH_KEY),
                 staticModifierHealth
         );
 
         StaticModifier staticModifierMana = new StaticModifier(
                 Modifier.ModifierTarget.MAX,
                 StaticModifier.CalculationType.ADDITIVE,
-                (DEFAULT_MANA + playerEditableCharacteristics.mana) - Constant.Player.Stat.DEFAULT_MANA_AMOUNT
+                (DEFAULT_MANA + playerEditableCharacteristics.mana) - DEFAULT_MANA_AMOUNT
         );
         playerStatMap.putModifier(
                 DefaultEntityStatTypes.getMana(),
-                staticModifierMana.getCalculationType().createKey(Constant.Player.Stat.STATIC_MODIFIER_MANA_KEY),
+                staticModifierMana.getCalculationType().createKey(STATIC_MODIFIER_MANA_KEY),
                 staticModifierMana
         );
 
         StaticModifier staticModifierStamina = new StaticModifier(
                 Modifier.ModifierTarget.MAX,
                 StaticModifier.CalculationType.ADDITIVE,
-                (DEFAULT_STAMINA + playerEditableCharacteristics.stamina) - Constant.Player.Stat.DEFAULT_STAMINA_AMOUNT
+                (DEFAULT_STAMINA + playerEditableCharacteristics.stamina) - DEFAULT_STAMINA_AMOUNT
         );
         playerStatMap.putModifier(
                 DefaultEntityStatTypes.getStamina(),
-                staticModifierStamina.getCalculationType().createKey(Constant.Player.Stat.STATIC_MODIFIER_STAMINA_KEY),
+                staticModifierStamina.getCalculationType().createKey(STATIC_MODIFIER_STAMINA_KEY),
                 staticModifierStamina
         );
 
@@ -145,8 +156,8 @@ public class Characteristics {
                 DEFAULT_DAMAGE
         );
         playerStatMap.putModifier(
-                EntityStatType.getAssetMap().getIndex(Constant.Player.Stat.STATIC_MODIFIER_DAMAGE_KEY),
-                staticModifierDamage.getCalculationType().createKey(Constant.Player.Stat.STATIC_MODIFIER_DAMAGE_KEY),
+                EntityStatType.getAssetMap().getIndex(STATIC_MODIFIER_DAMAGE_KEY),
+                staticModifierDamage.getCalculationType().createKey(STATIC_MODIFIER_DAMAGE_KEY),
                 staticModifierDamage
         );
 
@@ -156,8 +167,8 @@ public class Characteristics {
                 DEFAULT_CRITICAL_DAMAGE
         );
         playerStatMap.putModifier(
-                EntityStatType.getAssetMap().getIndex(Constant.Player.Stat.STATIC_MODIFIER_CRITICAL_DAMAGE_KEY),
-                staticModifierCriticalDamage.getCalculationType().createKey(Constant.Player.Stat.STATIC_MODIFIER_CRITICAL_DAMAGE_KEY),
+                EntityStatType.getAssetMap().getIndex(STATIC_MODIFIER_CRITICAL_DAMAGE_KEY),
+                staticModifierCriticalDamage.getCalculationType().createKey(STATIC_MODIFIER_CRITICAL_DAMAGE_KEY),
                 staticModifierCriticalDamage
         );
 
@@ -167,8 +178,8 @@ public class Characteristics {
                 DEFAULT_CRITICAL_PCT
         );
         playerStatMap.putModifier(
-                EntityStatType.getAssetMap().getIndex(Constant.Player.Stat.STATIC_MODIFIER_CRITICAL_PCT_KEY),
-                staticModifierCriticalPct.getCalculationType().createKey(Constant.Player.Stat.STATIC_MODIFIER_CRITICAL_PCT_KEY),
+                EntityStatType.getAssetMap().getIndex(STATIC_MODIFIER_CRITICAL_PCT_KEY),
+                staticModifierCriticalPct.getCalculationType().createKey(STATIC_MODIFIER_CRITICAL_PCT_KEY),
                 staticModifierCriticalPct
         );
 
@@ -178,20 +189,20 @@ public class Characteristics {
                 DEFAULT_CRITICAL_RESISTANCE
         );
         playerStatMap.putModifier(
-                EntityStatType.getAssetMap().getIndex(Constant.Player.Stat.STATIC_MODIFIER_CRITICAL_RESISTANCE_KEY),
-                staticModifierCriticalResistance.getCalculationType().createKey(Constant.Player.Stat.STATIC_MODIFIER_CRITICAL_RESISTANCE_KEY),
+                EntityStatType.getAssetMap().getIndex(STATIC_MODIFIER_CRITICAL_RESISTANCE_KEY),
+                staticModifierCriticalResistance.getCalculationType().createKey(STATIC_MODIFIER_CRITICAL_RESISTANCE_KEY),
                 staticModifierCriticalResistance
         );
 
-        StaticModifier staticModifierBonusXP = new StaticModifier(
+        StaticModifier staticModifierBonusXPPct = new StaticModifier(
                 Modifier.ModifierTarget.MAX,
-                StaticModifier.CalculationType.ADDITIVE,
-                DEFAULT_BONUS_XP
+                StaticModifier.CalculationType.MULTIPLICATIVE,
+                DEFAULT_BONUS_XP_PCT
         );
         playerStatMap.putModifier(
-                EntityStatType.getAssetMap().getIndex(Constant.Player.Stat.STATIC_MODIFIER_BONUS_XP_KEY),
-                staticModifierBonusXP.getCalculationType().createKey(Constant.Player.Stat.STATIC_MODIFIER_BONUS_XP_KEY),
-                staticModifierBonusXP
+                EntityStatType.getAssetMap().getIndex(STATIC_MODIFIER_BONUS_XP_KEY),
+                staticModifierBonusXPPct.getCalculationType().createKey(STATIC_MODIFIER_BONUS_XP_KEY),
+                staticModifierBonusXPPct
         );
     }
 }

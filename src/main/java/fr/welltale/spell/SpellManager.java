@@ -57,7 +57,7 @@ public class SpellManager {
             @Nonnull InteractionType type,
             @Nonnull CommandBuffer<EntityStore> cmdBuffer
     ) {
-        Class casterClass = this.classRepository.getClass(casterData.getClassUuid());
+        Class casterClass = this.classRepository.getClassConfig(casterData.getClassUuid());
         if (casterClass == null) {
             this.logger.atSevere()
                     .log("[SPELL] SpellManager Cast Failed: Caster Class is null");

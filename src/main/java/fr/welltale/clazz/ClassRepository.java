@@ -6,6 +6,6 @@ import java.util.List;
 import java.util.UUID;
 
 public interface ClassRepository {
-    @Nullable Class getClass(@Nonnull UUID classId);
-    List<Class> getClasses();
+    @Nullable Class getClassConfig(@Nonnull UUID classId);
+    List<Class> getClassesConfigs();
 }

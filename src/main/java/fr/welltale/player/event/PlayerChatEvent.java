@@ -99,7 +99,7 @@ public class PlayerChatEvent {
 
 
             if (playerData.getRankUuid() != null) {
-                Rank playerRank = this.rankRepository.getRank(playerData.getRankUuid());
+                Rank playerRank = this.rankRepository.getRankConfig(playerData.getRankUuid());
                 if (playerRank == null) {
                     this.logger.atSevere()
                             .log("[CHAT] PlayerChatEvent ReformatMessage Failed: PlayerRank is null");

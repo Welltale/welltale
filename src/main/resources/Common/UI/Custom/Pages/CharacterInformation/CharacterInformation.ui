@@ -1,0 +1,18 @@
+$C = "../../Commons.ui";
+
+Group #MainContainer {
+  Anchor: (Top: 50, Left: 50, Right: 50, Bottom: 50);
+  LayoutMode: Top;
+  Background: "../../Commons/UIBackground.png";
+  Padding: (Full: 20);
+
+  Group #HeaderContainer {
+    LayoutMode: Left;
+    FlexWeight: 1;
+
+    Label #HeaderTitle {
+      Style: (FontSize: 10, TextColor: #ffffff, Alignment: Center);
+      Text: "INFORMATIONS PERSONNAGE";
+    }
+  }
+}

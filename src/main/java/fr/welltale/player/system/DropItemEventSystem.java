@@ -67,7 +67,7 @@ public class DropItemEventSystem extends EntityEventSystem<EntityStore, com.hypi
             return;
         }
 
-        Rank rank = this.rankRepository.getRank(playerData.getRankUuid());
+        Rank rank = this.rankRepository.getRankConfig(playerData.getRankUuid());
         if (rank == null) {
             this.logger.atSevere()
                     .log("[PLAYER] DropItemEvent Handle Failed: Rank is null");
@@ -86,6 +86,6 @@ public class DropItemEventSystem extends EntityEventSystem<EntityStore, com.hypi
 
     @Override
     public @Nullable Query<EntityStore> getQuery() {
-        return Archetype.empty();
+        return Archetype.of(PlayerRef.getComponentType());
     }
 }

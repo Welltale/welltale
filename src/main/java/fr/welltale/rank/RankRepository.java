@@ -9,13 +9,13 @@ public interface RankRepository {
     Exception ERR_RANK_ALREADY_EXISTS = new Exception("rank already exists");
     Exception ERR_RANK_NOT_FOUND = new Exception("rank not found");
 
-    void addRank(@Nonnull Rank rank) throws Exception;
+    void addRankConfig(@Nonnull Rank rank) throws Exception;
 
-    @Nullable Rank getRank(@Nonnull UUID rankId);
+    @Nullable Rank getRankConfig(@Nonnull UUID rankId);
 
-    List<Rank> getCachedRanks();
+    List<Rank> getCachedRanksConfigs();
 
-    void updateRank(@Nonnull Rank rank) throws Exception;
+    void updateRankConfig(@Nonnull Rank rank) throws Exception;
 
-    void deleteRank(@Nonnull UUID rankId) throws Exception;
+    void deleteRankConfig(@Nonnull UUID rankId) throws Exception;
 }

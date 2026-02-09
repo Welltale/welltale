@@ -5,3 +5,6 @@ items.Armor_Beginner_Chest.name = Plastron du débutant
 items.Armor_Beginner_Head.name = Casque du débutant
 items.Armor_Beginner_Hands.name = Gants du débutant
 items.Armor_Beginner_Legs.name = Jambières du débutant
+
+items.Item_Quest_Book.name = Livre de quêtes
+items.Item_Quest_Book.description = Permets de voir vos quêtes

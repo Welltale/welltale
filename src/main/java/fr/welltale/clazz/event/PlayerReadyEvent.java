@@ -52,7 +52,7 @@ public class PlayerReadyEvent {
         }
 
         if (playerData.getClassUuid() != null) {
-            this.classRepository.getClass(playerData.getClassUuid());
+            this.classRepository.getClassConfig(playerData.getClassUuid());
             return;
         }
 

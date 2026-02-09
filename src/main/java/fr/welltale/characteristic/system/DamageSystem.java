@@ -123,7 +123,7 @@ public class DamageSystem extends EntityEventSystem<EntityStore, Damage> {
 
         float newDamageAmount = initialDamage + (additionalCharacteristicsFromDamager.getDamage() + Characteristics.DEFAULT_DAMAGE);
 
-        boolean isCrit = ThreadLocalRandom.current().nextFloat() < (Characteristics.DEFAULT_CRITICAL_PCT + additionalCharacteristicsFromDamager.getCriticalPct());
+        boolean isCrit = ThreadLocalRandom.current().nextFloat() < (Characteristics.DEFAULT_CRITICAL_PCT + additionalCharacteristicsFromDamager.getCriticalPct()) / 100;
 
         if (isCrit) {
             newDamageAmount += (additionalCharacteristicsFromDamager.getCriticalDamage() + Characteristics.DEFAULT_CRITICAL_DAMAGE);

@@ -82,7 +82,7 @@ public class ClassSelectPage extends InteractiveCustomUIPage<ClassSelectPage.Cla
 
         cmd.append("Pages/Class/ClassSelectPage.ui");
 
-        List<Class> classes = this.classRepository.getClasses();
+        List<Class> classes = this.classRepository.getClassesConfigs();
         if (classes.isEmpty()) {
             Player player = ref.getStore().getComponent(ref, Player.getComponentType());
             if (player == null) {
@@ -138,7 +138,7 @@ public class ClassSelectPage extends InteractiveCustomUIPage<ClassSelectPage.Cla
         }
 
         if (data.classSelectedUuid != null) {
-            Class newClass = this.classRepository.getClass(data.classSelectedUuid);
+            Class newClass = this.classRepository.getClassConfig(data.classSelectedUuid);
             if (newClass == null) {
                 this.sendUpdate();
                 return;
@@ -190,7 +190,7 @@ public class ClassSelectPage extends InteractiveCustomUIPage<ClassSelectPage.Cla
             return;
         }
 
-        Class selectedClass = this.classRepository.getClass(this.classSelectedUuid);
+        Class selectedClass = this.classRepository.getClassConfig(this.classSelectedUuid);
         if (selectedClass == null) {
             this.sendUpdate();
             return;

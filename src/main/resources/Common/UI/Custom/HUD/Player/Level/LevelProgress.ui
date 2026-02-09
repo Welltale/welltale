@@ -1,8 +1,8 @@
-Group #LevelProgressHud {
+Group #MainContainer {
   LayoutMode: Bottom;
   Anchor: (Bottom: 2, Width: 350, Height: 38);
 
-  Group {
+  Group #LabelContainer {
     LayoutMode: Left;
 
     Label #LevelLabel {
@@ -28,15 +28,15 @@ Group #LevelProgressHud {
     }
   }
 
-  Group {
+  Group #LevelProgressBarContainer {
     LayoutMode: Left;
     Anchor: (Left: -3, Width: 350, Height: 10);
 
-    Group {
+    Group #LevelProressBarSubContainer {
       Anchor: (Left: 0, Width: 350, Height: 10);
       Background: "XPBarBackground.png";
 
-      ProgressBar #ProgressBar {
+      ProgressBar #LevelProgressBar {
         Anchor: (Width: 350, Height: 7, Left: 1.5, Right: 1.5);
         BarTexturePath: "XPBarFill.png";
         Value: 0.0;

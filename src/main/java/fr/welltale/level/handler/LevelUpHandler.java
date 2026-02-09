@@ -2,8 +2,10 @@ package fr.welltale.level.handler;
 
 import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.logger.HytaleLogger;
+import com.hypixel.hytale.math.vector.Vector3d;
 import com.hypixel.hytale.protocol.SoundCategory;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
+import com.hypixel.hytale.server.core.universe.world.ParticleUtil;
 import com.hypixel.hytale.server.core.universe.world.SoundUtil;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import fr.welltale.characteristic.Characteristics;
@@ -52,6 +54,13 @@ public class LevelUpHandler implements Consumer<LevelUpEvent> {
                 store
         );
 
-        //TODO PLAY LEVEL PARTICLE
+        Vector3d playerPosition = playerRef.getTransform().getPosition().clone();
+        playerPosition.y += 2;
+
+        ParticleUtil.spawnParticleEffect(
+                Constant.Particle.CINEMATIC_FIREWORKS_RED_XL,
+                playerPosition,
+                store
+        );
     }
 }

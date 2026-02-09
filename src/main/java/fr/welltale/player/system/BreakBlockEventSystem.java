@@ -66,7 +66,7 @@ public class BreakBlockEventSystem extends EntityEventSystem<EntityStore, com.hy
             return;
         }
 
-        Rank rank = this.rankRepository.getRank(playerData.getRankUuid());
+        Rank rank = this.rankRepository.getRankConfig(playerData.getRankUuid());
         if (rank == null) {
             this.logger.atSevere()
                     .log("[PLAYER] BreakBlockEvent Handle Failed: Rank is null");
@@ -85,6 +85,6 @@ public class BreakBlockEventSystem extends EntityEventSystem<EntityStore, com.hy
 
     @Override
     public @Nullable Query<EntityStore> getQuery() {
-        return Archetype.empty();
+        return Archetype.of(PlayerRef.getComponentType());
     }
 }

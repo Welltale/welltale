@@ -31,7 +31,7 @@ public class GiveXPHandler implements Consumer<GiveXPEvent> {
 
         Store<EntityStore> store = event.playerRef().getStore();
 
-        var bonusXP = Characteristics.DEFAULT_BONUS_XP;
+        float bonusXP = Characteristics.DEFAULT_BONUS_XP_PCT;
         PlayerRef playerRef = store.getComponent(event.playerRef(), PlayerRef.getComponentType());
         if (playerRef == null) {
             this.logger.atSevere()
@@ -41,15 +41,11 @@ public class GiveXPHandler implements Consumer<GiveXPEvent> {
 
         Player playerData = this.playerRepository.getPlayerByUuid(playerRef.getUuid());
         if (playerData != null) {
-            bonusXP += playerData.getEditableCharacteristics().getBonusXP();
+            bonusXP += playerData.getEditableCharacteristics().getBonusXPPct();
         }
 
-        Characteristics.AdditionalCharacteristics additionalCharacteristicsFromPlayer = Characteristics.getAdditionalCharacteristicsFromPlayer(event.playerRef(), store);
-
-        bonusXP += additionalCharacteristicsFromPlayer.getBonusXP();
-
-        long xpAmount = event.amount();
-        xpAmount = xpAmount + (xpAmount * bonusXP / 100);
+        bonusXP += Characteristics.getAdditionalCharacteristicsFromPlayer(event.playerRef(), store).getBonusXPPct();
+        long xpAmount = (long) (event.amount() * (1.0 + bonusXP / 100.0));
 
         PlayerLevelComponent playerLevelComponent = store.getComponent(event.playerRef(), PlayerLevelComponent.getComponentType());
         if (playerLevelComponent == null) {

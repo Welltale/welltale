@@ -5,23 +5,6 @@ import com.hypixel.hytale.server.core.asset.type.soundevent.config.SoundEvent;
 import java.awt.*;
 
 public class Constant {
-    public static class Player {
-        public static class Stat {
-            public static final float DEFAULT_STAMINA_AMOUNT = 10;
-            public static final float DEFAULT_HEALTH_AMOUNT = 100;
-            public static final float DEFAULT_MANA_AMOUNT = 0;
-
-            public static final String STATIC_MODIFIER_STAMINA_KEY = "Stamina";
-            public static final String STATIC_MODIFIER_HEALTH_KEY = "Health";
-            public static final String STATIC_MODIFIER_MANA_KEY = "Mana";
-            public static final String STATIC_MODIFIER_DAMAGE_KEY = "Damage";
-            public static final String STATIC_MODIFIER_CRITICAL_DAMAGE_KEY = "CriticalDamage";
-            public static final String STATIC_MODIFIER_CRITICAL_RESISTANCE_KEY = "CriticalResistance";
-            public static final String STATIC_MODIFIER_CRITICAL_PCT_KEY = "Critical";
-            public static final String STATIC_MODIFIER_BONUS_XP_KEY = "BonusXP";
-        }
-    }
-
     public static class World {
         public static class CelesteIslandWorld {
             public static String WORLD_NAME = "default";
@@ -40,6 +23,7 @@ public class Constant {
         // Level
         public static String LEVEL_PREFIX = "Lv.";
         public static Color LEVEL_PREFIX_COLOR = fr.welltale.util.Color.WELLTALE;
+        public static String XP_PREFIX = "XP: ";
 
         // Server
         public static String SERVER_PREFIX = "Welltale";
@@ -48,6 +32,7 @@ public class Constant {
 
     public static class Particle {
         public static String PLAYER_SPAWN_SPAWN = "PlayerSpawn_Spawn";
+        public static String CINEMATIC_FIREWORKS_RED_XL = "Cinematic_Fireworks_Red_XL";
     }
 
     public static class SoundIndex {

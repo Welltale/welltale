@@ -1,0 +1,9 @@
+Group #MainContainer {
+  LayoutMode: Top;
+  Anchor: (Right: 0, Left: 0, Top: 50, Height: 20);
+
+  Label #RegionLabel {
+    Style: (RenderBold: true, RenderUppercase: true, Alignment: Center);
+    Text: "Region";
+  }
+}

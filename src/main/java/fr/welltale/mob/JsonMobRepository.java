@@ -11,7 +11,7 @@ public class JsonMobRepository implements MobRepository{
     private List<Mob> cachedMobs;
 
     @Override
-    public @Nullable Mob getMob(@NonNull String modelAsset) {
+    public @Nullable Mob getMobConfig(@NonNull String modelAsset) {
         for (Mob cachedMob : this.cachedMobs) {
             if (!cachedMob.getModelAsset().equals(modelAsset)) continue;
 
@@ -22,7 +22,7 @@ public class JsonMobRepository implements MobRepository{
     }
 
     @Override
-    public @Nullable List<Mob> getMobs() {
+    public @Nullable List<Mob> getMobsConfig() {
         return this.cachedMobs;
     }
 }

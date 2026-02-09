@@ -3,7 +3,6 @@ package fr.welltale.mob.system;
 import com.hypixel.hytale.component.*;
 import com.hypixel.hytale.component.query.Query;
 import com.hypixel.hytale.component.system.RefSystem;
-import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.modules.entity.component.PersistentModel;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
@@ -27,9 +26,6 @@ public class MobStatsAssignSystem extends RefSystem<EntityStore> {
     ) {
         if (!ref.isValid()) return;
 
-        Player player = store.getComponent(ref, Player.getComponentType());
-        if (player != null) return;
-
         MobStatsComponent mobStatsComponent = store.getComponent(ref, MobStatsComponent.getComponentType());
         if (mobStatsComponent != null && mobStatsComponent.getLevel() > 0) return;
 
@@ -37,7 +33,7 @@ public class MobStatsAssignSystem extends RefSystem<EntityStore> {
         if (entityPersistentModel == null) return;
 
         String entityModelAssetId = entityPersistentModel.getModelReference().getModelAssetId();
-        Mob mob = this.mobRepository.getMob(entityModelAssetId);
+        Mob mob = this.mobRepository.getMobConfig(entityModelAssetId);
         if (mob == null) return;
 
         if (mobStatsComponent != null) {

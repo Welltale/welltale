@@ -12,7 +12,7 @@ public class JsonRankRepository implements RankRepository {
     private List<Rank> cachedRanks;
 
     @Override
-    public void addRank(@NonNull Rank rank) throws Exception {
+    public void addRankConfig(@NonNull Rank rank) throws Exception {
         rank.setId(UUID.randomUUID());
 
         for (Rank cachedRank : this.cachedRanks) {
@@ -27,19 +27,19 @@ public class JsonRankRepository implements RankRepository {
     }
 
     @Override
-    public @Nullable Rank getRank(@NonNull UUID rankId) {
+    public @Nullable Rank getRankConfig(@NonNull UUID rankId) {
         return cachedRanks.stream()
                 .filter(r -> r.getId().equals(rankId))
                 .findFirst()
                 .orElse(null);
     }
 
-    public List<Rank> getCachedRanks() {
+    public List<Rank> getCachedRanksConfigs() {
         return this.cachedRanks;
     }
 
     @Override
-    public void updateRank(@NonNull Rank rank) throws Exception {
+    public void updateRankConfig(@NonNull Rank rank) throws Exception {
         for (int i = 0; i < this.cachedRanks.size(); i++) {
             if (!this.cachedRanks.get(i).getId().equals(rank.getId())) {
                 continue;
@@ -52,8 +52,8 @@ public class JsonRankRepository implements RankRepository {
     }
 
     @Override
-    public void deleteRank(@NonNull UUID rankId) throws Exception {
-        Rank rank = this.getRank(rankId);
+    public void deleteRankConfig(@NonNull UUID rankId) throws Exception {
+        Rank rank = this.getRankConfig(rankId);
         this.cachedRanks.remove(rank);
     }
 }

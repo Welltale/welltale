@@ -23,10 +23,10 @@ Group #MainContainer {
 
         Label #ClassSelectorTitle {
           Text: "CLASSE";
-          Style: (FontSize: 15, TextColor: $C.@WelltaleColor, Alignment: Center, RenderBold: true);
+          Style: (FontSize: 17, TextColor: #ffffff, Alignment: Center, RenderBold: true);
         }
 
-        $C.@WelltaleSeparator {}
+        $C.@WhiteSeparator {}
 
         Group #Classes {
           LayoutMode: Left;

@@ -29,6 +29,7 @@ import fr.welltale.player.*;
 import fr.welltale.player.system.BreakBlockEventSystem;
 import fr.welltale.player.system.DropItemEventSystem;
 import fr.welltale.player.system.PlaceBlockEventSystem;
+import fr.welltale.player.system.UpdatePlayerHudSystem;
 import fr.welltale.rank.JsonRankFileLoader;
 import fr.welltale.rank.JsonRankRepository;
 import fr.welltale.rank.Rank;
@@ -90,6 +91,7 @@ public class Welltale extends JavaPlugin {
             this.getEntityStoreRegistry().registerSystem(new BreakBlockEventSystem(playerRepository, rankRepository, logger));
             this.getEntityStoreRegistry().registerSystem(new PlaceBlockEventSystem(playerRepository, rankRepository, logger));
             this.getEntityStoreRegistry().registerSystem(new DropItemEventSystem(playerRepository, rankRepository, logger));
+            this.getEntityStoreRegistry().registerSystem(new UpdatePlayerHudSystem());
 
             this.getEventRegistry().registerGlobal(
                     PlayerChatEvent.class,

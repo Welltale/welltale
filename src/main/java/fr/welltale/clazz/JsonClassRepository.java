@@ -12,7 +12,7 @@ public class JsonClassRepository implements ClassRepository {
     private List<Class> cachedClasses;
 
     @Override
-    public @Nullable Class getClass(@NonNull UUID classId) {
+    public @Nullable Class getClassConfig(@NonNull UUID classId) {
         for (Class cls : this.cachedClasses) {
             if (!cls.getUuid().equals(classId)) {
                 continue;
@@ -25,7 +25,7 @@ public class JsonClassRepository implements ClassRepository {
     }
 
     @Override
-    public List<Class> getClasses() {
+    public List<Class> getClassesConfigs() {
         return this.cachedClasses;
     }
 }

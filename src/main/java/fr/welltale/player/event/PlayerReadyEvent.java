@@ -9,6 +9,7 @@ import com.hypixel.hytale.server.core.universe.Universe;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import fr.welltale.characteristic.Characteristics;
 import fr.welltale.constant.Constant;
+import fr.welltale.level.PlayerLevelComponent;
 import fr.welltale.player.PlayerRepository;
 import fr.welltale.rank.Rank;
 import fr.welltale.rank.RankRepository;
@@ -55,9 +56,17 @@ public class PlayerReadyEvent {
 
         Characteristics.setCharacteristicsToPlayer(ref, store, playerData.getEditableCharacteristics());
 
+        PlayerLevelComponent playerLevelComponent = store.getComponent(ref, PlayerLevelComponent.getComponentType());
+        if (playerLevelComponent == null) {
+            player.remove();
+            this.logger.atSevere()
+                    .log("[PLAYER] PlayerReadyEvent OnPlayerReady Failed: PlayerLevelComponent is null");
+            return;
+        }
+
         Rank playerRank = null;
         if (playerData.getRankUuid() != null) {
-            Rank rank = this.rankRepository.getRank(playerData.getRankUuid());
+            Rank rank = this.rankRepository.getRankConfig(playerData.getRankUuid());
             if (rank != null) {
                 playerRank = rank;
             }
