@@ -86,7 +86,7 @@
           "Parent": "Weapon_Sword_Primary_Thrust_Damage",
           "DamageCalculator": {
             "BaseDamage": {
-              "Earth": 10
+              "Physical": 10
             }
           },
           "DamageEffects": {

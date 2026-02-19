@@ -26,6 +26,10 @@ public class JsonMobFileLoader {
                             0,
                             0,
                             0,
+                            0,
+                            0,
+                            0,
+                            0,
                             0
                     )
             };
