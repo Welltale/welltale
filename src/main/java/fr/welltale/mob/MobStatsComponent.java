@@ -13,9 +13,13 @@ public class MobStatsComponent implements Component<EntityStore> {
     private int level = 0;
     private long baseXP = 0;
     private int criticalDamage = 0;
-    private int criticalPct = 0;
+    private float criticalPct = 0;
     private int criticalResistance = 0;
-    private int resistancePct = 0;
+    private float resistancePct = 0;
+    private float earthResistance = 0;
+    private float fireResistance = 0;
+    private float waterResistance = 0;
+    private float airResistance = 0;
 
     public static void setComponentType(ComponentType<EntityStore, MobStatsComponent> type) {
         TYPE = type;
@@ -29,13 +33,28 @@ public class MobStatsComponent implements Component<EntityStore> {
 
     public MobStatsComponent() {}
 
-    public MobStatsComponent(int level, long baseXP, int criticalDamage, int criticalPct, int criticalResistance, int resistancePct) {
+    public MobStatsComponent(
+            int level,
+            long baseXP,
+            int criticalDamage,
+            float criticalPct,
+            int criticalResistance,
+            float resistancePct,
+            float earthResistance,
+            float fireResistance,
+            float waterResistance,
+            float airResistance
+    ) {
         this.level = level;
         this.baseXP = baseXP;
         this.criticalDamage = criticalDamage;
         this.criticalPct = criticalPct;
         this.criticalResistance = criticalResistance;
         this.resistancePct = resistancePct;
+        this.earthResistance = earthResistance;
+        this.fireResistance = fireResistance;
+        this.waterResistance = waterResistance;
+        this.airResistance = airResistance;
     }
 
     public static final BuilderCodec<MobStatsComponent> CODEC = BuilderCodec
@@ -56,7 +75,7 @@ public class MobStatsComponent implements Component<EntityStore> {
                     component -> component.criticalDamage
             ).add()
             .append(
-                    new KeyedCodec<>("CriticalPct", BuilderCodec.INTEGER),
+                    new KeyedCodec<>("CriticalPct", BuilderCodec.FLOAT),
                     (component, value) -> component.criticalPct = value,
                     component -> component.criticalPct
             ).add()
@@ -66,9 +85,29 @@ public class MobStatsComponent implements Component<EntityStore> {
                     component -> component.criticalResistance
             ).add()
             .append(
-                    new KeyedCodec<>("ResistancePct", BuilderCodec.INTEGER),
+                    new KeyedCodec<>("ResistancePct", BuilderCodec.FLOAT),
                     (component, value) -> component.resistancePct = value,
                     component -> component.resistancePct
+            ).add()
+            .append(
+                    new KeyedCodec<>("EarthResistancePct", BuilderCodec.FLOAT),
+                    (component, value) -> component.earthResistance = value,
+                    component -> component.earthResistance
+            ).add()
+            .append(
+                    new KeyedCodec<>("FireResistancePct", BuilderCodec.FLOAT),
+                    (component, value) -> component.fireResistance = value,
+                    component -> component.fireResistance
+            ).add()
+            .append(
+                    new KeyedCodec<>("WaterResistancePct", BuilderCodec.FLOAT),
+                    (component, value) -> component.waterResistance = value,
+                    component -> component.waterResistance
+            ).add()
+            .append(
+                    new KeyedCodec<>("AirResistancePct", BuilderCodec.FLOAT),
+                    (component, value) -> component.airResistance = value,
+                    component -> component.airResistance
             ).add()
             .build();
 
@@ -80,7 +119,11 @@ public class MobStatsComponent implements Component<EntityStore> {
                 criticalDamage,
                 criticalPct,
                 criticalResistance,
-                resistancePct
+                resistancePct,
+                earthResistance,
+                fireResistance,
+                waterResistance,
+                airResistance
         );
     }
 
@@ -91,6 +134,10 @@ public class MobStatsComponent implements Component<EntityStore> {
                 ", criticalDamage=" + this.criticalDamage +
                 ", criticalPct=" + this.criticalPct +
                 ", criticalResistance=" + this.criticalResistance +
-                ", resistancePct=" + this.resistancePct + "}";
+                ", resistancePct=" + this.resistancePct +
+                ", earthResistancePct=" + this.earthResistance +
+                ", fireResistancePct=" + this.fireResistance +
+                ", waterResistancePct=" + this.waterResistance +
+                ", airResistancePct=" + this.airResistance + "}";
     }
 }

@@ -46,7 +46,11 @@ public class MobStatsAssignSystem extends RefSystem<EntityStore> {
                 mob.getCriticalDamage(),
                 mob.getCriticalPct(),
                 mob.getCriticalResistance(),
-                mob.getResistancePct()
+                mob.getResistancePct(),
+                mob.getEarthResistance(),
+                mob.getFireResistance(),
+                mob.getWaterResistance(),
+                mob.getAirResistance()
         );
 
         commandBuffer.addComponent(ref, MobStatsComponent.getComponentType(), mobStatsComponent);

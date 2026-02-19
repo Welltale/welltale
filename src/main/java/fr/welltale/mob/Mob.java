@@ -12,8 +12,12 @@ public class Mob {
     private int level;
     private long baseXP;
     private int criticalDamage;
-    private int criticalPct;
+    private float criticalPct;
     private int criticalResistance;
-    private int resistancePct;
-    //TODO ADD DROPPABLE RESOURCES
+    private float resistancePct;
+    private float earthResistance;
+    private float fireResistance;
+    private float waterResistance;
+    private float airResistance;
+    //TODO ADD DROPPABLE RESOURCES & GEMS
 }

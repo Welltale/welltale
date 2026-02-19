@@ -23,7 +23,7 @@ Group #MainContainer {
 
         Label #ClassSelectorTitle {
           Text: "CLASSE";
-          Style: (FontSize: 17, TextColor: #ffffff, Alignment: Center, RenderBold: true);
+          Style: (FontSize: 20, TextColor: #ffffff, Alignment: Center, RenderBold: true);
         }
 
         $C.@WhiteSeparator {}

@@ -14,15 +14,12 @@ import fr.welltale.constant.Constant;
 import fr.welltale.level.PlayerLevelComponent;
 import fr.welltale.level.event.GiveXPEvent;
 import fr.welltale.level.event.LevelUpEvent;
-import fr.welltale.player.Player;
-import fr.welltale.player.PlayerRepository;
 import lombok.AllArgsConstructor;
 
 import java.util.function.Consumer;
 
 @AllArgsConstructor
 public class GiveXPHandler implements Consumer<GiveXPEvent> {
-    private final PlayerRepository playerRepository;
     private final HytaleLogger logger;
 
     @Override
@@ -37,11 +34,6 @@ public class GiveXPHandler implements Consumer<GiveXPEvent> {
             this.logger.atSevere()
                     .log("[LEVEL] GiveXPHandler Accept Failed: PlayerUUIDComponent is null");
             return;
-        }
-
-        Player playerData = this.playerRepository.getPlayerByUuid(playerRef.getUuid());
-        if (playerData != null) {
-            bonusXP += playerData.getEditableCharacteristics().getBonusXPPct();
         }
 
         bonusXP += Characteristics.getAdditionalCharacteristicsFromPlayer(event.playerRef(), store).getBonusXPPct();

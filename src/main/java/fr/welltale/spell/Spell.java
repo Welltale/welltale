@@ -17,9 +17,7 @@ public interface Spell {
 
     String getSlug();
 
-    int getBaseDamage();
-
-    int getManaCost();
+    int getStaminaCost();
 
     float getCooldown();
 

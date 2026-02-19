@@ -45,5 +45,4 @@ public class XPTable {
         long xpNeeded = getXPToNextLevel(totalXP);
         return xpNeeded > 0 ? (float) xpCurrent / xpNeeded : 0.0f;
     }
-
 }

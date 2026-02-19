@@ -45,7 +45,7 @@ public class CastSpellInteraction extends SimpleInteraction {
         Ref<EntityStore> owningEntityRef = context.getOwningEntity();
         if (!owningEntityRef.isValid()) {
             staticLogger.atSevere()
-                    .log("[SPELL] CastSpellInteraction Tick0 Failed: PlayerRef is null");
+                    .log("[SPELL] CastSpellInteraction Tick0 Failed: OwningEntityRef is null");
             return;
         }
 

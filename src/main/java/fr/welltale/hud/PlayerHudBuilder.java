@@ -7,8 +7,8 @@ import com.hypixel.hytale.server.core.ui.builder.UICommandBuilder;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import fr.welltale.level.hud.LevelProgressHud;
+import fr.welltale.player.hud.PlayerHud;
 import fr.welltale.player.hud.RegionInfoHud;
-import fr.welltale.player.hud.StatsHud;
 import org.jspecify.annotations.NonNull;
 
 public class PlayerHudBuilder extends CustomUIHud {
@@ -24,7 +24,7 @@ public class PlayerHudBuilder extends CustomUIHud {
         Store<EntityStore> store = ref.getStore();
 
         RegionInfoHud.buildRegionInfoHud(uiCommandBuilder);
-        StatsHud.buildStatsHud(uiCommandBuilder, store, ref);
+        PlayerHud.buildPlayerHud(uiCommandBuilder, store, ref);
         LevelProgressHud.buildLevelProgressHud(uiCommandBuilder, store, ref);
     }
 }

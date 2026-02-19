@@ -122,9 +122,9 @@ public class Welltale extends JavaPlugin {
             //Spell
             logger.atInfo().log("Loading spells...");
             SpellManager spellManager = new SpellManager(logger, universe, classRepository);
+            SpellCooldownScheduler spellCooldownScheduler = new SpellCooldownScheduler();
             CastSpellInteraction castSpellInteraction = new CastSpellInteraction();
             castSpellInteraction.initStatics(spellManager, playerRepository, logger);
-            SpellCooldownScheduler spellCooldownScheduler = new SpellCooldownScheduler();
 
             this.getCodecRegistry(Interaction.CODEC).register(
                     CastSpellInteraction.ROOT_INTERACTION,
@@ -145,7 +145,7 @@ public class Welltale extends JavaPlugin {
             );
             PlayerLevelComponent.setComponentType(levelType);
 
-            this.getEventRegistry().register(GiveXPEvent.class, new GiveXPHandler(playerRepository, logger));
+            this.getEventRegistry().register(GiveXPEvent.class, new GiveXPHandler(logger));
             this.getEventRegistry().register(LevelUpEvent.class, new LevelUpHandler(playerRepository, logger));
             this.getEntityStoreRegistry().registerSystem(new OnDeathSystem(logger));
             this.getEntityStoreRegistry().registerSystem(new PlayerJoinSystem(playerRepository, logger, universe));

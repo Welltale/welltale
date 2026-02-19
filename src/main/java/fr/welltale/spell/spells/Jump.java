@@ -32,12 +32,7 @@ public class Jump implements Spell {
     }
 
     @Override
-    public int getBaseDamage() {
-        return 5;
-    }
-
-    @Override
-    public int getManaCost() {
+    public int getStaminaCost() {
         return 10;
     }
 

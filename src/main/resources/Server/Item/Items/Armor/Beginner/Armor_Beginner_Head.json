@@ -27,20 +27,6 @@
       "Haircut",
       "HeadAccessory"
     ],
-    "DamageResistance": {
-      "Physical": [
-        {
-          "Amount": 0.02,
-          "CalculationType": "Multiplicative"
-        }
-      ],
-      "Projectile": [
-        {
-          "Amount": 0.02,
-          "CalculationType": "Multiplicative"
-        }
-      ]
-    },
     "StatModifiers": {
       "Health": [
         {
@@ -48,7 +34,55 @@
           "CalculationType": "Additive"
         }
       ],
-      "Mana": [
+      "Wisdom": [
+        {
+          "Amount": 5,
+          "CalculationType": "Additive"
+        }
+      ],
+      "Strength": [
+        {
+          "Amount": 5,
+          "CalculationType": "Additive"
+        }
+      ],
+      "Intelligence": [
+        {
+          "Amount": 5,
+          "CalculationType": "Additive"
+        }
+      ],
+      "Chance": [
+        {
+          "Amount": 5,
+          "CalculationType": "Additive"
+        }
+      ],
+      "Agility": [
+        {
+          "Amount": 5,
+          "CalculationType": "Additive"
+        }
+      ],
+      "LifeRegen": [
+        {
+          "Amount": 0.02,
+          "CalculationType": "Multiplicative"
+        }
+      ],
+      "DropChance": [
+        {
+          "Amount": 0.02,
+          "CalculationType": "Multiplicative"
+        }
+      ],
+      "MoveSpeed": [
+        {
+          "Amount": 0.02,
+          "CalculationType": "Multiplicative"
+        }
+      ],
+      "Pods": [
         {
           "Amount": 5,
           "CalculationType": "Additive"
@@ -60,10 +94,10 @@
           "CalculationType": "Additive"
         }
       ],
-      "Damage": [
+      "BonusXP": [
         {
-          "Amount": 2,
-          "CalculationType": "Additive"
+          "Amount": 0.02,
+          "CalculationType": "Multiplicative"
         }
       ],
       "CriticalDamage": [
@@ -78,16 +112,34 @@
           "CalculationType": "Multiplicative"
         }
       ],
-      "BonusXP": [
+      "CriticalResistance": [
+        {
+          "Amount": 5,
+          "CalculationType": "Additive"
+        }
+      ],
+      "EarthResistance": [
         {
           "Amount": 0.02,
           "CalculationType": "Multiplicative"
         }
       ],
-      "CriticalResistance": [
+      "FireResistance": [
         {
-          "Amount": 5,
-          "CalculationType": "Additive"
+          "Amount": 0.02,
+          "CalculationType": "Multiplicative"
+        }
+      ],
+      "WaterResistance": [
+        {
+          "Amount": 0.02,
+          "CalculationType": "Multiplicative"
+        }
+      ],
+      "AirResistance": [
+        {
+          "Amount": 0.02,
+          "CalculationType": "Multiplicative"
         }
       ]
     }

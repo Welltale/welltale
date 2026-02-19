@@ -87,7 +87,7 @@ public class SpellManager {
 
         if (!canCast(caster, casterData, casterClass, spell, casterStatMap)) return;
 
-        this.consumeMana(casterStatMap, spell.getManaCost());
+        this.consumeStamina(casterStatMap, spell.getStaminaCost());
         spell.run(caster, casterRef, casterStore, this.universe, cmdBuffer);
         playerCooldowns.put(casterData.getUuid().toString() + "_" + spell.getSlug(), spell.getCooldown());
         this.startCooldown(casterData.getUuid(), spell.getSlug(), spell.getCooldown());
@@ -104,15 +104,15 @@ public class SpellManager {
     ) {
         if (!casterClass.getSpellSlugs().contains(spell.getSlug())) return false;
 
-        EntityStatValue casterCurrentMana = casterStatMap.get(DefaultEntityStatTypes.getMana());
-        if (casterCurrentMana == null) {
+        EntityStatValue casterCurrentStamina = casterStatMap.get(DefaultEntityStatTypes.getStamina());
+        if (casterCurrentStamina == null) {
             this.logger.atSevere()
-                    .log("[SPELL] SpellManager CanCast Failed: Caster Mana is null");
+                    .log("[SPELL] SpellManager CanCast Failed: Caster Stamina is null");
             return false;
         }
 
-        if (casterCurrentMana.get() < spell.getManaCost()) {
-            caster.sendMessage(Message.raw("Cannot cast spell: " + spell.getName() + " no enough mana").color(Color.DARK_RED));
+        if (casterCurrentStamina.get() < spell.getStaminaCost()) {
+            caster.sendMessage(Message.raw("Cannot cast spell: " + spell.getName() + " no enough stamina").color(Color.DARK_RED));
             return false;
         }
 
@@ -126,15 +126,15 @@ public class SpellManager {
         return true;
     }
 
-    private void consumeMana(@Nonnull EntityStatMap casterStatMap, float manaCost) {
-        EntityStatValue casterCurrentMana = casterStatMap.get(DefaultEntityStatTypes.getMana());
-        if (casterCurrentMana == null) {
+    private void consumeStamina(@Nonnull EntityStatMap casterStatMap, float staminaCost) {
+        EntityStatValue casterCurrentStamina = casterStatMap.get(DefaultEntityStatTypes.getStamina());
+        if (casterCurrentStamina == null) {
             this.logger.atSevere()
-                    .log("[SPELL] SpellManager ConsumeMana Failed: Caster Mana is null");
+                    .log("[SPELL] SpellManager ConsumeStamina Failed: Caster Stamina is null");
             return;
         }
 
-        casterStatMap.setStatValue(DefaultEntityStatTypes.getMana(), casterCurrentMana.get() - manaCost);
+        casterStatMap.setStatValue(DefaultEntityStatTypes.getStamina(), casterCurrentStamina.get() - staminaCost);
     }
 
     private void startCooldown(@Nonnull UUID casterId, @Nonnull String spellSlug, float spellCooldown) {

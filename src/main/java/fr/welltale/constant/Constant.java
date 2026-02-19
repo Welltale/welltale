@@ -38,5 +38,6 @@ public class Constant {
     public static class SoundIndex {
         public static int LEVEL_UP = SoundEvent.getAssetMap().getIndex("LevelUp");
         public static int XP_GAINED = SoundEvent.getAssetMap().getIndex("XPGained");
+        public static int BOOK_PAGE_TURN = SoundEvent.getAssetMap().getIndex("BookPageTurn");
     }
 }

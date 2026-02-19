@@ -7,6 +7,7 @@ import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.component.query.Query;
 import com.hypixel.hytale.component.system.EntityEventSystem;
 import com.hypixel.hytale.server.core.modules.entity.damage.Damage;
+import com.hypixel.hytale.server.core.modules.entity.damage.DamageCause;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import fr.welltale.characteristic.Characteristics;
@@ -30,39 +31,31 @@ public class DamageSystem extends EntityEventSystem<EntityStore, Damage> {
     ) {
         float damageAmount = damage.getAmount();
         if (!(damage.getSource() instanceof Damage.EntitySource damager)) return;
-        Ref<EntityStore> damagerSourceRef = damager.getRef();
 
-        if (!damagerSourceRef.isValid()) {
-            return;
-        }
+        Ref<EntityStore> damagerSourceRef = damager.getRef();
+        if (!damagerSourceRef.isValid()) return;
+
+        Ref<EntityStore> damagedRef = archetypeChunk.getReferenceTo(i);
 
         PlayerRef damagerPlayerRef = store.getComponent(damagerSourceRef, PlayerRef.getComponentType());
         if (damagerPlayerRef == null) {
-            Ref<EntityStore> damagedRef = archetypeChunk.getReferenceTo(i);
+            // Mob -> Player
             PlayerRef damagedPlayerRef = store.getComponent(damagedRef, PlayerRef.getComponentType());
             if (damagedPlayerRef == null) return;
 
-            float newDamageAmount = this.applyEntityWithRefDamageToPlayer(store, damagerSourceRef, damagedRef, damageAmount);
-            damage.setAmount(newDamageAmount);
-            return;
-        }
-
-        Ref<EntityStore> damagedRef = archetypeChunk.getReferenceTo(i);
-        if (!damagedRef.isValid()) {
-            float newDamageAmount = this.applyPlayerDamageToEntity(store, damagerSourceRef, damagedRef, damageAmount);
-            damage.setAmount(newDamageAmount);
+            damage.setAmount(applyEntityDamageToPlayer(store, damagerSourceRef, damagedRef, damage, damageAmount));
             return;
         }
 
         PlayerRef damagedPlayerRef = store.getComponent(damagedRef, PlayerRef.getComponentType());
         if (damagedPlayerRef == null) {
-            float newDamageAmount = this.applyPlayerDamageToEntity(store, damagerSourceRef, damagedRef, damageAmount);
-            damage.setAmount(newDamageAmount);
+            // Player -> Mob
+            damage.setAmount(applyPlayerDamageToEntity(store, damagerSourceRef, damagedRef, damage, damageAmount));
             return;
         }
 
-        float newDamageAmount = this.applyPlayerDamageToAnotherPlayer(store, damagerSourceRef, damagedRef, damageAmount);
-        damage.setAmount(newDamageAmount);
+        // Player -> Player
+        damage.setAmount(applyPlayerDamageToPlayer(store, damagerSourceRef, damagedRef, damage, damageAmount));
     }
 
     @Override
@@ -70,72 +63,200 @@ public class DamageSystem extends EntityEventSystem<EntityStore, Damage> {
         return Query.any();
     }
 
-    private float applyEntityWithRefDamageToPlayer(
+    // -------------------------------------------------------------------------
+    // MOB -> PLAYER
+    // -------------------------------------------------------------------------
+    private float applyEntityDamageToPlayer(
             @NonNull Store<EntityStore> store,
             @NonNull Ref<EntityStore> entityDamagerRef,
             @NonNull Ref<EntityStore> damagedRef,
+            @NonNull Damage damage,
             float initialDamage
     ) {
-        MobStatsComponent mobStatsComponent = store.getComponent(entityDamagerRef, MobStatsComponent.getComponentType());
-        if (mobStatsComponent == null) return initialDamage;
+        MobStatsComponent mob = store.getComponent(entityDamagerRef, MobStatsComponent.getComponentType());
+        if (mob == null) return initialDamage;
 
-        Characteristics.AdditionalCharacteristics additionalCharacteristicsFromDamaged = Characteristics.getAdditionalCharacteristicsFromPlayer(damagedRef, store);
+        Characteristics.DamageElement element = getElementFromDamage(damage);
+        Characteristics.AdditionalCharacteristics damagedStats = Characteristics.getAdditionalCharacteristicsFromPlayer(damagedRef, store);
 
-        boolean isCrit = ThreadLocalRandom.current().nextFloat() < mobStatsComponent.getCriticalPct();
+        // Les mobs n'ont pas de stats élémentaires pour l'instant,
+        // leur initialDamage est déjà fixé dans MobStatsComponent.
 
+        // Critique
+        boolean isCrit = ThreadLocalRandom.current().nextFloat() < mob.getCriticalPct() / 100f;
         if (isCrit) {
-            initialDamage += mobStatsComponent.getCriticalDamage();
-            initialDamage -= (additionalCharacteristicsFromDamaged.getCriticalResistance() + Characteristics.DEFAULT_CRITICAL_RESISTANCE);
+            initialDamage += mob.getCriticalDamage();
+            initialDamage -= Math.max(0, damagedStats.getCriticalResistance() + Characteristics.DEFAULT_CRITICAL_RESISTANCE);
         }
 
-        return initialDamage;
+        // Résistance élémentaire du joueur ciblé
+        initialDamage = applyElementalResistanceFromPlayer(initialDamage, element, damagedStats);
+
+        return Math.max(0, initialDamage);
     }
 
-    private float applyPlayerDamageToAnotherPlayer(
+    // -------------------------------------------------------------------------
+    // PLAYER -> PLAYER
+    // -------------------------------------------------------------------------
+    private float applyPlayerDamageToPlayer(
             @NonNull Store<EntityStore> store,
             @NonNull Ref<EntityStore> damagerRef,
             @NonNull Ref<EntityStore> damagedRef,
+            @NonNull Damage damage,
             float initialDamage
     ) {
-        Characteristics.AdditionalCharacteristics additionalCharacteristicsFromDamager = Characteristics.getAdditionalCharacteristicsFromPlayer(damagerRef, store);
-        Characteristics.AdditionalCharacteristics additionalCharacteristicsFromDamaged = Characteristics.getAdditionalCharacteristicsFromPlayer(damagedRef, store);
+        Characteristics.DamageElement element = getElementFromDamage(damage);
+        Characteristics.AdditionalCharacteristics damagerStats = Characteristics.getAdditionalCharacteristicsFromPlayer(damagerRef, store);
+        Characteristics.AdditionalCharacteristics damagedStats  = Characteristics.getAdditionalCharacteristicsFromPlayer(damagedRef, store);
 
-        float newDamageAmount = initialDamage + (Characteristics.DEFAULT_DAMAGE + additionalCharacteristicsFromDamager.getDamage());
+        // Boost élémentaire selon les stats du damager (Intelligence, Strength, etc.)
+        float newDamage = applyElementalBoostFromPlayer(initialDamage, element, damagerStats);
 
-        boolean isCrit = ThreadLocalRandom.current().nextFloat() < (Characteristics.DEFAULT_CRITICAL_PCT + additionalCharacteristicsFromDamager.getCriticalPct());
-
+        // Critique
+        boolean isCrit = ThreadLocalRandom.current().nextFloat()
+                < (Characteristics.DEFAULT_CRITICAL_PCT + damagerStats.getCriticalPct()) / 100f;
         if (isCrit) {
-            newDamageAmount += (additionalCharacteristicsFromDamager.getCriticalDamage() + Characteristics.DEFAULT_CRITICAL_DAMAGE);
-            newDamageAmount -= (additionalCharacteristicsFromDamaged.getCriticalResistance() + Characteristics.DEFAULT_CRITICAL_RESISTANCE);
+            newDamage += Characteristics.DEFAULT_CRITICAL_DAMAGE + damagerStats.getCriticalDamage();
+            newDamage -= Math.max(0, Characteristics.DEFAULT_CRITICAL_RESISTANCE + damagedStats.getCriticalResistance());
         }
 
-        return newDamageAmount;
+        // Résistance élémentaire du joueur ciblé
+        newDamage = applyElementalResistanceFromPlayer(newDamage, element, damagedStats);
+
+        return Math.max(0, newDamage);
     }
 
+    // -------------------------------------------------------------------------
+    // PLAYER -> MOB
+    // -------------------------------------------------------------------------
     private float applyPlayerDamageToEntity(
             @NonNull Store<EntityStore> store,
             @NonNull Ref<EntityStore> damagerRef,
             @NonNull Ref<EntityStore> entityDamagedRef,
+            @NonNull Damage damage,
             float initialDamage
     ) {
-        Characteristics.AdditionalCharacteristics additionalCharacteristicsFromDamager = Characteristics.getAdditionalCharacteristicsFromPlayer(damagerRef, store);
-        MobStatsComponent mobStatsComponent = store.getComponent(entityDamagedRef, MobStatsComponent.getComponentType());
+        Characteristics.DamageElement element = getElementFromDamage(damage);
+        Characteristics.AdditionalCharacteristics damagerStats = Characteristics.getAdditionalCharacteristicsFromPlayer(damagerRef, store);
+        MobStatsComponent mob = store.getComponent(entityDamagedRef, MobStatsComponent.getComponentType());
 
-        float newDamageAmount = initialDamage + (additionalCharacteristicsFromDamager.getDamage() + Characteristics.DEFAULT_DAMAGE);
+        // Boost élémentaire selon les stats du damager
+        float newDamage = applyElementalBoostFromPlayer(initialDamage, element, damagerStats);
 
-        boolean isCrit = ThreadLocalRandom.current().nextFloat() < (Characteristics.DEFAULT_CRITICAL_PCT + additionalCharacteristicsFromDamager.getCriticalPct()) / 100;
-
+        // Critique
+        boolean isCrit = ThreadLocalRandom.current().nextFloat()
+                < (Characteristics.DEFAULT_CRITICAL_PCT + damagerStats.getCriticalPct()) / 100f;
         if (isCrit) {
-            newDamageAmount += (additionalCharacteristicsFromDamager.getCriticalDamage() + Characteristics.DEFAULT_CRITICAL_DAMAGE);
-            if (mobStatsComponent != null) {
-                newDamageAmount -= mobStatsComponent.getCriticalResistance();
+            newDamage += Characteristics.DEFAULT_CRITICAL_DAMAGE + damagerStats.getCriticalDamage();
+            if (mob != null) {
+                newDamage -= Math.max(0, mob.getCriticalResistance());
             }
         }
 
-        if (mobStatsComponent != null) {
-            newDamageAmount = newDamageAmount * (100f - mobStatsComponent.getResistancePct()) / 100f;
+        // Résistance élémentaire du mob ciblé
+        if (mob != null) {
+            newDamage = applyElementalResistanceFromMob(newDamage, element, mob);
         }
 
-        return newDamageAmount;
+        return Math.max(0, newDamage);
+    }
+
+    // -------------------------------------------------------------------------
+    // HELPERS
+    // -------------------------------------------------------------------------
+
+    /**
+     * Applique le boost élémentaire des stats du DAMAGER sur les dommages.
+     *
+     * Correspondances élément -> stat (comme Dofus) :
+     *   FIRE  -> Intelligence
+     *   EARTH -> Strength
+     *   WATER -> Chance
+     *   AIR   -> Agility
+     *
+     * Formule : damage * (1 + stat / 100)
+     * Exemple : 50 Intelligence sur un spell feu à 100 de base → 100 * 1.5 = 150
+     *
+     * Si element est null (damage physique/neutre), aucun boost appliqué.
+     */
+    private float applyElementalBoostFromPlayer(
+            float damage,
+            Characteristics.DamageElement element,
+            Characteristics.AdditionalCharacteristics stats
+    ) {
+        if (element == null) return damage;
+
+        float stat = switch (element) {
+            case FIRE  -> stats.getIntelligence();
+            case EARTH -> stats.getStrength();
+            case WATER -> stats.getChance();
+            case AIR   -> stats.getAgility();
+        };
+
+        return damage * (1f + stat / 100f);
+    }
+
+    /**
+     * Applique la résistance élémentaire d'un JOUEUR ciblé.
+     * Formule Dofus : damage * (100 - résistance%) / 100
+     * Cap à MAX_ELEMENTAL_RESISTANCE pour éviter l'immunité totale.
+     *
+     * Si element est null, aucune résistance appliquée.
+     */
+    private float applyElementalResistanceFromPlayer(
+            float damage,
+            Characteristics.DamageElement element,
+            Characteristics.AdditionalCharacteristics stats
+    ) {
+        if (element == null) return damage;
+
+        float resistancePct = switch (element) {
+            case EARTH -> Characteristics.DEFAULT_EARTH_RESISTANCE_PCT + stats.getEarthResistance();
+            case FIRE  -> Characteristics.DEFAULT_FIRE_RESISTANCE_PCT  + stats.getFireResistance();
+            case WATER -> Characteristics.DEFAULT_WATER_RESISTANCE_PCT + stats.getWaterResistance();
+            case AIR   -> Characteristics.DEFAULT_AIR_RESISTANCE_PCT   + stats.getAirResistance();
+        };
+
+        resistancePct = Math.min(resistancePct, Characteristics.MAX_ELEMENTAL_RESISTANCE);
+        return damage * (100f - resistancePct) / 100f;
+    }
+
+    /**
+     * Applique la résistance globale d'un MOB.
+     */
+    private float applyElementalResistanceFromMob(
+            float damage,
+            Characteristics.DamageElement element,
+            MobStatsComponent mob
+    ) {
+        float resistancePct;
+
+        if (element == null) {
+            // Damage physique/neutre → résistance globale
+            resistancePct = mob.getResistancePct();
+        } else {
+            resistancePct = switch (element) {
+                case EARTH -> mob.getEarthResistance();
+                case FIRE  -> mob.getFireResistance();
+                case WATER -> mob.getWaterResistance();
+                case AIR   -> mob.getAirResistance();
+            };
+        }
+
+        resistancePct = Math.min(resistancePct, Characteristics.MAX_ELEMENTAL_RESISTANCE);
+        return damage * (100f - resistancePct) / 100f;
+    }
+
+    private Characteristics.DamageElement getElementFromDamage(Damage damage) {
+        DamageCause cause = DamageCause.getAssetMap().getAsset(damage.getDamageCauseIndex());
+        if (cause == null) return null;
+
+        return switch (cause.getId()) {
+            case "Earth" -> Characteristics.DamageElement.EARTH;
+            case "Fire"  -> Characteristics.DamageElement.FIRE;
+            case "Water" -> Characteristics.DamageElement.WATER;
+            case "Air"   -> Characteristics.DamageElement.AIR;
+            default            -> null;
+        };
     }
 }

@@ -61,12 +61,3 @@
     Volume: 6
   )
 );
-
-@Respawn = "Sounds/Respawn_Stereo.ogg";
-
-@RespawnActivate = (
-  Activate: (
-    SoundPath: @Respawn,
-    Volume: -6
-  )
-);

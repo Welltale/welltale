@@ -32,12 +32,7 @@ public class Supershot implements Spell {
     }
 
     @Override
-    public int getBaseDamage() {
-        return 1;
-    }
-
-    @Override
-    public int getManaCost() {
+    public int getStaminaCost() {
         return 5;
     }
 

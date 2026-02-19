@@ -7,16 +7,16 @@ Group #MainContainer {
     Anchor: (Bottom: -160);
 
     Label #HealthLabel {
-      Style: (RenderBold: true, HorizontalAlignment: Center);
+      Style: (RenderBold: true, HorizontalAlignment: Center, FontSize: 10);
       FlexWeight: 1;
-      Padding: (Left: 50);
+      Anchor: (Left: 50, Bottom: 5);
       Text: "0 / 0";
     }
 
     Label #StaminaLabel {
-      Style: (RenderBold: true, HorizontalAlignment: Center);
+      Style: (RenderBold: true, HorizontalAlignment: Center, FontSize: 10);
       FlexWeight: 1;
-      Padding: (Right: 50);
+      Anchor: (Right: 50, Bottom: 5);
       Text: "0 / 0";
     }
   }

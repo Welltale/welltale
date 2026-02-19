@@ -86,7 +86,7 @@
           "Parent": "Weapon_Sword_Primary_Thrust_Damage",
           "DamageCalculator": {
             "BaseDamage": {
-              "Physical": 10
+              "Earth": 10
             }
           },
           "DamageEffects": {
@@ -103,9 +103,9 @@
   "Interactions": {
     "Primary": "Root_Weapon_Sword_Primary",
     "Secondary": "Root_Weapon_Sword_Secondary_Guard",
-    "Ability1": "Root_Cast_Spell_Ability",
-    "Ability2": "Root_Cast_Spell_Ability",
-    "Ability3": "Root_Cast_Spell_Ability"
+    "Ability1": "Root_Cast_Spell",
+    "Ability2": "Root_Cast_Spell",
+    "Ability3": "Root_Cast_Spell"
   },
   "Reticle": "DefaultMelee",
   "MaxStack": 1,
@@ -117,7 +117,55 @@
           "CalculationType": "Additive"
         }
       ],
-      "Mana": [
+      "Wisdom": [
+        {
+          "Amount": 5,
+          "CalculationType": "Additive"
+        }
+      ],
+      "Strength": [
+        {
+          "Amount": 5,
+          "CalculationType": "Additive"
+        }
+      ],
+      "Intelligence": [
+        {
+          "Amount": 5,
+          "CalculationType": "Additive"
+        }
+      ],
+      "Chance": [
+        {
+          "Amount": 5,
+          "CalculationType": "Additive"
+        }
+      ],
+      "Agility": [
+        {
+          "Amount": 5,
+          "CalculationType": "Additive"
+        }
+      ],
+      "LifeRegen": [
+        {
+          "Amount": 0.02,
+          "CalculationType": "Multiplicative"
+        }
+      ],
+      "DropChance": [
+        {
+          "Amount": 0.02,
+          "CalculationType": "Multiplicative"
+        }
+      ],
+      "MoveSpeed": [
+        {
+          "Amount": 0.02,
+          "CalculationType": "Multiplicative"
+        }
+      ],
+      "Pods": [
         {
           "Amount": 5,
           "CalculationType": "Additive"
@@ -129,10 +177,10 @@
           "CalculationType": "Additive"
         }
       ],
-      "Damage": [
+      "BonusXP": [
         {
-          "Amount": 2,
-          "CalculationType": "Additive"
+          "Amount": 0.02,
+          "CalculationType": "Multiplicative"
         }
       ],
       "CriticalDamage": [
@@ -147,19 +195,47 @@
           "CalculationType": "Multiplicative"
         }
       ],
-      "BonusXP": [
-        {
-          "Amount": 0.02,
-          "CalculationType": "Multiplicative"
-        }
-      ],
       "CriticalResistance": [
         {
           "Amount": 5,
           "CalculationType": "Additive"
         }
+      ],
+      "EarthResistance": [
+        {
+          "Amount": 0.02,
+          "CalculationType": "Multiplicative"
+        }
+      ],
+      "FireResistance": [
+        {
+          "Amount": 0.02,
+          "CalculationType": "Multiplicative"
+        }
+      ],
+      "WaterResistance": [
+        {
+          "Amount": 0.02,
+          "CalculationType": "Multiplicative"
+        }
+      ],
+      "AirResistance": [
+        {
+          "Amount": 0.02,
+          "CalculationType": "Multiplicative"
+        }
       ]
     }
   },
-  "ItemLevel": 1
+  "ItemLevel": 1,
+  "Armor": {
+    "ArmorSlot": "Head",
+    "BaseDamageResistance": 0,
+    "CosmeticsToHide": [
+      "EarAccessory",
+      "Ear",
+      "Haircut",
+      "HeadAccessory"
+    ]
+  }
 }
