@@ -52,6 +52,7 @@ public class Nameplate {
         nameplate.setText("[" + playerRef.getUsername() + "] [" + Constant.Prefix.LEVEL_PREFIX + playerLevelComponent.getLevel() + "]");
     }
 
+    //TODO ADD MOB HP IN NAMEPLATE
     public static void setMobNameplate(
             @Nonnull Ref<EntityStore> ref,
             @NonNull Store<EntityStore> store,

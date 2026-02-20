@@ -24,10 +24,10 @@ public class Characteristics {
     public static final int DEFAULT_STRENGTH = 100;
     public static final int DEFAULT_INTELLIGENCE = 0;
     public static final int DEFAULT_CHANCE = 0;
-    public static final int DEFAULT_AGILITY = 0;
+    public static final int DEFAULT_AGILITY = 200;
     public static final float DEFAULT_LIFE_REGEN_PCT = 0;
     public static final float DEFAULT_DROP_CHANCE = 0;
-    public static final float DEFAULT_MOVE_SPEED = 0.5f;
+    public static final float DEFAULT_MOVE_SPEED = 0;
     public static final int DEFAULT_PODS = 100;
     public static final int DEFAULT_STAMINA = 20;
     public static final float DEFAULT_BONUS_XP_PCT = 0;
@@ -66,7 +66,7 @@ public class Characteristics {
         EARTH,
         FIRE,
         WATER,
-        AIR;
+        AIR
     }
 
     @Getter

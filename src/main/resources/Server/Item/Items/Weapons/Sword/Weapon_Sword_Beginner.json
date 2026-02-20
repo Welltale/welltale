@@ -38,7 +38,7 @@
           "Parent": "Weapon_Sword_Primary_Swing_Left_Damage",
           "DamageCalculator": {
             "BaseDamage": {
-              "Physical": 2
+              "Earth": 2
             }
           },
           "DamageEffects": {
@@ -54,7 +54,7 @@
           "Parent": "Weapon_Sword_Primary_Swing_Right_Damage",
           "DamageCalculator": {
             "BaseDamage": {
-              "Physical": 4
+              "Earth": 4
             }
           },
           "DamageEffects": {
@@ -70,7 +70,7 @@
           "Parent": "Weapon_Sword_Primary_Swing_Down_Damage",
           "DamageCalculator": {
             "BaseDamage": {
-              "Physical": 6
+              "Earth": 6
             }
           },
           "DamageEffects": {
@@ -86,7 +86,7 @@
           "Parent": "Weapon_Sword_Primary_Thrust_Damage",
           "DamageCalculator": {
             "BaseDamage": {
-              "Physical": 10
+              "Earth": 10
             }
           },
           "DamageEffects": {
@@ -161,7 +161,7 @@
       ],
       "MoveSpeed": [
         {
-          "Amount": 0.02,
+          "Amount": 2.0,
           "CalculationType": "Multiplicative"
         }
       ],
@@ -227,15 +227,5 @@
       ]
     }
   },
-  "ItemLevel": 1,
-  "Armor": {
-    "ArmorSlot": "Head",
-    "BaseDamageResistance": 0,
-    "CosmeticsToHide": [
-      "EarAccessory",
-      "Ear",
-      "Haircut",
-      "HeadAccessory"
-    ]
-  }
+  "ItemLevel": 1
 }

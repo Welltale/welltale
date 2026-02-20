@@ -1,10 +1,13 @@
 package fr.welltale.characteristic.system;
 
-import com.hypixel.hytale.component.*;
+import com.hypixel.hytale.component.ArchetypeChunk;
+import com.hypixel.hytale.component.CommandBuffer;
+import com.hypixel.hytale.component.Ref;
+import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.component.query.Query;
 import com.hypixel.hytale.component.system.tick.EntityTickingSystem;
+import com.hypixel.hytale.logger.HytaleLogger;
 import com.hypixel.hytale.protocol.packets.player.UpdateMovementSettings;
-import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.entity.entities.player.movement.MovementManager;
 import com.hypixel.hytale.server.core.modules.entitystats.EntityStatMap;
 import com.hypixel.hytale.server.core.modules.entitystats.EntityStatValue;
@@ -25,8 +28,12 @@ public class MoveSpeedSystem extends EntityTickingSystem<EntityStore> {
             PlayerRef.getComponentType()
     );
 
-    // Cached stat index for MoveSpeed
+    // Cached stat indices
     private Integer moveSpeedStatIndex = null;
+    private Integer agilityStatIndex = null;
+
+    // Agility bonus per point: 0.1% (0.01)
+    private static final float AGILITY_BONUS_PER_POINT = 0.001f;
 
     public MoveSpeedSystem() {
     }
@@ -57,14 +64,21 @@ public class MoveSpeedSystem extends EntityTickingSystem<EntityStore> {
         MovementManager movementManager = store.getComponent(ref, MovementManager.getComponentType());
         if (movementManager == null) return;
 
-        // Lazy initialization of stat index
+        // Lazy initialization of stat indices
         if (moveSpeedStatIndex == null) {
             moveSpeedStatIndex = EntityStatType.getAssetMap().getIndex(Characteristics.STATIC_MODIFIER_MOVE_SPEED_KEY);
+            agilityStatIndex = EntityStatType.getAssetMap().getIndex(Characteristics.STATIC_MODIFIER_AGILITY_KEY);
         }
 
-        // Get MoveSpeed value from EntityStatMap
+        // Get MoveSpeed and Agility values from EntityStatMap
         EntityStatValue moveSpeedStatValue = entityStatMap.get(moveSpeedStatIndex);
-        float speedMultiplier = getSpeedMultiplier(moveSpeedStatValue);
+        EntityStatValue agilityStatValue = entityStatMap.get(agilityStatIndex);
+        float speedMultiplier = 0;
+        if (moveSpeedStatValue != null && agilityStatValue != null) {
+            speedMultiplier = getSpeedMultiplier(moveSpeedStatValue, agilityStatValue);
+            HytaleLogger.getLogger().atInfo().log("SPEED MULTIPLIER: " + speedMultiplier);
+        }
+
 
         // Get current settings and update them with the speed multiplier
         var settings = movementManager.getSettings();
@@ -118,18 +132,18 @@ public class MoveSpeedSystem extends EntityTickingSystem<EntityStore> {
         }
     }
 
-    private static float getSpeedMultiplier(EntityStatValue moveSpeedStatValue) {
-        float moveSpeedValue;
-        if (moveSpeedStatValue != null) {
-            moveSpeedValue = moveSpeedStatValue.getMax();
-        } else {
-            moveSpeedValue = Characteristics.DEFAULT_MOVE_SPEED;
-        }
+    private static float getSpeedMultiplier(@Nonnull EntityStatValue moveSpeedStatValue, @Nonnull EntityStatValue agilityStatValue) {
+        float moveSpeedValue = moveSpeedStatValue.getMax();
+        float agilityValue = agilityStatValue.getMax();
 
         // Apply MoveSpeed characteristic to movement settings
         // The MoveSpeed characteristic is a percentage-based multiplier
         // Default value of 10 means 10% speed boost, so we convert to 1.0 + 0.10 = 1.10
-        float speedMultiplier = 1.0f + (moveSpeedValue / 100.0f);
-        return speedMultiplier;
+
+        // Apply Agility bonus to movement speed
+        // Each point of Agility adds 0.1% (0.001) to the movespeed
+        float agilityBonus = agilityValue * AGILITY_BONUS_PER_POINT;
+
+        return 1.0f + (moveSpeedValue / 100.0f) + agilityBonus;
     }
 }
