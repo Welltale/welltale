@@ -50,7 +50,12 @@ Each game system follows a consistent pattern:
   - Elemental boost: `damage * (1 + stat / 100)`
   - Resistance: `damage * (100 - resistance%) / 100` (capped at 50%)
   - Critical hit system with damage and resistance calculations
-- MoveSpeedSystem updates player movement speed
+- Passive stat systems inspired by Dofus:
+  - **MoveSpeedSystem**: Agility increases movement speed (0.1% per point)
+  - **PodsSystem**: Strength increases inventory capacity (0.5 pods per point)
+  - **LifeRegenSystem**: Intelligence increases health regeneration (0.1% per point as % bonus to base regen)
+  - **DropChanceSystem**: Chance increases drop rate (0.1% per point)
+  - **Wisdom**: Increases XP gain (0.1% per point) - handled in GiveXPHandler
 
 **Level System** (`fr.welltale.level`)
 - XP calculation using exponential curve: `A * level^2.8` where A=35

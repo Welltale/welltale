@@ -76,7 +76,6 @@ public class MoveSpeedSystem extends EntityTickingSystem<EntityStore> {
         float speedMultiplier = 0;
         if (moveSpeedStatValue != null && agilityStatValue != null) {
             speedMultiplier = getSpeedMultiplier(moveSpeedStatValue, agilityStatValue);
-            HytaleLogger.getLogger().atInfo().log("SPEED MULTIPLIER: " + speedMultiplier);
         }
 
 

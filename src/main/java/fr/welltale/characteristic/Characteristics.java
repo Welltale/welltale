@@ -30,7 +30,6 @@ public class Characteristics {
     public static final float DEFAULT_MOVE_SPEED = 0;
     public static final int DEFAULT_PODS = 100;
     public static final int DEFAULT_STAMINA = 20;
-    public static final float DEFAULT_BONUS_XP_PCT = 0;
     public static final int DEFAULT_CRITICAL_DAMAGE = 0;
     public static final float DEFAULT_CRITICAL_PCT = 0;
     public static final int DEFAULT_CRITICAL_RESISTANCE = 0;
@@ -53,7 +52,6 @@ public class Characteristics {
     public static final String STATIC_MODIFIER_MOVE_SPEED_KEY = "MoveSpeed";
     public static final String STATIC_MODIFIER_PODS_KEY = "Pods";
     public static final String STATIC_MODIFIER_STAMINA_KEY = "Stamina";
-    public static final String STATIC_MODIFIER_BONUS_XP_PCT_KEY = "BonusXP";
     public static final String STATIC_MODIFIER_CRITICAL_DAMAGE_KEY = "CriticalDamage";
     public static final String STATIC_MODIFIER_CRITICAL_PCT_KEY = "Critical";
     public static final String STATIC_MODIFIER_CRITICAL_RESISTANCE_KEY = "CriticalResistance";
@@ -94,7 +92,6 @@ public class Characteristics {
         private float moveSpeed;
         private int pods;
         private int stamina;
-        private float bonusXPPct;
         private int criticalDamage;
         private float criticalPct;
         private int criticalResistance;
@@ -173,11 +170,6 @@ public class Characteristics {
         EntityStatValue staminaStatValue = playerStatMap.get(EntityStatType.getAssetMap().getIndex(STATIC_MODIFIER_STAMINA_KEY));
         if (staminaStatValue != null) {
             additionalCharacteristics.stamina = (int) staminaStatValue.getMax();
-        }
-
-        EntityStatValue bonusXPStatValue = playerStatMap.get(EntityStatType.getAssetMap().getIndex(STATIC_MODIFIER_BONUS_XP_PCT_KEY));
-        if (bonusXPStatValue != null) {
-            additionalCharacteristics.bonusXPPct = bonusXPStatValue.getMax();
         }
 
         EntityStatValue criticalDamageStatValue = playerStatMap.get(EntityStatType.getAssetMap().getIndex(STATIC_MODIFIER_CRITICAL_DAMAGE_KEY));
@@ -351,17 +343,6 @@ public class Characteristics {
                 DefaultEntityStatTypes.getStamina(),
                 staticModifierStamina.getCalculationType().createKey(STATIC_MODIFIER_STAMINA_KEY),
                 staticModifierStamina
-        );
-
-        StaticModifier staticModifierBonusXPPct = new StaticModifier(
-                Modifier.ModifierTarget.MAX,
-                StaticModifier.CalculationType.MULTIPLICATIVE,
-                DEFAULT_BONUS_XP_PCT
-        );
-        playerStatMap.putModifier(
-                EntityStatType.getAssetMap().getIndex(STATIC_MODIFIER_BONUS_XP_PCT_KEY),
-                staticModifierBonusXPPct.getCalculationType().createKey(STATIC_MODIFIER_BONUS_XP_PCT_KEY),
-                staticModifierBonusXPPct
         );
 
         StaticModifier staticModifierCriticalDamage = new StaticModifier(

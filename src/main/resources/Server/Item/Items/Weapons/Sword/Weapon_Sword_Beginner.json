@@ -119,7 +119,7 @@
       ],
       "Wisdom": [
         {
-          "Amount": 5,
+          "Amount": 200,
           "CalculationType": "Additive"
         }
       ],
@@ -175,12 +175,6 @@
         {
           "Amount": 5,
           "CalculationType": "Additive"
-        }
-      ],
-      "BonusXP": [
-        {
-          "Amount": 0.02,
-          "CalculationType": "Multiplicative"
         }
       ],
       "CriticalDamage": [

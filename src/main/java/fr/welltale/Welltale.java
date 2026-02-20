@@ -9,7 +9,10 @@ import com.hypixel.hytale.server.core.plugin.JavaPlugin;
 import com.hypixel.hytale.server.core.plugin.JavaPluginInit;
 import com.hypixel.hytale.server.core.universe.Universe;
 import fr.welltale.characteristic.system.DamageSystem;
+import fr.welltale.characteristic.system.DropChanceSystem;
+import fr.welltale.characteristic.system.LifeRegenSystem;
 import fr.welltale.characteristic.system.MoveSpeedSystem;
+import fr.welltale.characteristic.system.PodsSystem;
 import fr.welltale.clazz.Class;
 import fr.welltale.clazz.JsonClassFileLoader;
 import fr.welltale.clazz.JsonClassRepository;
@@ -106,6 +109,12 @@ public class Welltale extends JavaPlugin {
             this.getEntityStoreRegistry().registerSystem(damageSystem);
             MoveSpeedSystem moveSpeedSystem = new MoveSpeedSystem();
             this.getEntityStoreRegistry().registerSystem(moveSpeedSystem);
+            PodsSystem podsSystem = new PodsSystem();
+            this.getEntityStoreRegistry().registerSystem(podsSystem);
+            LifeRegenSystem lifeRegenSystem = new LifeRegenSystem();
+            this.getEntityStoreRegistry().registerSystem(lifeRegenSystem);
+            DropChanceSystem dropChanceSystem = new DropChanceSystem();
+            this.getEntityStoreRegistry().registerSystem(dropChanceSystem);
             //Characteristic
 
             //Class

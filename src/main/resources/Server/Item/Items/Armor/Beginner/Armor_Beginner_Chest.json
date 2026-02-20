@@ -91,12 +91,6 @@
           "CalculationType": "Additive"
         }
       ],
-      "BonusXP": [
-        {
-          "Amount": 0.02,
-          "CalculationType": "Multiplicative"
-        }
-      ],
       "CriticalDamage": [
         {
           "Amount": 10,
