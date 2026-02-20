@@ -32,7 +32,7 @@ public class MoveSpeedSystem extends EntityTickingSystem<EntityStore> {
     private Integer moveSpeedStatIndex = null;
     private Integer agilityStatIndex = null;
 
-    // Agility bonus per point: 0.1% (0.01)
+    // Agility bonus per point: 0.1% (0.001)
     private static final float AGILITY_BONUS_PER_POINT = 0.001f;
 
     public MoveSpeedSystem() {

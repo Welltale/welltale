@@ -143,7 +143,7 @@
       ],
       "Agility": [
         {
-          "Amount": 5,
+          "Amount": 1000,
           "CalculationType": "Additive"
         }
       ],
@@ -161,7 +161,7 @@
       ],
       "MoveSpeed": [
         {
-          "Amount": 2.0,
+          "Amount": 0.0,
           "CalculationType": "Multiplicative"
         }
       ],
