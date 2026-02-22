@@ -68,6 +68,11 @@ public class PlayerReadyInventoryPacketInterceptor {
             if (player == null) return;
 
             if (packet.type == WindowType.PocketCrafting) {
+                if (player.getGameMode() == GameMode.Creative) {
+                    this.openVanillaWindow(packet, playerRef, ref, store, player);
+                    return;
+                }
+
                 CustomUIPage currentPage = player.getPageManager().getCustomPage();
                 if (currentPage instanceof CustomInventoryPage) {
                     player.getPageManager().setPage(ref, store, com.hypixel.hytale.protocol.packets.interface_.Page.None);

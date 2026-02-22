@@ -6,7 +6,7 @@ Group #MainContainer {
   LayoutMode: Center;
 
   Group #Frame {
-    Anchor: (Width: 1260, Height: 720);
+    Anchor: (Width: 1180, Height: 700);
     LayoutMode: Top;
     Padding: (Full: 12);
     Background: $C.@HytaleContainerBackground;
@@ -72,7 +72,7 @@ Group #MainContainer {
         LayoutMode: Left;
 
         Group #EquipmentPanel {
-          Anchor: (Width: 240);
+          Anchor: (Width: 228);
           LayoutMode: Top;
           Padding: (Full: 10);
           Background: $C.@HytalePanelBackground;
@@ -84,71 +84,49 @@ Group #MainContainer {
 
           $C.@HytaleSectionSeparator {}
 
-          Label {
-            Text: "Arme";
-            Style: (FontSize: 12, TextColor: #96a9be, Alignment: Start);
-            Anchor: (Height: 18);
+          Label { Text: "Combat"; Style: (FontSize: 12, RenderUppercase: true, RenderBold: true, Alignment: Center, TextColor: #9fb7c8); Anchor: (Height: 20); }
+
+          Group { Anchor: (Height: 68); LayoutMode: Left;
+            Group { Anchor: (Width: 68, Height: 68); LayoutMode: Top; Label { Text: "Head"; Style: (FontSize: 11, TextColor: #96a9be, Alignment: Center); Anchor: (Height: 14); } ItemGrid #EquipHeadGrid { Anchor: (Width: 50, Height: 50); SlotsPerRow: 1; AreItemsDraggable: true; DisplayItemQuantity: true; RenderItemQualityBackground: true; ShowScrollbar: false; Style: (SlotSize: 50, SlotIconSize: 40, SlotSpacing: 4, SlotBackground: "../../Common/BlockSelectorSlotBackground.png"); } }
+            Group { Anchor: (Width: 68, Height: 68); LayoutMode: Top; Label { Text: "Weapon"; Style: (FontSize: 11, TextColor: #96a9be, Alignment: Center); Anchor: (Height: 14); } ItemGrid #EquipWeaponGrid { Anchor: (Width: 50, Height: 50); SlotsPerRow: 1; AreItemsDraggable: true; DisplayItemQuantity: true; RenderItemQualityBackground: true; ShowScrollbar: false; Style: (SlotSize: 50, SlotIconSize: 40, SlotSpacing: 4, SlotBackground: "../../Common/BlockSelectorSlotBackground.png"); } }
+            Group { Anchor: (Width: 68, Height: 68); LayoutMode: Top; Label { Text: "Hands"; Style: (FontSize: 11, TextColor: #96a9be, Alignment: Center); Anchor: (Height: 14); } ItemGrid #EquipGauntletsGrid { Anchor: (Width: 50, Height: 50); SlotsPerRow: 1; AreItemsDraggable: true; DisplayItemQuantity: true; RenderItemQualityBackground: true; ShowScrollbar: false; Style: (SlotSize: 50, SlotIconSize: 40, SlotSpacing: 4, SlotBackground: "../../Common/BlockSelectorSlotBackground.png"); } }
           }
 
-          ItemGrid #WeaponGrid {
-            Anchor: (Height: 64);
-            SlotsPerRow: 1;
-            AreItemsDraggable: true;
-            DisplayItemQuantity: true;
-            RenderItemQualityBackground: true;
-            ShowScrollbar: false;
-            Style: (
-              SlotSize: 58,
-              SlotIconSize: 48,
-              SlotSpacing: 4,
-              SlotBackground: "../../Common/BlockSelectorSlotBackground.png"
-            );
+          Group { Anchor: (Height: 68); LayoutMode: Left;
+            Group { Anchor: (Width: 68, Height: 68); LayoutMode: Top; Label { Text: "Chest"; Style: (FontSize: 11, TextColor: #96a9be, Alignment: Center); Anchor: (Height: 14); } ItemGrid #EquipChestGrid { Anchor: (Width: 50, Height: 50); SlotsPerRow: 1; AreItemsDraggable: true; DisplayItemQuantity: true; RenderItemQualityBackground: true; ShowScrollbar: false; Style: (SlotSize: 50, SlotIconSize: 40, SlotSpacing: 4, SlotBackground: "../../Common/BlockSelectorSlotBackground.png"); } }
+            Group { Anchor: (Width: 68, Height: 68); LayoutMode: Top; Label { Text: "Pants"; Style: (FontSize: 11, TextColor: #96a9be, Alignment: Center); Anchor: (Height: 14); } ItemGrid #EquipPantsGrid { Anchor: (Width: 50, Height: 50); SlotsPerRow: 1; AreItemsDraggable: true; DisplayItemQuantity: true; RenderItemQualityBackground: true; ShowScrollbar: false; Style: (SlotSize: 50, SlotIconSize: 40, SlotSpacing: 4, SlotBackground: "../../Common/BlockSelectorSlotBackground.png"); } }
+            Group { Anchor: (Width: 68, Height: 68); LayoutMode: Top; Label { Text: "Boots"; Style: (FontSize: 11, TextColor: #96a9be, Alignment: Center); Anchor: (Height: 14); } ItemGrid #EquipBootsGrid { Anchor: (Width: 50, Height: 50); SlotsPerRow: 1; AreItemsDraggable: true; DisplayItemQuantity: true; RenderItemQualityBackground: true; ShowScrollbar: false; Style: (SlotSize: 50, SlotIconSize: 40, SlotSpacing: 4, SlotBackground: "../../Common/BlockSelectorSlotBackground.png"); } }
           }
 
           $C.@SmallSpacer {}
+          $C.@HytaleSectionSeparator {}
+          Label { Text: "Accessoires"; Style: (FontSize: 12, RenderUppercase: true, RenderBold: true, Alignment: Center, TextColor: #9fb7c8); Anchor: (Height: 20); }
 
-          Label {
-            Text: "Armure";
-            Style: (FontSize: 12, TextColor: #96a9be, Alignment: Start);
-            Anchor: (Height: 18);
+          Group { Anchor: (Height: 68); LayoutMode: Left;
+            Group { Anchor: (Width: 68, Height: 68); LayoutMode: Top; Label { Text: "Amulet"; Style: (FontSize: 11, TextColor: #96a9be, Alignment: Center); Anchor: (Height: 14); } ItemGrid #EquipAmuletGrid { Anchor: (Width: 50, Height: 50); SlotsPerRow: 1; AreItemsDraggable: true; DisplayItemQuantity: true; RenderItemQualityBackground: true; ShowScrollbar: false; Style: (SlotSize: 50, SlotIconSize: 40, SlotSpacing: 4, SlotBackground: "../../Common/BlockSelectorSlotBackground.png"); } }
+            Group { Anchor: (Width: 68, Height: 68); LayoutMode: Top; Label { Text: "Ring I"; Style: (FontSize: 11, TextColor: #96a9be, Alignment: Center); Anchor: (Height: 14); } ItemGrid #EquipRing1Grid { Anchor: (Width: 50, Height: 50); SlotsPerRow: 1; AreItemsDraggable: true; DisplayItemQuantity: true; RenderItemQualityBackground: true; ShowScrollbar: false; Style: (SlotSize: 50, SlotIconSize: 40, SlotSpacing: 4, SlotBackground: "../../Common/BlockSelectorSlotBackground.png"); } }
+            Group { Anchor: (Width: 68, Height: 68); LayoutMode: Top; Label { Text: "Ring II"; Style: (FontSize: 11, TextColor: #96a9be, Alignment: Center); Anchor: (Height: 14); } ItemGrid #EquipRing2Grid { Anchor: (Width: 50, Height: 50); SlotsPerRow: 1; AreItemsDraggable: true; DisplayItemQuantity: true; RenderItemQualityBackground: true; ShowScrollbar: false; Style: (SlotSize: 50, SlotIconSize: 40, SlotSpacing: 4, SlotBackground: "../../Common/BlockSelectorSlotBackground.png"); } }
           }
 
-          ItemGrid #ArmorGrid {
-            Anchor: (Height: 124);
-            SlotsPerRow: 2;
-            AreItemsDraggable: true;
-            DisplayItemQuantity: true;
-            RenderItemQualityBackground: true;
-            ShowScrollbar: false;
-            Style: (
-              SlotSize: 58,
-              SlotIconSize: 48,
-              SlotSpacing: 4,
-              SlotBackground: "../../Common/BlockSelectorSlotBackground.png"
-            );
+          Group { Anchor: (Height: 68); LayoutMode: Left;
+            Group { Anchor: (Width: 68, Height: 68); LayoutMode: Top; Label { Text: "Belt"; Style: (FontSize: 11, TextColor: #96a9be, Alignment: Center); Anchor: (Height: 14); } ItemGrid #EquipBeltGrid { Anchor: (Width: 50, Height: 50); SlotsPerRow: 1; AreItemsDraggable: true; DisplayItemQuantity: true; RenderItemQualityBackground: true; ShowScrollbar: false; Style: (SlotSize: 50, SlotIconSize: 40, SlotSpacing: 4, SlotBackground: "../../Common/BlockSelectorSlotBackground.png"); } }
+            Group { Anchor: (Width: 68, Height: 68); LayoutMode: Top; Label { Text: "Pet"; Style: (FontSize: 11, TextColor: #96a9be, Alignment: Center); Anchor: (Height: 14); } ItemGrid #EquipPetGrid { Anchor: (Width: 50, Height: 50); SlotsPerRow: 1; AreItemsDraggable: true; DisplayItemQuantity: true; RenderItemQualityBackground: true; ShowScrollbar: false; Style: (SlotSize: 50, SlotIconSize: 40, SlotSpacing: 4, SlotBackground: "../../Common/BlockSelectorSlotBackground.png"); } }
           }
 
           $C.@SmallSpacer {}
+          $C.@HytaleSectionSeparator {}
+          Label { Text: "Trophees"; Style: (FontSize: 12, RenderUppercase: true, RenderBold: true, Alignment: Center, TextColor: #9fb7c8); Anchor: (Height: 20); }
 
-          Label {
-            Text: "Utilitaire";
-            Style: (FontSize: 12, TextColor: #96a9be, Alignment: Start);
-            Anchor: (Height: 18);
+          Group { Anchor: (Height: 68); LayoutMode: Left;
+            Group { Anchor: (Width: 68, Height: 68); LayoutMode: Top; Label { Text: "I"; Style: (FontSize: 11, TextColor: #96a9be, Alignment: Center); Anchor: (Height: 14); } ItemGrid #EquipTrophy1Grid { Anchor: (Width: 50, Height: 50); SlotsPerRow: 1; AreItemsDraggable: true; DisplayItemQuantity: true; RenderItemQualityBackground: true; ShowScrollbar: false; Style: (SlotSize: 50, SlotIconSize: 40, SlotSpacing: 4, SlotBackground: "../../Common/BlockSelectorSlotBackground.png"); } }
+            Group { Anchor: (Width: 68, Height: 68); LayoutMode: Top; Label { Text: "II"; Style: (FontSize: 11, TextColor: #96a9be, Alignment: Center); Anchor: (Height: 14); } ItemGrid #EquipTrophy2Grid { Anchor: (Width: 50, Height: 50); SlotsPerRow: 1; AreItemsDraggable: true; DisplayItemQuantity: true; RenderItemQualityBackground: true; ShowScrollbar: false; Style: (SlotSize: 50, SlotIconSize: 40, SlotSpacing: 4, SlotBackground: "../../Common/BlockSelectorSlotBackground.png"); } }
+            Group { Anchor: (Width: 68, Height: 68); LayoutMode: Top; Label { Text: "III"; Style: (FontSize: 11, TextColor: #96a9be, Alignment: Center); Anchor: (Height: 14); } ItemGrid #EquipTrophy3Grid { Anchor: (Width: 50, Height: 50); SlotsPerRow: 1; AreItemsDraggable: true; DisplayItemQuantity: true; RenderItemQualityBackground: true; ShowScrollbar: false; Style: (SlotSize: 50, SlotIconSize: 40, SlotSpacing: 4, SlotBackground: "../../Common/BlockSelectorSlotBackground.png"); } }
           }
 
-          ItemGrid #UtilityGrid {
-            Anchor: (Height: 64);
-            SlotsPerRow: 3;
-            AreItemsDraggable: true;
-            DisplayItemQuantity: true;
-            RenderItemQualityBackground: true;
-            ShowScrollbar: false;
-            Style: (
-              SlotSize: 58,
-              SlotIconSize: 48,
-              SlotSpacing: 4,
-              SlotBackground: "../../Common/BlockSelectorSlotBackground.png"
-            );
+          Group { Anchor: (Height: 68); LayoutMode: Left;
+            Group { Anchor: (Width: 68, Height: 68); LayoutMode: Top; Label { Text: "IV"; Style: (FontSize: 11, TextColor: #96a9be, Alignment: Center); Anchor: (Height: 14); } ItemGrid #EquipTrophy4Grid { Anchor: (Width: 50, Height: 50); SlotsPerRow: 1; AreItemsDraggable: true; DisplayItemQuantity: true; RenderItemQualityBackground: true; ShowScrollbar: false; Style: (SlotSize: 50, SlotIconSize: 40, SlotSpacing: 4, SlotBackground: "../../Common/BlockSelectorSlotBackground.png"); } }
+            Group { Anchor: (Width: 68, Height: 68); LayoutMode: Top; Label { Text: "V"; Style: (FontSize: 11, TextColor: #96a9be, Alignment: Center); Anchor: (Height: 14); } ItemGrid #EquipTrophy5Grid { Anchor: (Width: 50, Height: 50); SlotsPerRow: 1; AreItemsDraggable: true; DisplayItemQuantity: true; RenderItemQualityBackground: true; ShowScrollbar: false; Style: (SlotSize: 50, SlotIconSize: 40, SlotSpacing: 4, SlotBackground: "../../Common/BlockSelectorSlotBackground.png"); } }
+            Group { Anchor: (Width: 68, Height: 68); LayoutMode: Top; Label { Text: "VI"; Style: (FontSize: 11, TextColor: #96a9be, Alignment: Center); Anchor: (Height: 14); } ItemGrid #EquipTrophy6Grid { Anchor: (Width: 50, Height: 50); SlotsPerRow: 1; AreItemsDraggable: true; DisplayItemQuantity: true; RenderItemQualityBackground: true; ShowScrollbar: false; Style: (SlotSize: 50, SlotIconSize: 40, SlotSpacing: 4, SlotBackground: "../../Common/BlockSelectorSlotBackground.png"); } }
           }
         }
 
@@ -252,7 +230,7 @@ Group #MainContainer {
         $C.@HytaleVerticalSeparator {}
 
         Group #LootPanel {
-          Anchor: (Width: 240);
+          Anchor: (Width: 228);
           LayoutMode: Top;
           Padding: (Full: 10);
           Background: $C.@HytalePanelBackground;

@@ -9,7 +9,10 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class CustomInventoryService {
+    public static final int EQUIPMENT_SLOT_COUNT = 17;
+
     private final ConcurrentHashMap<UUID, List<ItemStack>> pendingLootByPlayer = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<UUID, List<ItemStack>> equipmentByPlayer = new ConcurrentHashMap<>();
 
     public void addLoot(UUID playerUuid, List<ItemStack> loot) {
         if (playerUuid == null || loot == null || loot.isEmpty()) return;
@@ -41,6 +44,60 @@ public class CustomInventoryService {
         }
 
         pendingLootByPlayer.put(playerUuid, sanitizedLoot);
+    }
+
+    public ItemStack getEquipmentSlot(UUID playerUuid, int slotIndex) {
+        if (playerUuid == null || slotIndex < 0 || slotIndex >= EQUIPMENT_SLOT_COUNT) {
+            return null;
+        }
+
+        List<ItemStack> equipment = equipmentByPlayer.get(playerUuid);
+        if (equipment == null || slotIndex >= equipment.size()) {
+            return null;
+        }
+
+        ItemStack stack = equipment.get(slotIndex);
+        return ItemStack.isEmpty(stack) ? null : new ItemStack(stack.getItemId(), Math.max(1, stack.getQuantity()));
+    }
+
+    public void setEquipmentSlot(UUID playerUuid, int slotIndex, ItemStack stack) {
+        if (playerUuid == null || slotIndex < 0 || slotIndex >= EQUIPMENT_SLOT_COUNT) {
+            return;
+        }
+
+        equipmentByPlayer.compute(playerUuid, (_, existing) -> {
+            List<ItemStack> next = existing == null ? new ArrayList<>(EQUIPMENT_SLOT_COUNT) : new ArrayList<>(existing);
+            while (next.size() < EQUIPMENT_SLOT_COUNT) {
+                next.add(null);
+            }
+
+            if (ItemStack.isEmpty(stack)) {
+                next.set(slotIndex, null);
+            } else {
+                String itemId = sanitizeEquipmentItemId(stack.getItemId());
+                if (itemId == null || itemId.isBlank()) {
+                    next.set(slotIndex, null);
+                } else {
+                    next.set(slotIndex, new ItemStack(itemId, Math.max(1, stack.getQuantity())));
+                }
+            }
+
+            boolean hasAny = false;
+            for (ItemStack item : next) {
+                if (!ItemStack.isEmpty(item)) {
+                    hasAny = true;
+                    break;
+                }
+            }
+
+            return hasAny ? next : null;
+        });
+    }
+
+    private String sanitizeEquipmentItemId(String rawItemId) {
+        if (rawItemId == null) return null;
+        String trimmed = rawItemId.trim();
+        return trimmed.isBlank() ? null : trimmed;
     }
 
     private List<ItemStack> sanitizeLoot(List<ItemStack> loot) {

@@ -30,24 +30,46 @@ import org.jspecify.annotations.NonNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.lang.reflect.Method;
 
 public class CustomInventoryPage extends InteractiveCustomUIPage<CustomInventoryPage.CustomInventoryEventData> {
     private static final int STORAGE_SLOT_COUNT = 36;
     private static final int HOTBAR_SLOT_COUNT = 9;
     private static final int INVENTORY_SLOT_COUNT = HOTBAR_SLOT_COUNT + STORAGE_SLOT_COUNT;
     private static final int LOOT_SLOT_COUNT = 12;
-
     private static final String ACTION_COLLECT_ALL = "COLLECT_ALL";
     private static final String ACTION_CLOSE = "CLOSE";
-    private static final String ACTION_SLOT_CLICK = "SLOT_CLICK";
+    private static final String ACTION_TRANSFER_DROP = "TRANSFER_DROP";
+    private static final String ACTION_TRANSFER_DRAG_COMPLETED = "TRANSFER_DRAG_COMPLETED";
+    private static final String ACTION_TRANSFER_RELEASE = "TRANSFER_RELEASE";
+    private static final String ACTION_DRAG_HOVER = "DRAG_HOVER";
     private static final String ACTION_SWITCH_TAB = "SWITCH_TAB";
     private static final String ACTION_ADD_CHARACTERISTIC = "ADD_CHARACTERISTIC";
 
     private static final String AREA_HOTBAR = "HOTBAR";
     private static final String AREA_STORAGE = "STORAGE";
-    private static final String AREA_WEAPON = "WEAPON";
     private static final String AREA_LOOT = "LOOT";
+    private static final String AREA_EQUIPMENT_HEAD = "EQUIP_HEAD";
+    private static final String AREA_EQUIPMENT_WEAPON = "EQUIP_WEAPON";
+    private static final String AREA_EQUIPMENT_AMULET = "EQUIP_AMULET";
+    private static final String AREA_EQUIPMENT_GAUNTLETS = "EQUIP_GAUNTLETS";
+    private static final String AREA_EQUIPMENT_RING_1 = "EQUIP_RING_1";
+    private static final String AREA_EQUIPMENT_RING_2 = "EQUIP_RING_2";
+    private static final String AREA_EQUIPMENT_CHEST = "EQUIP_CHEST";
+    private static final String AREA_EQUIPMENT_PANTS = "EQUIP_PANTS";
+    private static final String AREA_EQUIPMENT_BELT = "EQUIP_BELT";
+    private static final String AREA_EQUIPMENT_PET = "EQUIP_PET";
+    private static final String AREA_EQUIPMENT_BOOTS = "EQUIP_BOOTS";
+    private static final String AREA_EQUIPMENT_TROPHY_1 = "EQUIP_TROPHY_1";
+    private static final String AREA_EQUIPMENT_TROPHY_2 = "EQUIP_TROPHY_2";
+    private static final String AREA_EQUIPMENT_TROPHY_3 = "EQUIP_TROPHY_3";
+    private static final String AREA_EQUIPMENT_TROPHY_4 = "EQUIP_TROPHY_4";
+    private static final String AREA_EQUIPMENT_TROPHY_5 = "EQUIP_TROPHY_5";
+    private static final String AREA_EQUIPMENT_TROPHY_6 = "EQUIP_TROPHY_6";
+
+    private static final int ARMOR_SLOT_HEAD = 0;
+    private static final int ARMOR_SLOT_CHEST = 1;
+    private static final int ARMOR_SLOT_GAUNTLETS = 2;
+    private static final int ARMOR_SLOT_PANTS = 3;
 
     private static final String TAB_CHARACTERISTICS = "CHARACTERISTICS";
     private static final String TAB_INVENTORY = "INVENTORY";
@@ -65,12 +87,55 @@ public class CustomInventoryPage extends InteractiveCustomUIPage<CustomInventory
     private final PlayerRepository playerRepository;
     private final HytaleLogger logger;
 
-    private ItemStack cursorStack;
     private String selectedTab = TAB_INVENTORY;
-    private String lastSlotActionKey;
-    private long lastSlotActionAt;
+    private static final String[] EQUIPMENT_AREAS = {
+            AREA_EQUIPMENT_HEAD,
+            AREA_EQUIPMENT_WEAPON,
+            AREA_EQUIPMENT_AMULET,
+            AREA_EQUIPMENT_GAUNTLETS,
+            AREA_EQUIPMENT_RING_1,
+            AREA_EQUIPMENT_RING_2,
+            AREA_EQUIPMENT_CHEST,
+            AREA_EQUIPMENT_PANTS,
+            AREA_EQUIPMENT_BELT,
+            AREA_EQUIPMENT_PET,
+            AREA_EQUIPMENT_BOOTS,
+            AREA_EQUIPMENT_TROPHY_1,
+            AREA_EQUIPMENT_TROPHY_2,
+            AREA_EQUIPMENT_TROPHY_3,
+            AREA_EQUIPMENT_TROPHY_4,
+            AREA_EQUIPMENT_TROPHY_5,
+            AREA_EQUIPMENT_TROPHY_6
+    };
+
+    private static final String[][] EQUIPMENT_GRID_BINDINGS = {
+            {"#EquipHeadGrid", AREA_EQUIPMENT_HEAD},
+            {"#EquipWeaponGrid", AREA_EQUIPMENT_WEAPON},
+            {"#EquipAmuletGrid", AREA_EQUIPMENT_AMULET},
+            {"#EquipGauntletsGrid", AREA_EQUIPMENT_GAUNTLETS},
+            {"#EquipRing1Grid", AREA_EQUIPMENT_RING_1},
+            {"#EquipRing2Grid", AREA_EQUIPMENT_RING_2},
+            {"#EquipChestGrid", AREA_EQUIPMENT_CHEST},
+            {"#EquipPantsGrid", AREA_EQUIPMENT_PANTS},
+            {"#EquipBeltGrid", AREA_EQUIPMENT_BELT},
+            {"#EquipPetGrid", AREA_EQUIPMENT_PET},
+            {"#EquipBootsGrid", AREA_EQUIPMENT_BOOTS},
+            {"#EquipTrophy1Grid", AREA_EQUIPMENT_TROPHY_1},
+            {"#EquipTrophy2Grid", AREA_EQUIPMENT_TROPHY_2},
+            {"#EquipTrophy3Grid", AREA_EQUIPMENT_TROPHY_3},
+            {"#EquipTrophy4Grid", AREA_EQUIPMENT_TROPHY_4},
+            {"#EquipTrophy5Grid", AREA_EQUIPMENT_TROPHY_5},
+            {"#EquipTrophy6Grid", AREA_EQUIPMENT_TROPHY_6}
+    };
+
     private boolean closed;
     private String lastRawEventPayload;
+    private String pendingDragArea;
+    private int pendingDragSlot = -1;
+    private long pendingDragAt;
+    private String pendingHoverArea;
+    private int pendingHoverSlot = -1;
+    private long pendingHoverAt;
 
     public static class CustomInventoryEventData {
         public String action;
@@ -100,57 +165,9 @@ public class CustomInventoryPage extends InteractiveCustomUIPage<CustomInventory
                         )
                         .add()
                         .append(
-                                new KeyedCodec<>("Index", Codec.STRING),
-                                (obj, val) -> obj.index = val,
-                                obj -> obj.index
-                        )
-                        .add()
-                        .append(
-                                new KeyedCodec<>("SlotIndex", Codec.STRING),
-                                (obj, val) -> obj.slotIndex = val,
-                                obj -> obj.slotIndex
-                        )
-                        .add()
-                        .append(
-                                new KeyedCodec<>("InventorySlotIndex", Codec.STRING),
-                                (obj, val) -> obj.inventorySlotIndex = val,
-                                obj -> obj.inventorySlotIndex
-                        )
-                        .add()
-                        .append(
                                 new KeyedCodec<>("ItemStackId", Codec.STRING),
                                 (obj, val) -> obj.itemStackId = val,
                                 obj -> obj.itemStackId
-                        )
-                        .add()
-                        .append(
-                                new KeyedCodec<>("InventorySectionId", Codec.STRING),
-                                (obj, val) -> obj.inventorySectionId = val,
-                                obj -> obj.inventorySectionId
-                        )
-                        .add()
-                        .append(
-                                new KeyedCodec<>("FromSectionId", Codec.STRING),
-                                (obj, val) -> obj.fromSectionId = val,
-                                obj -> obj.fromSectionId
-                        )
-                        .add()
-                        .append(
-                                new KeyedCodec<>("FromSlotId", Codec.STRING),
-                                (obj, val) -> obj.fromSlotId = val,
-                                obj -> obj.fromSlotId
-                        )
-                        .add()
-                        .append(
-                                new KeyedCodec<>("ToSectionId", Codec.STRING),
-                                (obj, val) -> obj.toSectionId = val,
-                                obj -> obj.toSectionId
-                        )
-                        .add()
-                        .append(
-                                new KeyedCodec<>("ToSlotId", Codec.STRING),
-                                (obj, val) -> obj.toSlotId = val,
-                                obj -> obj.toSlotId
                         )
                         .add()
                         .build();
@@ -178,73 +195,66 @@ public class CustomInventoryPage extends InteractiveCustomUIPage<CustomInventory
         if (!ref.isValid()) return;
 
         cmd.append("Pages/Inventory/CustomInventoryPage.ui");
-        event.addEventBinding(CustomUIEventBindingType.Activating, "#CollectAllButton", EventData.of("Action", ACTION_COLLECT_ALL));
-        event.addEventBinding(CustomUIEventBindingType.Activating, "#CloseButton", EventData.of("Action", ACTION_CLOSE));
-        event.addEventBinding(
-                CustomUIEventBindingType.Activating,
-                "#TabCharacteristics",
-                new EventData().append("Action", ACTION_SWITCH_TAB).append("Area", TAB_CHARACTERISTICS),
-                false
-        );
-        event.addEventBinding(
-                CustomUIEventBindingType.Activating,
-                "#TabInventory",
-                new EventData().append("Action", ACTION_SWITCH_TAB).append("Area", TAB_INVENTORY),
-                false
-        );
-        event.addEventBinding(
-                CustomUIEventBindingType.Activating,
-                "#TabQuests",
-                new EventData().append("Action", ACTION_SWITCH_TAB).append("Area", TAB_QUESTS),
-                false
-        );
-        event.addEventBinding(
-                CustomUIEventBindingType.Activating,
-                "#TabGuild",
-                new EventData().append("Action", ACTION_SWITCH_TAB).append("Area", TAB_GUILD),
-                false
-        );
-        event.addEventBinding(
-                CustomUIEventBindingType.Activating,
-                "#AddHealthButton",
-                new EventData().append("Action", ACTION_ADD_CHARACTERISTIC).append("Area", CHARACTERISTIC_HEALTH),
-                false
-        );
-        event.addEventBinding(
-                CustomUIEventBindingType.Activating,
-                "#AddWisdomButton",
-                new EventData().append("Action", ACTION_ADD_CHARACTERISTIC).append("Area", CHARACTERISTIC_WISDOM),
-                false
-        );
-        event.addEventBinding(
-                CustomUIEventBindingType.Activating,
-                "#AddStrengthButton",
-                new EventData().append("Action", ACTION_ADD_CHARACTERISTIC).append("Area", CHARACTERISTIC_STRENGTH),
-                false
-        );
-        event.addEventBinding(
-                CustomUIEventBindingType.Activating,
-                "#AddIntelligenceButton",
-                new EventData().append("Action", ACTION_ADD_CHARACTERISTIC).append("Area", CHARACTERISTIC_INTELLIGENCE),
-                false
-        );
-        event.addEventBinding(
-                CustomUIEventBindingType.Activating,
-                "#AddChanceButton",
-                new EventData().append("Action", ACTION_ADD_CHARACTERISTIC).append("Area", CHARACTERISTIC_CHANCE),
-                false
-        );
-        event.addEventBinding(
-                CustomUIEventBindingType.Activating,
-                "#AddAgilityButton",
-                new EventData().append("Action", ACTION_ADD_CHARACTERISTIC).append("Area", CHARACTERISTIC_AGILITY),
-                false
-        );
-        event.addEventBinding(CustomUIEventBindingType.SlotClicking, "#WeaponGrid", new EventData().append("Action", ACTION_SLOT_CLICK).append("Area", AREA_WEAPON), false);
-        event.addEventBinding(CustomUIEventBindingType.SlotClicking, "#HotbarGrid", new EventData().append("Action", ACTION_SLOT_CLICK).append("Area", AREA_HOTBAR), false);
-        event.addEventBinding(CustomUIEventBindingType.SlotClicking, "#StorageGrid", new EventData().append("Action", ACTION_SLOT_CLICK).append("Area", AREA_STORAGE), false);
-        event.addEventBinding(CustomUIEventBindingType.SlotClicking, "#LootGrid", new EventData().append("Action", ACTION_SLOT_CLICK).append("Area", AREA_LOOT), false);
+        bindActivating(event, "#CollectAllButton", ACTION_COLLECT_ALL, null);
+        bindActivating(event, "#CloseButton", ACTION_CLOSE, null);
+        bindActivating(event, "#TabCharacteristics", ACTION_SWITCH_TAB, TAB_CHARACTERISTICS);
+        bindActivating(event, "#TabInventory", ACTION_SWITCH_TAB, TAB_INVENTORY);
+        bindActivating(event, "#TabQuests", ACTION_SWITCH_TAB, TAB_QUESTS);
+        bindActivating(event, "#TabGuild", ACTION_SWITCH_TAB, TAB_GUILD);
+        bindActivating(event, "#AddHealthButton", ACTION_ADD_CHARACTERISTIC, CHARACTERISTIC_HEALTH);
+        bindActivating(event, "#AddWisdomButton", ACTION_ADD_CHARACTERISTIC, CHARACTERISTIC_WISDOM);
+        bindActivating(event, "#AddStrengthButton", ACTION_ADD_CHARACTERISTIC, CHARACTERISTIC_STRENGTH);
+        bindActivating(event, "#AddIntelligenceButton", ACTION_ADD_CHARACTERISTIC, CHARACTERISTIC_INTELLIGENCE);
+        bindActivating(event, "#AddChanceButton", ACTION_ADD_CHARACTERISTIC, CHARACTERISTIC_CHANCE);
+        bindActivating(event, "#AddAgilityButton", ACTION_ADD_CHARACTERISTIC, CHARACTERISTIC_AGILITY);
+        for (String[] binding : EQUIPMENT_GRID_BINDINGS) {
+            bindItemGridEvents(event, binding[0], binding[1]);
+        }
+        bindItemGridEvents(event, "#HotbarGrid", AREA_HOTBAR);
+        bindItemGridEvents(event, "#StorageGrid", AREA_STORAGE);
+        bindItemGridEvents(event, "#LootGrid", AREA_LOOT);
         applyState(cmd, ref, store);
+    }
+
+    private void bindActivating(@NonNull UIEventBuilder event, @NonNull String selector, @NonNull String action, String area) {
+        if (area == null) {
+            event.addEventBinding(CustomUIEventBindingType.Activating, selector, EventData.of("Action", action));
+            return;
+        }
+
+        event.addEventBinding(
+                CustomUIEventBindingType.Activating,
+                selector,
+                new EventData().append("Action", action).append("Area", area),
+                false
+        );
+    }
+
+    private void bindItemGridEvents(@NonNull UIEventBuilder event, @NonNull String selector, @NonNull String area) {
+        event.addEventBinding(
+                CustomUIEventBindingType.Dropped,
+                selector,
+                new EventData().append("Action", ACTION_TRANSFER_DROP).append("Area", area),
+                false
+        );
+        event.addEventBinding(
+                CustomUIEventBindingType.SlotMouseDragCompleted,
+                selector,
+                new EventData().append("Action", ACTION_TRANSFER_DRAG_COMPLETED).append("Area", area),
+                false
+        );
+        event.addEventBinding(
+                CustomUIEventBindingType.SlotClickReleaseWhileDragging,
+                selector,
+                new EventData().append("Action", ACTION_TRANSFER_RELEASE).append("Area", area),
+                false
+        );
+        event.addEventBinding(
+                CustomUIEventBindingType.SlotMouseEntered,
+                selector,
+                new EventData().append("Action", ACTION_DRAG_HOVER).append("Area", area),
+                false
+        );
     }
 
     @Override
@@ -269,29 +279,21 @@ public class CustomInventoryPage extends InteractiveCustomUIPage<CustomInventory
             return;
         }
 
-        if (ACTION_SLOT_CLICK.equals(data.action)) {
-            int resolvedIndex = resolveIndex(data);
-            if (resolvedIndex < 0) {
-                resolvedIndex = resolveIndexFromRawPayload(lastRawEventPayload);
+        if (ACTION_TRANSFER_DROP.equals(data.action)
+                || ACTION_TRANSFER_DRAG_COMPLETED.equals(data.action)
+                || ACTION_TRANSFER_RELEASE.equals(data.action)) {
+            boolean changed = handleTransfer(ref, store, data);
+            if (changed) {
+                safeSendUpdate(ref, store);
             }
+            return;
+        }
 
-            if (resolvedIndex < 0) {
-                this.logger.atInfo().log("[INVENTORY] Ignored slot event with unresolved index area=" + data.area
-                        + " index=" + data.index
-                        + " slotIndex=" + data.slotIndex
-                        + " inventorySlotIndex=" + data.inventorySlotIndex
-                        + " raw=" + lastRawEventPayload);
-                return;
+        if (ACTION_DRAG_HOVER.equals(data.action)) {
+            boolean changed = handleDragHover(data, ref, store);
+            if (changed) {
+                safeSendUpdate(ref, store);
             }
-
-            this.logger.atInfo().log("[INVENTORY] Slot event area=" + data.area
-                    + " resolvedIndex=" + resolvedIndex
-                    + " index=" + data.index
-                    + " slotIndex=" + data.slotIndex
-                    + " inventorySlotIndex=" + data.inventorySlotIndex
-                    + " cursorEmpty=" + ItemStack.isEmpty(cursorStack));
-
-            handleSlotClick(ref, store, data.area, resolvedIndex);
             return;
         }
 
@@ -352,12 +354,6 @@ public class CustomInventoryPage extends InteractiveCustomUIPage<CustomInventory
         safeSendUpdate(ref, store);
     }
 
-    private UICommandBuilder buildStateUpdate(@NonNull Ref<EntityStore> ref, @NonNull Store<EntityStore> store) {
-        UICommandBuilder update = new UICommandBuilder();
-        applyState(update, ref, store);
-        return update;
-    }
-
     private void safeSendUpdate(@NonNull Ref<EntityStore> ref, @NonNull Store<EntityStore> store) {
         if (closed) {
             return;
@@ -376,54 +372,372 @@ public class CustomInventoryPage extends InteractiveCustomUIPage<CustomInventory
     @Override
     public void handleDataEvent(@NonNull Ref<EntityStore> ref, @NonNull Store<EntityStore> store, String rawData) {
         this.lastRawEventPayload = rawData;
-        this.logger.atInfo().log("[INVENTORY] Raw event payload: " + rawData);
         super.handleDataEvent(ref, store, rawData);
     }
 
     @Override
     public void onDismiss(@NonNull Ref<EntityStore> ref, @NonNull Store<EntityStore> store) {
         this.closed = true;
-        this.cursorStack = null;
-        this.logger.atInfo().log("[INVENTORY] Custom inventory page dismissed");
+        resetDragState();
     }
 
-    private void handleSlotClick(@NonNull Ref<EntityStore> ref, @NonNull Store<EntityStore> store, String area, int index) {
-        Player player = store.getComponent(ref, Player.getComponentType());
-        if (player == null) return;
-        if (index < 0) return;
+    private boolean handleTransfer(@NonNull Ref<EntityStore> ref,
+                                   @NonNull Store<EntityStore> store,
+                                   @NonNull CustomInventoryEventData data) {
+        int sourceSlot = firstValid(
+                extractIntFromRawPayload(lastRawEventPayload, "SourceSlotId"),
+                extractIntFromRawPayload(lastRawEventPayload, "SourceItemGridIndex"),
+                extractIntFromRawPayload(lastRawEventPayload, "SlotIndex"),
+                resolveIndex(data)
+        );
+        String sourceItemId = data.itemStackId;
+
+        if (sourceSlot < 0 || data.area == null) {
+            return false;
+        }
 
         long now = System.currentTimeMillis();
-        String actionKey = area + ":" + index + ":" + (ItemStack.isEmpty(cursorStack) ? "EMPTY" : "HELD");
-        if (actionKey.equals(lastSlotActionKey) && now - lastSlotActionAt < 80) {
-            return;
-        }
-        lastSlotActionKey = actionKey;
-        lastSlotActionAt = now;
-
-        if (cursorStack == null || ItemStack.isEmpty(cursorStack)) {
-            cursorStack = removeStackFromArea(ref, store, area, index);
-            safeSendUpdate(ref, store);
-            return;
-        }
-
-        ItemStack target = getStackFromArea(ref, store, area, index);
-        if (ItemStack.isEmpty(target)) {
-            boolean placed = setStackToArea(ref, store, area, index, cursorStack);
-            if (placed) {
-                cursorStack = null;
+        if (pendingDragArea != null && now - pendingDragAt <= 1500L) {
+            if (!(pendingDragArea.equals(data.area) && pendingDragSlot == sourceSlot)) {
+                boolean applied = tryApplyTransfer(ref, store, pendingDragArea, pendingDragSlot, data.area, sourceSlot);
+                if (!applied) {
+                    resetDragState();
+                }
+                return applied;
             }
-            safeSendUpdate(ref, store);
-            return;
+
+            if (pendingHoverArea != null
+                    && pendingHoverSlot >= 0
+                    && now - pendingHoverAt <= 1200L
+                    && !(pendingDragArea.equals(pendingHoverArea) && pendingDragSlot == pendingHoverSlot)) {
+                boolean applied = tryApplyTransfer(ref, store, pendingDragArea, pendingDragSlot, pendingHoverArea, pendingHoverSlot);
+                if (!applied) {
+                    resetDragState();
+                }
+                return applied;
+            }
         }
 
-        boolean placed = setStackToArea(ref, store, area, index, cursorStack);
-        if (!placed) {
-            safeSendUpdate(ref, store);
-            return;
+        String resolvedSourceArea = resolveSourceArea(ref, store, data.area, sourceSlot, sourceItemId);
+        pendingDragArea = resolvedSourceArea != null ? resolvedSourceArea : data.area;
+        pendingDragSlot = sourceSlot;
+        pendingDragAt = now;
+        return false;
+    }
+
+    private boolean handleDragHover(@NonNull CustomInventoryEventData data,
+                                    @NonNull Ref<EntityStore> ref,
+                                    @NonNull Store<EntityStore> store) {
+        int hovered = firstValid(
+                extractIntFromRawPayload(lastRawEventPayload, "SlotIndex"),
+                resolveIndex(data)
+        );
+        if (hovered < 0 || data.area == null) {
+            return false;
         }
 
-        cursorStack = target;
-        safeSendUpdate(ref, store);
+        this.pendingHoverArea = data.area;
+        this.pendingHoverSlot = hovered;
+        this.pendingHoverAt = System.currentTimeMillis();
+        return false;
+    }
+
+    private boolean tryApplyTransfer(@NonNull Ref<EntityStore> ref,
+                                  @NonNull Store<EntityStore> store,
+                                  String fromArea,
+                                  int fromSlot,
+                                  String toArea,
+                                  int toSlot) {
+        if (fromArea == null || toArea == null || fromSlot < 0 || toSlot < 0) {
+            return false;
+        }
+
+        if (fromArea.equals(toArea) && fromSlot == toSlot) {
+            return false;
+        }
+
+        if (toInventorySectionId(fromArea) != Integer.MIN_VALUE && toInventorySectionId(toArea) != Integer.MIN_VALUE) {
+            Player player = store.getComponent(ref, Player.getComponentType());
+            if (player == null) {
+                return false;
+            }
+
+            Inventory inventory = player.getInventory();
+            int fromSectionId = toInventorySectionId(fromArea);
+            int toSectionId = toInventorySectionId(toArea);
+            int fromSlotId = toInventorySectionSlot(fromArea, fromSlot);
+            int toSlotId = toInventorySectionSlot(toArea, toSlot);
+            if (fromSectionId == Integer.MIN_VALUE || toSectionId == Integer.MIN_VALUE || fromSlotId < 0 || toSlotId < 0) {
+                return false;
+            }
+
+            var fromContainer = inventory.getSectionById(fromSectionId);
+            var toContainer = inventory.getSectionById(toSectionId);
+            if (fromContainer == null || toContainer == null) {
+                return false;
+            }
+
+            ItemStack source = fromContainer.getItemStack((short) fromSlotId);
+            if (ItemStack.isEmpty(source)) {
+                return false;
+            }
+
+            var moveTransaction = fromContainer.moveItemStackFromSlotToSlot(
+                    (short) fromSlotId,
+                    source.getQuantity(),
+                    toContainer,
+                    (short) toSlotId
+            );
+            if (!moveTransaction.succeeded()) {
+                return false;
+            }
+
+            resetDragState();
+            return true;
+        }
+
+        ItemStack picked = removeStackFromArea(ref, store, fromArea, fromSlot);
+        if (ItemStack.isEmpty(picked)) {
+            return false;
+        }
+
+        ItemStack target = getStackFromArea(ref, store, toArea, toSlot);
+        if (ItemStack.isEmpty(target)) {
+            if (!setStackToArea(ref, store, toArea, toSlot, picked)) {
+                setStackToArea(ref, store, fromArea, fromSlot, picked);
+                return false;
+            }
+        } else {
+            if (!setStackToArea(ref, store, toArea, toSlot, picked)) {
+                setStackToArea(ref, store, fromArea, fromSlot, picked);
+                return false;
+            }
+
+            if (!setStackToArea(ref, store, fromArea, fromSlot, target)) {
+                ItemStack rollback = removeStackFromArea(ref, store, toArea, toSlot);
+                if (!ItemStack.isEmpty(rollback)) {
+                    setStackToArea(ref, store, fromArea, fromSlot, rollback);
+                }
+                return false;
+            }
+        }
+
+        resetDragState();
+        return true;
+    }
+
+    private void resetDragState() {
+        this.pendingDragArea = null;
+        this.pendingDragSlot = -1;
+        this.pendingDragAt = 0;
+        this.pendingHoverArea = null;
+        this.pendingHoverSlot = -1;
+        this.pendingHoverAt = 0;
+    }
+
+    private String resolveSourceArea(@NonNull Ref<EntityStore> ref,
+                                     @NonNull Store<EntityStore> store,
+                                     String preferredArea,
+                                     int slot,
+                                     String itemId) {
+        if (matchesItemAt(ref, store, preferredArea, slot, itemId)) {
+            return preferredArea;
+        }
+        if (matchesItemAt(ref, store, AREA_HOTBAR, slot, itemId)) {
+            return AREA_HOTBAR;
+        }
+        if (matchesItemAt(ref, store, AREA_STORAGE, slot, itemId)) {
+            return AREA_STORAGE;
+        }
+        for (String equipmentArea : EQUIPMENT_AREAS) {
+            if (matchesItemAt(ref, store, equipmentArea, 0, itemId)) {
+                return equipmentArea;
+            }
+        }
+        if (matchesItemAt(ref, store, AREA_LOOT, slot, itemId)) {
+            return AREA_LOOT;
+        }
+        return null;
+    }
+
+    private boolean matchesItemAt(@NonNull Ref<EntityStore> ref,
+                                  @NonNull Store<EntityStore> store,
+                                  String area,
+                                  int slot,
+                                  String itemId) {
+        if (area == null || slot < 0 || itemId == null || itemId.isBlank()) {
+            return false;
+        }
+        ItemStack stack = getStackFromArea(ref, store, area, slot);
+        return !ItemStack.isEmpty(stack) && itemId.equals(stack.getItemId());
+    }
+
+    private int toInventorySectionId(String area) {
+        if (AREA_HOTBAR.equals(area)) {
+            return Inventory.HOTBAR_SECTION_ID;
+        }
+        if (AREA_STORAGE.equals(area)) {
+            return Inventory.STORAGE_SECTION_ID;
+        }
+        if (AREA_EQUIPMENT_WEAPON.equals(area)) {
+            return Inventory.HOTBAR_SECTION_ID;
+        }
+        if (AREA_EQUIPMENT_HEAD.equals(area)
+                || AREA_EQUIPMENT_CHEST.equals(area)
+                || AREA_EQUIPMENT_GAUNTLETS.equals(area)
+                || AREA_EQUIPMENT_PANTS.equals(area)) {
+            return Inventory.ARMOR_SECTION_ID;
+        }
+        return Integer.MIN_VALUE;
+    }
+
+    private int toInventorySectionSlot(String area, int slot) {
+        if (AREA_HOTBAR.equals(area) || AREA_STORAGE.equals(area)) {
+            return slot;
+        }
+        if (AREA_EQUIPMENT_WEAPON.equals(area)) {
+            return 0;
+        }
+        if (AREA_EQUIPMENT_HEAD.equals(area)) {
+            return ARMOR_SLOT_HEAD;
+        }
+        if (AREA_EQUIPMENT_CHEST.equals(area)) {
+            return ARMOR_SLOT_CHEST;
+        }
+        if (AREA_EQUIPMENT_GAUNTLETS.equals(area)) {
+            return ARMOR_SLOT_GAUNTLETS;
+        }
+        if (AREA_EQUIPMENT_PANTS.equals(area)) {
+            return ARMOR_SLOT_PANTS;
+        }
+        return -1;
+    }
+
+    private boolean isLinkedEquipmentArea(String area) {
+        return AREA_EQUIPMENT_WEAPON.equals(area)
+                || AREA_EQUIPMENT_HEAD.equals(area)
+                || AREA_EQUIPMENT_CHEST.equals(area)
+                || AREA_EQUIPMENT_GAUNTLETS.equals(area)
+                || AREA_EQUIPMENT_PANTS.equals(area);
+    }
+
+    private boolean isEquipmentArea(String area) {
+        for (String equipmentArea : EQUIPMENT_AREAS) {
+            if (equipmentArea.equals(area)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private int toEquipmentSlotIndex(String area) {
+        for (int i = 0; i < EQUIPMENT_AREAS.length; i++) {
+            if (EQUIPMENT_AREAS[i].equals(area)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    private boolean canEquip(String area, ItemStack stack) {
+        if (ItemStack.isEmpty(stack)) {
+            return true;
+        }
+
+        String itemId = stack.getItemId();
+        if (itemId == null) {
+            return false;
+        }
+
+        String id = itemId.toLowerCase();
+        return switch (area) {
+            case AREA_EQUIPMENT_HEAD -> containsAny(id, "head");
+            case AREA_EQUIPMENT_WEAPON -> containsAny(id, "weapon");
+            case AREA_EQUIPMENT_AMULET -> containsAny(id, "amulet");
+            case AREA_EQUIPMENT_GAUNTLETS -> containsAny(id, "hands");
+            case AREA_EQUIPMENT_RING_1, AREA_EQUIPMENT_RING_2 -> containsAny(id, "ring");
+            case AREA_EQUIPMENT_CHEST -> containsAny(id, "chest");
+            case AREA_EQUIPMENT_PANTS -> containsAny(id, "legs");
+            case AREA_EQUIPMENT_BELT -> containsAny(id, "belt");
+            case AREA_EQUIPMENT_PET -> containsAny(id, "companion");
+            case AREA_EQUIPMENT_BOOTS -> containsAny(id, "boots");
+            case AREA_EQUIPMENT_TROPHY_1,
+                 AREA_EQUIPMENT_TROPHY_2,
+                 AREA_EQUIPMENT_TROPHY_3,
+                 AREA_EQUIPMENT_TROPHY_4,
+                 AREA_EQUIPMENT_TROPHY_5,
+                 AREA_EQUIPMENT_TROPHY_6 -> true;
+            default -> false;
+        };
+    }
+
+    private boolean containsAny(String value, String... needles) {
+        for (String needle : needles) {
+            if (value.contains(needle)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private int extractIntFromRawPayload(String rawPayload, String key) {
+        if (rawPayload == null || rawPayload.isBlank() || key == null || key.isBlank()) {
+            return -1;
+        }
+
+        String token = "\"" + key + "\"";
+        int keyIndex = rawPayload.indexOf(token);
+        if (keyIndex < 0) {
+            return -1;
+        }
+
+        int colonIndex = rawPayload.indexOf(':', keyIndex + token.length());
+        if (colonIndex < 0) {
+            return -1;
+        }
+
+        int valueIndex = colonIndex + 1;
+        while (valueIndex < rawPayload.length() && Character.isWhitespace(rawPayload.charAt(valueIndex))) {
+            valueIndex++;
+        }
+
+        if (valueIndex >= rawPayload.length()) {
+            return -1;
+        }
+
+        if (rawPayload.charAt(valueIndex) == '"') {
+            valueIndex++;
+        }
+
+        int sign = 1;
+        if (valueIndex < rawPayload.length() && rawPayload.charAt(valueIndex) == '-') {
+            sign = -1;
+            valueIndex++;
+        }
+
+        int end = valueIndex;
+        while (end < rawPayload.length() && Character.isDigit(rawPayload.charAt(end))) {
+            end++;
+        }
+
+        if (end <= valueIndex) {
+            return -1;
+        }
+
+        try {
+            return Integer.parseInt(rawPayload.substring(valueIndex, end)) * sign;
+        } catch (Exception ignored) {
+            return -1;
+        }
+    }
+
+    private int firstValid(int... candidates) {
+        for (int candidate : candidates) {
+            if (candidate >= 0) {
+                return candidate;
+            }
+        }
+        return -1;
     }
 
     private ItemStack getStackFromArea(@NonNull Ref<EntityStore> ref, @NonNull Store<EntityStore> store, String area, int index) {
@@ -438,12 +752,27 @@ public class CustomInventoryPage extends InteractiveCustomUIPage<CustomInventory
             return getInventoryItem(inventory, inventoryIndex);
         }
 
+        if (isLinkedEquipmentArea(area)) {
+            int sectionId = toInventorySectionId(area);
+            int sectionSlot = toInventorySectionSlot(area, index);
+            if (sectionId == Integer.MIN_VALUE || sectionSlot < 0) return null;
+            var container = inventory.getSectionById(sectionId);
+            return container == null ? null : container.getItemStack((short) sectionSlot);
+        }
+
         if (AREA_LOOT.equals(area)) {
             UUIDComponent uuidComponent = store.getComponent(ref, UUIDComponent.getComponentType());
             if (uuidComponent == null) return null;
 
             List<ItemStack> loot = customInventoryService.getLootSnapshot(uuidComponent.getUuid());
             return index >= 0 && index < loot.size() ? loot.get(index) : null;
+        }
+
+        if (isEquipmentArea(area)) {
+            UUIDComponent uuidComponent = store.getComponent(ref, UUIDComponent.getComponentType());
+            if (uuidComponent == null) return null;
+            int equipmentIndex = toEquipmentSlotIndex(area);
+            return customInventoryService.getEquipmentSlot(uuidComponent.getUuid(), equipmentIndex);
         }
 
         return null;
@@ -467,6 +796,15 @@ public class CustomInventoryPage extends InteractiveCustomUIPage<CustomInventory
             return inventory.getStorage().setItemStackForSlot((short) storageIndex, null).getSlotBefore();
         }
 
+        if (isLinkedEquipmentArea(area)) {
+            int sectionId = toInventorySectionId(area);
+            int sectionSlot = toInventorySectionSlot(area, index);
+            if (sectionId == Integer.MIN_VALUE || sectionSlot < 0) return null;
+            var container = inventory.getSectionById(sectionId);
+            if (container == null) return null;
+            return container.setItemStackForSlot((short) sectionSlot, null, true).getSlotBefore();
+        }
+
         if (AREA_LOOT.equals(area)) {
             UUIDComponent uuidComponent = store.getComponent(ref, UUIDComponent.getComponentType());
             if (uuidComponent == null) return null;
@@ -478,6 +816,18 @@ public class CustomInventoryPage extends InteractiveCustomUIPage<CustomInventory
             loot.set(index, null);
             compactLoot(loot);
             customInventoryService.replaceLoot(uuidComponent.getUuid(), loot);
+            return stack;
+        }
+
+        if (isEquipmentArea(area)) {
+            UUIDComponent uuidComponent = store.getComponent(ref, UUIDComponent.getComponentType());
+            if (uuidComponent == null) return null;
+
+            int equipmentIndex = toEquipmentSlotIndex(area);
+            if (equipmentIndex < 0) return null;
+
+            ItemStack stack = customInventoryService.getEquipmentSlot(uuidComponent.getUuid(), equipmentIndex);
+            customInventoryService.setEquipmentSlot(uuidComponent.getUuid(), equipmentIndex, null);
             return stack;
         }
 
@@ -502,6 +852,15 @@ public class CustomInventoryPage extends InteractiveCustomUIPage<CustomInventory
             return inventory.getStorage().setItemStackForSlot((short) storageIndex, stack, true).succeeded();
         }
 
+        if (isLinkedEquipmentArea(area)) {
+            int sectionId = toInventorySectionId(area);
+            int sectionSlot = toInventorySectionSlot(area, index);
+            if (sectionId == Integer.MIN_VALUE || sectionSlot < 0) return false;
+            var container = inventory.getSectionById(sectionId);
+            if (container == null) return false;
+            return container.setItemStackForSlot((short) sectionSlot, stack, true).succeeded();
+        }
+
         if (AREA_LOOT.equals(area)) {
             UUIDComponent uuidComponent = store.getComponent(ref, UUIDComponent.getComponentType());
             if (uuidComponent == null) return false;
@@ -514,6 +873,21 @@ public class CustomInventoryPage extends InteractiveCustomUIPage<CustomInventory
             loot.set(index, stack);
             compactLoot(loot);
             customInventoryService.replaceLoot(uuidComponent.getUuid(), loot);
+            return true;
+        }
+
+        if (isEquipmentArea(area)) {
+            UUIDComponent uuidComponent = store.getComponent(ref, UUIDComponent.getComponentType());
+            if (uuidComponent == null) return false;
+
+            int equipmentIndex = toEquipmentSlotIndex(area);
+            if (equipmentIndex < 0) return false;
+
+            if (!ItemStack.isEmpty(stack) && !canEquip(area, stack)) {
+                return false;
+            }
+
+            customInventoryService.setEquipmentSlot(uuidComponent.getUuid(), equipmentIndex, stack);
             return true;
         }
 
@@ -567,43 +941,6 @@ public class CustomInventoryPage extends InteractiveCustomUIPage<CustomInventory
         return parseIndex(data.inventorySlotIndex);
     }
 
-    private int resolveIndexFromRawPayload(String rawPayload) {
-        if (rawPayload == null || rawPayload.isBlank()) return -1;
-
-        String lower = rawPayload.toLowerCase();
-        int cursor = 0;
-        while (true) {
-            int idx = lower.indexOf("index", cursor);
-            if (idx < 0) return -1;
-
-            int colon = rawPayload.indexOf(':', idx);
-            if (colon < 0) return -1;
-
-            int start = colon + 1;
-            while (start < rawPayload.length() && Character.isWhitespace(rawPayload.charAt(start))) {
-                start++;
-            }
-
-            if (start < rawPayload.length() && rawPayload.charAt(start) == '"') {
-                start++;
-            }
-
-            int end = start;
-            while (end < rawPayload.length() && Character.isDigit(rawPayload.charAt(end))) {
-                end++;
-            }
-
-            if (end > start) {
-                try {
-                    return Integer.parseInt(rawPayload.substring(start, end));
-                } catch (Exception ignored) {
-                }
-            }
-
-            cursor = idx + 5;
-        }
-    }
-
     private void applyState(@NonNull UICommandBuilder cmd, @NonNull Ref<EntityStore> ref, @NonNull Store<EntityStore> store) {
         Player player = store.getComponent(ref, Player.getComponentType());
         if (player == null) return;
@@ -614,16 +951,16 @@ public class CustomInventoryPage extends InteractiveCustomUIPage<CustomInventory
         Inventory inventory = player.getInventory();
         List<ItemStack> loot = customInventoryService.getLootSnapshot(uuidComponent.getUuid());
 
-        cmd.set("#WeaponGrid.Slots", new ItemGridSlot[]{createSafeLootSlot(getInventoryItem(inventory, 0))});
-        cmd.set("#ArmorGrid.Slots", buildEquipmentSlots(inventory, new String[]{"getArmor", "getArmorSection"}, 4));
-        cmd.set("#UtilityGrid.Slots", buildEquipmentSlots(inventory, new String[]{"getUtility", "getUtilitySection"}, 3));
+        for (String[] binding : EQUIPMENT_GRID_BINDINGS) {
+            cmd.set(binding[0] + ".Slots", oneSlotFromArea(ref, store, binding[1]));
+        }
         cmd.set("#HotbarGrid.Slots", buildInventorySlots(inventory, true));
         cmd.set("#StorageGrid.Slots", buildInventorySlots(inventory, false));
         cmd.set("#LootGrid.Slots", buildLootSlots(loot, LOOT_SLOT_COUNT));
 
         cmd.set("#InventoryCountLabel.Text", String.valueOf(STORAGE_SLOT_COUNT + HOTBAR_SLOT_COUNT));
         cmd.set("#LootCountLabel.Text", String.valueOf(loot.size()));
-        cmd.set("#CursorLabel.Text", ItemStack.isEmpty(cursorStack) ? "CURSEUR: vide" : "CURSEUR: " + formatStack(cursorStack));
+        cmd.set("#CursorLabel.Text", "GLISSER-DEPOSER ACTIF");
 
         fr.welltale.player.Player playerData = getPlayerData(ref, store);
         int points = playerData != null ? playerData.getCharacteristicPoints() : 0;
@@ -681,18 +1018,19 @@ public class CustomInventoryPage extends InteractiveCustomUIPage<CustomInventory
         return inventory.getStorage().getItemStack((short) storageIndex);
     }
 
+    private ItemGridSlot[] oneSlotFromArea(@NonNull Ref<EntityStore> ref, @NonNull Store<EntityStore> store, String area) {
+        ItemStack stack = getStackFromArea(ref, store, area, 0);
+        return new ItemGridSlot[]{createSafeLootSlot(stack)};
+    }
+
     private boolean isInventoryArea(String area) {
-        return AREA_HOTBAR.equals(area) || AREA_STORAGE.equals(area) || AREA_WEAPON.equals(area);
+        return AREA_HOTBAR.equals(area) || AREA_STORAGE.equals(area);
     }
 
     private int toInventoryIndex(String area, int rawIndex) {
         if (rawIndex < 0) return -1;
         if (AREA_HOTBAR.equals(area)) {
             return rawIndex;
-        }
-
-        if (AREA_WEAPON.equals(area)) {
-            return 0;
         }
 
         if (AREA_STORAGE.equals(area)) {
@@ -723,91 +1061,28 @@ public class CustomInventoryPage extends InteractiveCustomUIPage<CustomInventory
         return slots;
     }
 
-    private ItemGridSlot[] buildEmptySlots(int count) {
-        ItemGridSlot[] slots = new ItemGridSlot[count];
-        for (int i = 0; i < count; i++) {
-            slots[i] = new ItemGridSlot();
-        }
-
-        return slots;
-    }
-
-    private ItemGridSlot[] buildEquipmentSlots(@NonNull Inventory inventory, String[] getterCandidates, int capacity) {
-        Object section = resolveSection(inventory, getterCandidates);
-        if (section == null) {
-            return buildEmptySlots(capacity);
-        }
-
-        ItemGridSlot[] slots = new ItemGridSlot[capacity];
-        for (int i = 0; i < capacity; i++) {
-            slots[i] = createSafeLootSlot(readSectionStack(section, i));
-        }
-
-        return slots;
-    }
-
-    private Object resolveSection(@NonNull Inventory inventory, String[] getterCandidates) {
-        for (String getter : getterCandidates) {
-            try {
-                Method method = inventory.getClass().getMethod(getter);
-                return method.invoke(inventory);
-            } catch (Exception ignored) {
-            }
-        }
-
-        return null;
-    }
-
-    private ItemStack readSectionStack(Object section, int slotIndex) {
-        try {
-            Method getItemStack = section.getClass().getMethod("getItemStack", short.class);
-            return (ItemStack) getItemStack.invoke(section, (short) slotIndex);
-        } catch (Exception ignored) {
-        }
-
-        try {
-            Method getItemStackForSlot = section.getClass().getMethod("getItemStackForSlot", short.class);
-            return (ItemStack) getItemStackForSlot.invoke(section, (short) slotIndex);
-        } catch (Exception ignored) {
-        }
-
-        return null;
-    }
-
     private ItemGridSlot createSafeLootSlot(ItemStack itemStack) {
         if (ItemStack.isEmpty(itemStack)) {
-            return new ItemGridSlot();
+            return createActivatableSlot(null);
         }
 
         String itemId = itemStack.getItemId();
         if (itemId == null || itemId.isBlank()) {
-            return new ItemGridSlot();
+            return createActivatableSlot(null);
         }
 
         try {
-            return new ItemGridSlot(itemStack);
+            return createActivatableSlot(itemStack);
         } catch (Exception e) {
             this.logger.atSevere().log("[INVENTORY] Invalid loot stack rendered as empty slot: " + itemId);
-            return new ItemGridSlot();
+            return createActivatableSlot(null);
         }
     }
 
-    private String formatStack(ItemStack itemStack) {
-        if (ItemStack.isEmpty(itemStack)) return "";
-
-        String itemId = itemStack.getItemId();
-        int namespaceSeparator = itemId.indexOf(':');
-        if (namespaceSeparator >= 0 && namespaceSeparator < itemId.length() - 1) {
-            itemId = itemId.substring(namespaceSeparator + 1);
-        }
-
-        if (itemId.length() > 10) {
-            itemId = itemId.substring(0, 10);
-        }
-
-        return itemStack.getQuantity() > 1
-                ? itemId + " x" + itemStack.getQuantity()
-                : itemId;
+    private ItemGridSlot createActivatableSlot(ItemStack itemStack) {
+        ItemGridSlot slot = itemStack == null ? new ItemGridSlot() : new ItemGridSlot(itemStack);
+        slot.setActivatable(true);
+        return slot;
     }
 
     private String formatPercent(float value) {

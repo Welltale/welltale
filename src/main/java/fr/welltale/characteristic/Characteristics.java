@@ -100,14 +100,6 @@ public class Characteristics {
         private float fireResistance;
         private float waterResistance;
         private float airResistance;
-
-        public int getPods() {
-            return pods;
-        }
-
-        public void setPods(int pods) {
-            this.pods = pods;
-        }
     }
 
     @Nonnull
