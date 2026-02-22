@@ -33,4 +33,5 @@ build/
 
 ### Misc ###
 /run/
-/hytale-src/
+/hytale-src
+/hytale-assets

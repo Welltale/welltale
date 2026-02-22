@@ -165,12 +165,6 @@
           "CalculationType": "Multiplicative"
         }
       ],
-      "Pods": [
-        {
-          "Amount": 5,
-          "CalculationType": "Additive"
-        }
-      ],
       "Stamina": [
         {
           "Amount": 5,

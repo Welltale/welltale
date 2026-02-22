@@ -4,6 +4,9 @@ import com.hypixel.hytale.component.CommandBuffer;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.logger.HytaleLogger;
+import com.hypixel.hytale.server.core.modules.entitystats.EntityStatMap;
+import com.hypixel.hytale.server.core.modules.entitystats.EntityStatValue;
+import com.hypixel.hytale.server.core.modules.entitystats.asset.DefaultEntityStatTypes;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import fr.welltale.constant.Constant;
@@ -52,14 +55,25 @@ public class Nameplate {
         nameplate.setText("[" + playerRef.getUsername() + "] [" + Constant.Prefix.LEVEL_PREFIX + playerLevelComponent.getLevel() + "]");
     }
 
-    //TODO ADD MOB HP IN NAMEPLATE
     public static void setMobNameplate(
             @Nonnull Ref<EntityStore> ref,
             @NonNull Store<EntityStore> store,
             @Nonnull Mob mob,
             @Nonnull CommandBuffer<EntityStore> commandBuffer
     ) {
-        com.hypixel.hytale.server.core.entity.nameplate.Nameplate nameplate = new com.hypixel.hytale.server.core.entity.nameplate.Nameplate(mob.getModelAsset() + " [" + Constant.Prefix.LEVEL_PREFIX + mob.getLevel() + "]");
+        EntityStatMap entityStatMap = store.getComponent(ref, EntityStatMap.getComponentType());
+        EntityStatValue mobHealthStatValue = entityStatMap != null
+                ? entityStatMap.get(DefaultEntityStatTypes.getHealth())
+                : null;
+
+        String nameplateText = "[" + Constant.Prefix.LEVEL_PREFIX + mob.getLevel() + "] " + mob.getModelAsset();
+        if (mobHealthStatValue != null) {
+            long currentHealthValue = (long) Math.max(0, mobHealthStatValue.get());
+            long maxHealthValue = (long) mobHealthStatValue.getMax();
+            nameplateText += " [" + currentHealthValue + " / " + maxHealthValue + " HP]";
+        }
+
+        com.hypixel.hytale.server.core.entity.nameplate.Nameplate nameplate = new com.hypixel.hytale.server.core.entity.nameplate.Nameplate(nameplateText);
         com.hypixel.hytale.server.core.entity.nameplate.Nameplate mobNameplate = store.getComponent(ref, com.hypixel.hytale.server.core.entity.nameplate.Nameplate.getComponentType());
         if (mobNameplate != null) {
             if (mobNameplate.getText().equals(nameplate.getText())) return;

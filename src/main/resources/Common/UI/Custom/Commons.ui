@@ -54,6 +54,19 @@ $Sounds = "Sound.ui";
   Sounds: $Sounds.@ButtonsLight,
 );
 
+@HytaleContainerBackground = PatchStyle(TexturePath: "Commons/Hytale/ContainerPatch.png", Border: 23);
+@HytaleHeaderBackground = PatchStyle(TexturePath: "Commons/Hytale/ContainerHeaderNoRunes.png", HorizontalBorder: 35, VerticalBorder: 0);
+@HytalePanelBackground = PatchStyle(TexturePath: "Commons/Hytale/ContainerPanelLightPatch.png", Border: 18);
+@HytaleSectionSeparator = Group {
+  Anchor: (Height: 6, Right: 0, Left: 0, Top: 8, Bottom: 8);
+  Background: (TexturePath: "Commons/Hytale/ContainerSectionSeparator.png", Border: 2);
+};
+
+@HytaleVerticalSeparator = Group {
+  Anchor: (Width: 6, Top: 8, Bottom: 8);
+  Background: (TexturePath: "Commons/Hytale/ContainerVerticalSeparator.png");
+};
+
 @SmallSpacer = Group {
   Anchor: (Width: 5, Right: 0, Left: 0, Top: 5, Bottom: 5);
 };

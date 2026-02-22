@@ -58,9 +58,44 @@ public class OnDeathSystem extends DeathSystems.OnDeathSystem {
         MobStatsComponent mobStatsComponent = store.getComponent(ref, MobStatsComponent.getComponentType());
         if (mobStatsComponent == null) return;
 
-        //TODO ADD THE XP DISPATCH LOGIC IN A RADIUS AROUND THE ENTITY KILL FOR KILLER PLAYERS GROUP
-        //TODO ADD XP BONUS LOGIC BASED ON THE LEVEL DIFFERENCE BETWEEN PLAYERS AND THE ENTITY
-        GiveXPEvent.dispatch(killerRef, mobStatsComponent.getBaseXP());
+        long rewardedXP = applyLevelDifferenceXPModifier(
+                mobStatsComponent.getBaseXP(),
+                killerLevelComponent.getLevel(),
+                mobStatsComponent.getLevel()
+        );
+
+        if (rewardedXP <= 0) return;
+
+        // TODO: When group features are implemented, dispatch XP to eligible nearby group members.
+        GiveXPEvent.dispatch(killerRef, rewardedXP);
+    }
+
+    private long applyLevelDifferenceXPModifier(
+            long baseXP,
+            int playerLevel,
+            int mobLevel
+    ) {
+        if (baseXP <= 0 || playerLevel <= 0 || mobLevel <= 0) return 0;
+
+        float multiplier = getXPLevelBalanceMultiplier(playerLevel, mobLevel);
+        if (multiplier <= 0f) return 0;
+        return Math.round(baseXP * multiplier);
+    }
+
+    private float getXPLevelBalanceMultiplier(int playerLevel, int mobLevel) {
+        float multiplier = 1.0f;
+
+        if (mobLevel > playerLevel + 10) {
+            multiplier = (playerLevel + 10f) / mobLevel;
+        } else if (playerLevel > mobLevel + 5) {
+            multiplier = (float) mobLevel / playerLevel;
+        }
+
+        if (playerLevel > mobLevel * 2.5f) {
+            multiplier = (float) Math.floor(mobLevel * 2.5f) / playerLevel;
+        }
+
+        return multiplier;
     }
 
     @Override

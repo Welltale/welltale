@@ -1,0 +1,556 @@
+$C = "../../Commons.ui";
+
+Group #MainContainer {
+  Anchor: (Top: 0, Left: 0, Right: 0, Bottom: 0);
+  Background: #000000(0.52);
+  LayoutMode: Center;
+
+  Group #Frame {
+    Anchor: (Width: 1260, Height: 720);
+    LayoutMode: Top;
+    Padding: (Full: 12);
+    Background: $C.@HytaleContainerBackground;
+
+    Group #Header {
+      Anchor: (Height: 44);
+      Background: $C.@HytaleHeaderBackground;
+      Padding: (Left: 12, Right: 12);
+
+      Label {
+        Text: "INVENTAIRE";
+        Style: (FontName: "Secondary", FontSize: 20, RenderBold: true, RenderUppercase: true, LetterSpacing: 1, Alignment: Center, TextColor: #d2bc90);
+      }
+    }
+
+    $C.@SmallSpacer {}
+
+    Group #TabRow {
+      Anchor: (Height: 36);
+      LayoutMode: Left;
+      Background: #101820(0.35);
+      Padding: (Left: 8, Right: 8);
+
+      TextButton #TabInventory {
+        Text: "Inventaire";
+        Style: (...$C.@MainButtonStyle);
+        Anchor: (Width: 140, Height: 34);
+      }
+
+      $C.@SmallSpacer {}
+
+      TextButton #TabCharacteristics {
+        Text: "Caracteristiques";
+        Style: (...$C.@MainButtonStyle);
+        Anchor: (Width: 168, Height: 34);
+      }
+
+      $C.@SmallSpacer {}
+
+      TextButton #TabQuests {
+        Text: "Quetes";
+        Style: (...$C.@MainButtonStyle);
+        Anchor: (Width: 130, Height: 34);
+      }
+
+      $C.@SmallSpacer {}
+
+      TextButton #TabGuild {
+        Text: "Guilde";
+        Style: (...$C.@MainButtonStyle);
+        Anchor: (Width: 130, Height: 34);
+      }
+    }
+
+    $C.@SmallSpacer {}
+
+    Group #Body {
+      Anchor: (Top: 0, Bottom: 0);
+      LayoutMode: Top;
+
+      Group #MainInventorySection {
+        Anchor: (Top: 0, Bottom: 0);
+        LayoutMode: Left;
+
+        Group #EquipmentPanel {
+          Anchor: (Width: 240);
+          LayoutMode: Top;
+          Padding: (Full: 10);
+          Background: $C.@HytalePanelBackground;
+
+          Label #EquipmentTitle {
+            Text: "EQUIPEMENT";
+            Style: (FontName: "Secondary", FontSize: 16, RenderUppercase: true, RenderBold: true, Alignment: Center, TextColor: #c9b486);
+          }
+
+          $C.@HytaleSectionSeparator {}
+
+          Label {
+            Text: "Arme";
+            Style: (FontSize: 12, TextColor: #96a9be, Alignment: Start);
+            Anchor: (Height: 18);
+          }
+
+          ItemGrid #WeaponGrid {
+            Anchor: (Height: 64);
+            SlotsPerRow: 1;
+            AreItemsDraggable: true;
+            DisplayItemQuantity: true;
+            RenderItemQualityBackground: true;
+            ShowScrollbar: false;
+            Style: (
+              SlotSize: 58,
+              SlotIconSize: 48,
+              SlotSpacing: 4,
+              SlotBackground: "../../Common/BlockSelectorSlotBackground.png"
+            );
+          }
+
+          $C.@SmallSpacer {}
+
+          Label {
+            Text: "Armure";
+            Style: (FontSize: 12, TextColor: #96a9be, Alignment: Start);
+            Anchor: (Height: 18);
+          }
+
+          ItemGrid #ArmorGrid {
+            Anchor: (Height: 124);
+            SlotsPerRow: 2;
+            AreItemsDraggable: true;
+            DisplayItemQuantity: true;
+            RenderItemQualityBackground: true;
+            ShowScrollbar: false;
+            Style: (
+              SlotSize: 58,
+              SlotIconSize: 48,
+              SlotSpacing: 4,
+              SlotBackground: "../../Common/BlockSelectorSlotBackground.png"
+            );
+          }
+
+          $C.@SmallSpacer {}
+
+          Label {
+            Text: "Utilitaire";
+            Style: (FontSize: 12, TextColor: #96a9be, Alignment: Start);
+            Anchor: (Height: 18);
+          }
+
+          ItemGrid #UtilityGrid {
+            Anchor: (Height: 64);
+            SlotsPerRow: 3;
+            AreItemsDraggable: true;
+            DisplayItemQuantity: true;
+            RenderItemQualityBackground: true;
+            ShowScrollbar: false;
+            Style: (
+              SlotSize: 58,
+              SlotIconSize: 48,
+              SlotSpacing: 4,
+              SlotBackground: "../../Common/BlockSelectorSlotBackground.png"
+            );
+          }
+        }
+
+        $C.@HytaleVerticalSeparator {}
+
+        Group #InventoryPanel {
+          FlexWeight: 1;
+          LayoutMode: Top;
+          Padding: (Full: 10);
+          Background: $C.@HytalePanelBackground;
+
+          Label #InventoryTitle {
+            Text: "SACS";
+            Style: (FontName: "Secondary", FontSize: 16, RenderUppercase: true, RenderBold: true, Alignment: Center, TextColor: #c9b486);
+          }
+
+          Label #CursorLabel {
+            Text: "CURSEUR: vide";
+            Style: (FontSize: 11, Alignment: Center, TextColor: #a7b5c6);
+          }
+
+          $C.@HytaleSectionSeparator {}
+
+          Group #InventoryGrid {
+            LayoutMode: Top;
+
+            Label {
+              Text: "Barre rapide";
+              Style: (FontSize: 12, TextColor: #96a9be, Alignment: Start);
+              Anchor: (Height: 18);
+            }
+
+            ItemGrid #HotbarGrid {
+              Anchor: (Height: 56);
+              SlotsPerRow: 9;
+              AreItemsDraggable: true;
+              DisplayItemQuantity: true;
+              RenderItemQualityBackground: true;
+              ShowScrollbar: false;
+              Style: (
+                SlotSize: 52,
+                SlotIconSize: 40,
+                SlotSpacing: 4,
+                SlotBackground: "../../Common/BlockSelectorSlotBackground.png"
+              );
+            }
+
+            $C.@SmallSpacer {}
+
+            Label {
+              Text: "Sac";
+              Style: (FontSize: 12, TextColor: #96a9be, Alignment: Start);
+              Anchor: (Height: 18);
+            }
+
+            ItemGrid #StorageGrid {
+              Anchor: (Height: 238);
+              SlotsPerRow: 9;
+              AreItemsDraggable: true;
+              DisplayItemQuantity: true;
+              RenderItemQualityBackground: true;
+              ShowScrollbar: false;
+              Style: (
+                SlotSize: 52,
+                SlotIconSize: 40,
+                SlotSpacing: 4,
+                SlotBackground: "../../Common/BlockSelectorSlotBackground.png"
+              );
+            }
+          }
+
+          Group {
+            Anchor: (Height: 42, Top: 10);
+
+            Label #InventoryFooterLabel {
+              Text: "Slots visibles:";
+              Style: (FontSize: 12, TextColor: #96a9be, Alignment: Start);
+              Anchor: (Top: 0, Height: 20);
+            }
+
+            Label #InventoryCountLabel {
+              Text: "0";
+              Style: (FontSize: 12, TextColor: #ccb588, Alignment: End);
+              Anchor: (Top: 0, Height: 20);
+            }
+
+            Label #PodsLabel {
+              Text: "Pods:";
+              Style: (FontSize: 12, TextColor: #96a9be, Alignment: Start);
+              Anchor: (Bottom: 0, Height: 20);
+            }
+
+            Label #PodsValueLabel {
+              Text: "0";
+              Style: (FontSize: 12, TextColor: #ccb588, Alignment: End);
+              Anchor: (Bottom: 0, Height: 20);
+            }
+          }
+        }
+
+        $C.@HytaleVerticalSeparator {}
+
+        Group #LootPanel {
+          Anchor: (Width: 240);
+          LayoutMode: Top;
+          Padding: (Full: 10);
+          Background: $C.@HytalePanelBackground;
+
+          Label #LootTitle {
+            Text: "BUTIN";
+            Style: (FontName: "Secondary", FontSize: 16, RenderUppercase: true, RenderBold: true, Alignment: Center, TextColor: #c9b486);
+          }
+
+          $C.@HytaleSectionSeparator {}
+
+          ItemGrid #LootGrid {
+            Anchor: (Height: 190);
+            SlotsPerRow: 4;
+            AreItemsDraggable: true;
+            DisplayItemQuantity: true;
+            RenderItemQualityBackground: true;
+            ShowScrollbar: false;
+            Style: (
+              SlotSize: 44,
+              SlotIconSize: 36,
+              SlotSpacing: 4,
+              SlotBackground: "../../Common/BlockSelectorSlotBackground.png"
+            );
+          }
+
+          $C.@MediumSpacer {}
+
+          TextButton #CollectAllButton {
+            Text: "TOUT RECUPERER";
+            Style: (...$C.@MainButtonStyle);
+            Anchor: (Height: 38, Width: 200);
+          }
+
+          $C.@SmallSpacer {}
+
+          TextButton #CloseButton {
+            Text: "FERMER";
+            Style: (...$C.@CancelButtonStyle);
+            Anchor: (Height: 38, Width: 200);
+          }
+
+          $C.@SmallSpacer {}
+
+          Group {
+            Anchor: (Height: 24);
+
+            Label {
+              Text: "Piles de loot:";
+              Style: (FontSize: 12, TextColor: #96a9be, Alignment: Start);
+            }
+
+            Label #LootCountLabel {
+              Text: "0";
+              Style: (FontSize: 12, TextColor: #ccb588, Alignment: End);
+            }
+          }
+        }
+      }
+
+      Group #CharacteristicsPanel {
+        Anchor: (Top: 0, Bottom: 0);
+        LayoutMode: TopScrolling;
+        Padding: (Full: 16);
+        Background: $C.@HytalePanelBackground;
+        Visible: false;
+
+        Label {
+          Text: "CARACTERISTIQUES";
+          Style: (FontName: "Secondary", FontSize: 24, RenderUppercase: true, RenderBold: true, Alignment: Center, TextColor: #ccb588);
+          Anchor: (Height: 42);
+        }
+
+        Group {
+          Anchor: (Height: 30);
+          Background: #121f2a(0.65);
+          Padding: (Left: 12, Right: 12);
+
+          Label {
+            Text: "Points disponibles";
+            Style: (FontSize: 13, TextColor: #9fb3c6, Alignment: Start);
+          }
+
+          Label #CharacteristicPointsLabel {
+            Text: "0";
+            Style: (FontName: "Secondary", FontSize: 15, RenderBold: true, TextColor: #d9c38f, Alignment: End);
+          }
+        }
+
+        $C.@SmallSpacer {}
+        $C.@HytaleSectionSeparator {}
+        $C.@SmallSpacer {}
+
+        Group {
+          Anchor: (Height: 40);
+          LayoutMode: Left;
+          Padding: (Left: 8, Right: 8);
+          Background: #0f1b25(0.6);
+
+          Label {
+            Text: "Vitalite";
+            Style: (FontSize: 14, TextColor: #c4d3e1, Alignment: Start);
+            Anchor: (Width: 220);
+          }
+
+          Label #HealthStatValueLabel {
+            Text: "0";
+            Style: (FontName: "Secondary", FontSize: 14, RenderBold: true, TextColor: #d9c38f, Alignment: End);
+            Anchor: (Width: 130);
+          }
+
+          TextButton #AddHealthButton {
+            Text: "+";
+            Style: (...$C.@MainButtonStyle);
+            Anchor: (Width: 42, Height: 34);
+          }
+        }
+
+        $C.@SmallSpacer {}
+
+        Group {
+          Anchor: (Height: 40);
+          LayoutMode: Left;
+          Padding: (Left: 8, Right: 8);
+          Background: #0f1b25(0.6);
+
+          Label {
+            Text: "Sagesse";
+            Style: (FontSize: 14, TextColor: #c4d3e1, Alignment: Start);
+            Anchor: (Width: 220);
+          }
+
+          Label #WisdomStatValueLabel {
+            Text: "0";
+            Style: (FontName: "Secondary", FontSize: 14, RenderBold: true, TextColor: #d9c38f, Alignment: End);
+            Anchor: (Width: 130);
+          }
+
+          TextButton #AddWisdomButton {
+            Text: "+";
+            Style: (...$C.@MainButtonStyle);
+            Anchor: (Width: 42, Height: 34);
+          }
+        }
+
+        $C.@SmallSpacer {}
+
+        Group {
+          Anchor: (Height: 40);
+          LayoutMode: Left;
+          Padding: (Left: 8, Right: 8);
+          Background: #0f1b25(0.6);
+
+          Label {
+            Text: "Force";
+            Style: (FontSize: 14, TextColor: #c4d3e1, Alignment: Start);
+            Anchor: (Width: 220);
+          }
+
+          Label #StrengthStatValueLabel {
+            Text: "0";
+            Style: (FontName: "Secondary", FontSize: 14, RenderBold: true, TextColor: #d9c38f, Alignment: End);
+            Anchor: (Width: 130);
+          }
+
+          TextButton #AddStrengthButton {
+            Text: "+";
+            Style: (...$C.@MainButtonStyle);
+            Anchor: (Width: 42, Height: 34);
+          }
+        }
+
+        $C.@SmallSpacer {}
+
+        Group {
+          Anchor: (Height: 40);
+          LayoutMode: Left;
+          Padding: (Left: 8, Right: 8);
+          Background: #0f1b25(0.6);
+
+          Label {
+            Text: "Intelligence";
+            Style: (FontSize: 14, TextColor: #c4d3e1, Alignment: Start);
+            Anchor: (Width: 220);
+          }
+
+          Label #IntelligenceStatValueLabel {
+            Text: "0";
+            Style: (FontName: "Secondary", FontSize: 14, RenderBold: true, TextColor: #d9c38f, Alignment: End);
+            Anchor: (Width: 130);
+          }
+
+          TextButton #AddIntelligenceButton {
+            Text: "+";
+            Style: (...$C.@MainButtonStyle);
+            Anchor: (Width: 42, Height: 34);
+          }
+        }
+
+        $C.@SmallSpacer {}
+
+        Group {
+          Anchor: (Height: 40);
+          LayoutMode: Left;
+          Padding: (Left: 8, Right: 8);
+          Background: #0f1b25(0.6);
+
+          Label {
+            Text: "Chance";
+            Style: (FontSize: 14, TextColor: #c4d3e1, Alignment: Start);
+            Anchor: (Width: 220);
+          }
+
+          Label #ChanceStatValueLabel {
+            Text: "0";
+            Style: (FontName: "Secondary", FontSize: 14, RenderBold: true, TextColor: #d9c38f, Alignment: End);
+            Anchor: (Width: 130);
+          }
+
+          TextButton #AddChanceButton {
+            Text: "+";
+            Style: (...$C.@MainButtonStyle);
+            Anchor: (Width: 42, Height: 34);
+          }
+        }
+
+        $C.@SmallSpacer {}
+
+        Group {
+          Anchor: (Height: 40);
+          LayoutMode: Left;
+          Padding: (Left: 8, Right: 8);
+          Background: #0f1b25(0.6);
+
+          Label {
+            Text: "Agilite";
+            Style: (FontSize: 14, TextColor: #c4d3e1, Alignment: Start);
+            Anchor: (Width: 220);
+          }
+
+          Label #AgilityStatValueLabel {
+            Text: "0";
+            Style: (FontName: "Secondary", FontSize: 14, RenderBold: true, TextColor: #d9c38f, Alignment: End);
+            Anchor: (Width: 130);
+          }
+
+          TextButton #AddAgilityButton {
+            Text: "+";
+            Style: (...$C.@MainButtonStyle);
+            Anchor: (Width: 42, Height: 34);
+          }
+        }
+
+        $C.@SmallSpacer {}
+        $C.@HytaleSectionSeparator {}
+
+        Group {
+          Anchor: (Height: 34);
+          Label {
+            Text: "STATS SECONDAIRES";
+            Style: (FontName: "Secondary", FontSize: 14, RenderUppercase: true, RenderBold: true, TextColor: #b7cbd3, Alignment: Start);
+          }
+        }
+
+        Group { Anchor: (Height: 28); Label { Text: "Pods"; Style: (FontSize: 13, TextColor: #9fb3c6, Alignment: Start); } Label #PodsTotalStatValueLabel { Text: "0"; Style: (FontSize: 13, TextColor: #d9c38f, Alignment: End); } }
+        Group { Anchor: (Height: 28); Label { Text: "Regeneration vie"; Style: (FontSize: 13, TextColor: #9fb3c6, Alignment: Start); } Label #LifeRegenStatValueLabel { Text: "0%"; Style: (FontSize: 13, TextColor: #d9c38f, Alignment: End); } }
+        Group { Anchor: (Height: 28); Label { Text: "Chance de drop"; Style: (FontSize: 13, TextColor: #9fb3c6, Alignment: Start); } Label #DropChanceStatValueLabel { Text: "0%"; Style: (FontSize: 13, TextColor: #d9c38f, Alignment: End); } }
+        Group { Anchor: (Height: 28); Label { Text: "Vitesse de deplacement"; Style: (FontSize: 13, TextColor: #9fb3c6, Alignment: Start); } Label #MoveSpeedStatValueLabel { Text: "0%"; Style: (FontSize: 13, TextColor: #d9c38f, Alignment: End); } }
+        Group { Anchor: (Height: 28); Label { Text: "Stamina"; Style: (FontSize: 13, TextColor: #9fb3c6, Alignment: Start); } Label #StaminaStatValueLabel { Text: "0"; Style: (FontSize: 13, TextColor: #d9c38f, Alignment: End); } }
+        Group { Anchor: (Height: 28); Label { Text: "Degats critiques"; Style: (FontSize: 13, TextColor: #9fb3c6, Alignment: Start); } Label #CriticalDamageStatValueLabel { Text: "0"; Style: (FontSize: 13, TextColor: #d9c38f, Alignment: End); } }
+        Group { Anchor: (Height: 28); Label { Text: "Taux critique"; Style: (FontSize: 13, TextColor: #9fb3c6, Alignment: Start); } Label #CriticalPctStatValueLabel { Text: "0%"; Style: (FontSize: 13, TextColor: #d9c38f, Alignment: End); } }
+        Group { Anchor: (Height: 28); Label { Text: "Resistance critique"; Style: (FontSize: 13, TextColor: #9fb3c6, Alignment: Start); } Label #CriticalResistanceStatValueLabel { Text: "0"; Style: (FontSize: 13, TextColor: #d9c38f, Alignment: End); } }
+        Group { Anchor: (Height: 28); Label { Text: "Resistance terre"; Style: (FontSize: 13, TextColor: #9fb3c6, Alignment: Start); } Label #EarthResistanceStatValueLabel { Text: "0%"; Style: (FontSize: 13, TextColor: #d9c38f, Alignment: End); } }
+        Group { Anchor: (Height: 28); Label { Text: "Resistance feu"; Style: (FontSize: 13, TextColor: #9fb3c6, Alignment: Start); } Label #FireResistanceStatValueLabel { Text: "0%"; Style: (FontSize: 13, TextColor: #d9c38f, Alignment: End); } }
+        Group { Anchor: (Height: 28); Label { Text: "Resistance eau"; Style: (FontSize: 13, TextColor: #9fb3c6, Alignment: Start); } Label #WaterResistanceStatValueLabel { Text: "0%"; Style: (FontSize: 13, TextColor: #d9c38f, Alignment: End); } }
+        Group { Anchor: (Height: 28); Label { Text: "Resistance air"; Style: (FontSize: 13, TextColor: #9fb3c6, Alignment: Start); } Label #AirResistanceStatValueLabel { Text: "0%"; Style: (FontSize: 13, TextColor: #d9c38f, Alignment: End); } }
+      }
+
+      Group #AltPanel {
+        Anchor: (Top: 0, Bottom: 0);
+        LayoutMode: Top;
+        Padding: (Full: 16);
+        Background: $C.@HytalePanelBackground;
+        Visible: false;
+
+        Label #AltPanelTitle {
+          Text: "";
+          Style: (FontName: "Secondary", FontSize: 26, RenderUppercase: true, RenderBold: true, Alignment: Center, TextColor: #ccb588);
+          Anchor: (Height: 48);
+        }
+
+        $C.@HytaleSectionSeparator {}
+
+        Label #AltPanelDescription {
+          Text: "";
+          Style: (FontSize: 16, Alignment: Center, TextColor: #9db2c6);
+        }
+      }
+    }
+  }
+}

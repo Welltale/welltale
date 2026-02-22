@@ -30,7 +30,14 @@ public class JsonMobFileLoader {
                             0,
                             0,
                             0,
-                            0
+                            0,
+                            1,
+                            3,
+                            List.of(
+                                    new Mob.Drop("hytale:dirt", 1, 3, 0.90f, 10),
+                                    new Mob.Drop("hytale:stick", 1, 2, 0.60f, 8),
+                                    new Mob.Drop("hytale:coal", 1, 1, 0.20f, 3)
+                            )
                     )
             };
             mapper.writeValue(jsonDataFile, exampleMobs);

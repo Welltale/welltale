@@ -56,7 +56,7 @@ public class PlayerHud {
 
         hudManager.hideHudComponents(playerRef,
                 HudComponent.Mana,
-                HudComponent.Hotbar,
+//                HudComponent.Hotbar,
                 HudComponent.UtilitySlotSelector,
                 HudComponent.AmmoIndicator,
                 HudComponent.KillFeed

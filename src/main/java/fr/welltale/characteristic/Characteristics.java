@@ -22,13 +22,14 @@ public class Characteristics {
     public static final int DEFAULT_HEALTH = 20;
     public static final int DEFAULT_WISDOM = 0;
     public static final int DEFAULT_STRENGTH = 100;
+    public static final int DEFAULT_PODS = 10;
+    public static final int STRENGTH_TO_PODS = 5;
     public static final int DEFAULT_INTELLIGENCE = 0;
     public static final int DEFAULT_CHANCE = 0;
     public static final int DEFAULT_AGILITY = 0;
     public static final float DEFAULT_LIFE_REGEN_PCT = 0;
     public static final float DEFAULT_DROP_CHANCE = 0;
     public static final float DEFAULT_MOVE_SPEED = 0;
-    public static final int DEFAULT_PODS = 100;
     public static final int DEFAULT_STAMINA = 20;
     public static final int DEFAULT_CRITICAL_DAMAGE = 0;
     public static final float DEFAULT_CRITICAL_PCT = 0;
@@ -44,13 +45,13 @@ public class Characteristics {
     public static final String STATIC_MODIFIER_HEALTH_KEY = "Health";
     public static final String STATIC_MODIFIER_WISDOM_KEY = "Wisdom";
     public static final String STATIC_MODIFIER_STRENGTH_KEY = "Strength";
+    public static final String STATIC_MODIFIER_PODS_KEY = "Pods";
     public static final String STATIC_MODIFIER_INTELLIGENCE_KEY = "Intelligence";
     public static final String STATIC_MODIFIER_CHANCE_KEY = "Chance";
     public static final String STATIC_MODIFIER_AGILITY_KEY = "Agility";
     public static final String STATIC_MODIFIER_LIFE_REGEN_PCT_KEY = "LifeRegen";
     public static final String STATIC_MODIFIER_DROP_CHANCE_KEY = "DropChance";
     public static final String STATIC_MODIFIER_MOVE_SPEED_KEY = "MoveSpeed";
-    public static final String STATIC_MODIFIER_PODS_KEY = "Pods";
     public static final String STATIC_MODIFIER_STAMINA_KEY = "Stamina";
     public static final String STATIC_MODIFIER_CRITICAL_DAMAGE_KEY = "CriticalDamage";
     public static final String STATIC_MODIFIER_CRITICAL_PCT_KEY = "Critical";
@@ -84,13 +85,13 @@ public class Characteristics {
         private int health;
         private int wisdom;
         private int strength;
+        private int pods;
         private int intelligence;
         private int chance;
         private int agility;
         private float lifeRegenPct;
         private float dropChance;
         private float moveSpeed;
-        private int pods;
         private int stamina;
         private int criticalDamage;
         private float criticalPct;
@@ -99,6 +100,14 @@ public class Characteristics {
         private float fireResistance;
         private float waterResistance;
         private float airResistance;
+
+        public int getPods() {
+            return pods;
+        }
+
+        public void setPods(int pods) {
+            this.pods = pods;
+        }
     }
 
     @Nonnull
@@ -132,6 +141,11 @@ public class Characteristics {
             additionalCharacteristics.strength = (int) strengthStatValue.getMax();
         }
 
+        EntityStatValue podsStatValue = playerStatMap.get(EntityStatType.getAssetMap().getIndex(STATIC_MODIFIER_PODS_KEY));
+        if (podsStatValue != null) {
+            additionalCharacteristics.pods = (int) podsStatValue.getMax();
+        }
+
         EntityStatValue intelligenceStatValue = playerStatMap.get(EntityStatType.getAssetMap().getIndex(STATIC_MODIFIER_INTELLIGENCE_KEY));
         if (intelligenceStatValue != null) {
             additionalCharacteristics.intelligence = (int) intelligenceStatValue.getMax();
@@ -160,11 +174,6 @@ public class Characteristics {
         EntityStatValue moveSpeedStatValue = playerStatMap.get(EntityStatType.getAssetMap().getIndex(STATIC_MODIFIER_MOVE_SPEED_KEY));
         if (moveSpeedStatValue != null) {
             additionalCharacteristics.moveSpeed = (int) moveSpeedStatValue.getMax();
-        }
-
-        EntityStatValue podsStatValue = playerStatMap.get(EntityStatType.getAssetMap().getIndex(STATIC_MODIFIER_PODS_KEY));
-        if (podsStatValue != null) {
-            additionalCharacteristics.pods = (int) podsStatValue.getMax();
         }
 
         EntityStatValue staminaStatValue = playerStatMap.get(EntityStatType.getAssetMap().getIndex(STATIC_MODIFIER_STAMINA_KEY));
@@ -246,15 +255,28 @@ public class Characteristics {
                 staticModifierWisdom
         );
 
+        int effectiveStrength = DEFAULT_STRENGTH + playerEditableCharacteristics.strength;
+
         StaticModifier staticModifierStrength = new StaticModifier(
                 Modifier.ModifierTarget.MAX,
                 StaticModifier.CalculationType.ADDITIVE,
-                DEFAULT_STRENGTH
+                effectiveStrength
         );
         playerStatMap.putModifier(
                 EntityStatType.getAssetMap().getIndex(STATIC_MODIFIER_STRENGTH_KEY),
                 staticModifierStrength.getCalculationType().createKey(STATIC_MODIFIER_STRENGTH_KEY),
                 staticModifierStrength
+        );
+
+        StaticModifier staticModifierPods = new StaticModifier(
+                Modifier.ModifierTarget.MAX,
+                StaticModifier.CalculationType.ADDITIVE,
+                DEFAULT_PODS + (playerEditableCharacteristics.strength * STRENGTH_TO_PODS)
+        );
+        playerStatMap.putModifier(
+                EntityStatType.getAssetMap().getIndex(STATIC_MODIFIER_PODS_KEY),
+                staticModifierPods.getCalculationType().createKey(STATIC_MODIFIER_PODS_KEY),
+                staticModifierPods
         );
 
         StaticModifier staticModifierIntelligence = new StaticModifier(
@@ -321,17 +343,6 @@ public class Characteristics {
                 EntityStatType.getAssetMap().getIndex(STATIC_MODIFIER_MOVE_SPEED_KEY),
                 staticModifierMoveSpeed.getCalculationType().createKey(STATIC_MODIFIER_MOVE_SPEED_KEY),
                 staticModifierMoveSpeed
-        );
-
-        StaticModifier staticModifierPods = new StaticModifier(
-                Modifier.ModifierTarget.MAX,
-                StaticModifier.CalculationType.MULTIPLICATIVE,
-                DEFAULT_PODS
-        );
-        playerStatMap.putModifier(
-                EntityStatType.getAssetMap().getIndex(STATIC_MODIFIER_PODS_KEY),
-                staticModifierPods.getCalculationType().createKey(STATIC_MODIFIER_PODS_KEY),
-                staticModifierPods
         );
 
         StaticModifier staticModifierStamina = new StaticModifier(
