@@ -16,7 +16,8 @@ import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import fr.welltale.inventory.CustomInventoryService;
-import fr.welltale.inventory.page.CustomInventoryPage;
+import fr.welltale.inventory.page.InventoryPage;
+import fr.welltale.characteristic.page.CharacteristicsPage;
 import fr.welltale.player.PlayerRepository;
 
 import java.util.UUID;
@@ -74,7 +75,7 @@ public class PlayerReadyInventoryPacketInterceptor {
                 }
 
                 CustomUIPage currentPage = player.getPageManager().getCustomPage();
-                if (currentPage instanceof CustomInventoryPage) {
+                if (currentPage instanceof InventoryPage || currentPage instanceof CharacteristicsPage) {
                     player.getPageManager().setPage(ref, store, com.hypixel.hytale.protocol.packets.interface_.Page.None);
                     return;
                 }
@@ -82,7 +83,7 @@ public class PlayerReadyInventoryPacketInterceptor {
                 player.getPageManager().openCustomPage(
                         ref,
                         store,
-                        new CustomInventoryPage(playerRef, customInventoryService, playerRepository, logger)
+                        new InventoryPage(playerRef, customInventoryService, playerRepository, logger)
                 );
                 return;
             }

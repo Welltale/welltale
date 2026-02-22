@@ -22,6 +22,7 @@ import com.hypixel.hytale.server.core.ui.builder.UICommandBuilder;
 import com.hypixel.hytale.server.core.ui.builder.UIEventBuilder;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
+import fr.welltale.characteristic.page.CharacteristicsPage;
 import fr.welltale.characteristic.Characteristics;
 import fr.welltale.inventory.CustomInventoryService;
 import fr.welltale.player.PlayerRepository;
@@ -31,10 +32,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class CustomInventoryPage extends InteractiveCustomUIPage<CustomInventoryPage.CustomInventoryEventData> {
+public class InventoryPage extends InteractiveCustomUIPage<InventoryPage.CustomInventoryEventData> {
     private static final int STORAGE_SLOT_COUNT = 36;
     private static final int HOTBAR_SLOT_COUNT = 9;
     private static final int INVENTORY_SLOT_COUNT = HOTBAR_SLOT_COUNT + STORAGE_SLOT_COUNT;
+    private static final int VISIBLE_INVENTORY_SLOT_COUNT = STORAGE_SLOT_COUNT + HOTBAR_SLOT_COUNT;
     private static final int LOOT_SLOT_COUNT = 12;
     private static final String ACTION_COLLECT_ALL = "COLLECT_ALL";
     private static final String ACTION_CLOSE = "CLOSE";
@@ -42,8 +44,7 @@ public class CustomInventoryPage extends InteractiveCustomUIPage<CustomInventory
     private static final String ACTION_TRANSFER_DRAG_COMPLETED = "TRANSFER_DRAG_COMPLETED";
     private static final String ACTION_TRANSFER_RELEASE = "TRANSFER_RELEASE";
     private static final String ACTION_DRAG_HOVER = "DRAG_HOVER";
-    private static final String ACTION_SWITCH_TAB = "SWITCH_TAB";
-    private static final String ACTION_ADD_CHARACTERISTIC = "ADD_CHARACTERISTIC";
+    private static final String ACTION_OPEN_CHARACTERISTICS = "OPEN_CHARACTERISTICS";
 
     private static final String AREA_HOTBAR = "HOTBAR";
     private static final String AREA_STORAGE = "STORAGE";
@@ -71,23 +72,10 @@ public class CustomInventoryPage extends InteractiveCustomUIPage<CustomInventory
     private static final int ARMOR_SLOT_GAUNTLETS = 2;
     private static final int ARMOR_SLOT_PANTS = 3;
 
-    private static final String TAB_CHARACTERISTICS = "CHARACTERISTICS";
-    private static final String TAB_INVENTORY = "INVENTORY";
-    private static final String TAB_QUESTS = "QUESTS";
-    private static final String TAB_GUILD = "GUILD";
-
-    private static final String CHARACTERISTIC_HEALTH = "HEALTH";
-    private static final String CHARACTERISTIC_WISDOM = "WISDOM";
-    private static final String CHARACTERISTIC_STRENGTH = "STRENGTH";
-    private static final String CHARACTERISTIC_INTELLIGENCE = "INTELLIGENCE";
-    private static final String CHARACTERISTIC_CHANCE = "CHANCE";
-    private static final String CHARACTERISTIC_AGILITY = "AGILITY";
-
     private final CustomInventoryService customInventoryService;
     private final PlayerRepository playerRepository;
     private final HytaleLogger logger;
-
-    private String selectedTab = TAB_INVENTORY;
+    private final PlayerRef playerRef;
     private static final String[] EQUIPMENT_AREAS = {
             AREA_EQUIPMENT_HEAD,
             AREA_EQUIPMENT_WEAPON,
@@ -129,6 +117,7 @@ public class CustomInventoryPage extends InteractiveCustomUIPage<CustomInventory
     };
 
     private boolean closed;
+    private Integer cachedPodsValue;
     private String lastRawEventPayload;
     private String pendingDragArea;
     private int pendingDragSlot = -1;
@@ -144,10 +133,7 @@ public class CustomInventoryPage extends InteractiveCustomUIPage<CustomInventory
         public String slotIndex;
         public String inventorySlotIndex;
         public String itemStackId;
-        public String inventorySectionId;
-        public String fromSectionId;
         public String fromSlotId;
-        public String toSectionId;
         public String toSlotId;
 
         public static final BuilderCodec<CustomInventoryEventData> CODEC =
@@ -173,13 +159,14 @@ public class CustomInventoryPage extends InteractiveCustomUIPage<CustomInventory
                         .build();
     }
 
-    public CustomInventoryPage(
+    public InventoryPage(
             @NonNull PlayerRef playerRef,
             @NonNull CustomInventoryService customInventoryService,
             @NonNull PlayerRepository playerRepository,
             @NonNull HytaleLogger logger
     ) {
         super(playerRef, CustomPageLifetime.CanDismiss, CustomInventoryEventData.CODEC);
+        this.playerRef = playerRef;
         this.customInventoryService = customInventoryService;
         this.playerRepository = playerRepository;
         this.logger = logger;
@@ -194,19 +181,10 @@ public class CustomInventoryPage extends InteractiveCustomUIPage<CustomInventory
     ) {
         if (!ref.isValid()) return;
 
-        cmd.append("Pages/Inventory/CustomInventoryPage.ui");
+        cmd.append("Pages/Inventory/InventoryPage.ui");
         bindActivating(event, "#CollectAllButton", ACTION_COLLECT_ALL, null);
         bindActivating(event, "#CloseButton", ACTION_CLOSE, null);
-        bindActivating(event, "#TabCharacteristics", ACTION_SWITCH_TAB, TAB_CHARACTERISTICS);
-        bindActivating(event, "#TabInventory", ACTION_SWITCH_TAB, TAB_INVENTORY);
-        bindActivating(event, "#TabQuests", ACTION_SWITCH_TAB, TAB_QUESTS);
-        bindActivating(event, "#TabGuild", ACTION_SWITCH_TAB, TAB_GUILD);
-        bindActivating(event, "#AddHealthButton", ACTION_ADD_CHARACTERISTIC, CHARACTERISTIC_HEALTH);
-        bindActivating(event, "#AddWisdomButton", ACTION_ADD_CHARACTERISTIC, CHARACTERISTIC_WISDOM);
-        bindActivating(event, "#AddStrengthButton", ACTION_ADD_CHARACTERISTIC, CHARACTERISTIC_STRENGTH);
-        bindActivating(event, "#AddIntelligenceButton", ACTION_ADD_CHARACTERISTIC, CHARACTERISTIC_INTELLIGENCE);
-        bindActivating(event, "#AddChanceButton", ACTION_ADD_CHARACTERISTIC, CHARACTERISTIC_CHANCE);
-        bindActivating(event, "#AddAgilityButton", ACTION_ADD_CHARACTERISTIC, CHARACTERISTIC_AGILITY);
+        bindActivating(event, "#TabCharacteristics", ACTION_OPEN_CHARACTERISTICS, null);
         for (String[] binding : EQUIPMENT_GRID_BINDINGS) {
             bindItemGridEvents(event, binding[0], binding[1]);
         }
@@ -297,19 +275,13 @@ public class CustomInventoryPage extends InteractiveCustomUIPage<CustomInventory
             return;
         }
 
-        if (ACTION_SWITCH_TAB.equals(data.action)) {
-            if (data.area != null) {
-                this.selectedTab = data.area;
-            }
-            safeSendUpdate(ref, store);
-            return;
-        }
-
-        if (ACTION_ADD_CHARACTERISTIC.equals(data.action)) {
-            if (data.area != null) {
-                spendCharacteristicPoint(ref, store, data.area);
-            }
-            safeSendUpdate(ref, store);
+        if (ACTION_OPEN_CHARACTERISTICS.equals(data.action)) {
+            this.closed = true;
+            player.getPageManager().openCustomPage(
+                    ref,
+                    store,
+                    new CharacteristicsPage(playerRef, customInventoryService, playerRepository, logger)
+            );
             return;
         }
 
@@ -474,6 +446,10 @@ public class CustomInventoryPage extends InteractiveCustomUIPage<CustomInventory
             var fromContainer = inventory.getSectionById(fromSectionId);
             var toContainer = inventory.getSectionById(toSectionId);
             if (fromContainer == null || toContainer == null) {
+                return false;
+            }
+
+            if (fromSlotId >= fromContainer.getCapacity() || toSlotId >= toContainer.getCapacity()) {
                 return false;
             }
 
@@ -895,7 +871,11 @@ public class CustomInventoryPage extends InteractiveCustomUIPage<CustomInventory
     }
 
     private void compactLoot(List<ItemStack> loot) {
-        loot.removeIf(item -> ItemStack.isEmpty(item));
+        for (int i = loot.size() - 1; i >= 0; i--) {
+            if (ItemStack.isEmpty(loot.get(i))) {
+                loot.remove(i);
+            }
+        }
     }
 
     private int parseIndex(String rawIndex) {
@@ -958,55 +938,23 @@ public class CustomInventoryPage extends InteractiveCustomUIPage<CustomInventory
         cmd.set("#StorageGrid.Slots", buildInventorySlots(inventory, false));
         cmd.set("#LootGrid.Slots", buildLootSlots(loot, LOOT_SLOT_COUNT));
 
-        cmd.set("#InventoryCountLabel.Text", String.valueOf(STORAGE_SLOT_COUNT + HOTBAR_SLOT_COUNT));
+        cmd.set("#InventoryCountLabel.Text", String.valueOf(VISIBLE_INVENTORY_SLOT_COUNT));
         cmd.set("#LootCountLabel.Text", String.valueOf(loot.size()));
-        cmd.set("#CursorLabel.Text", "GLISSER-DEPOSER ACTIF");
-
-        fr.welltale.player.Player playerData = getPlayerData(ref, store);
-        int points = playerData != null ? playerData.getCharacteristicPoints() : 0;
-        Characteristics.EditableCharacteristics editable = playerData != null ? playerData.getEditableCharacteristics() : null;
-        int podsFromCharacteristics = Characteristics.DEFAULT_PODS + ((editable != null ? editable.getStrength() : 0) * Characteristics.STRENGTH_TO_PODS);
-
-        Characteristics.AdditionalCharacteristics additionalCharacteristics = Characteristics.getAdditionalCharacteristicsFromPlayer(ref, store);
-        cmd.set("#PodsValueLabel.Text", String.valueOf(podsFromCharacteristics));
-
-        cmd.set("#CharacteristicPointsLabel.Text", String.valueOf(points));
-        cmd.set("#HealthStatValueLabel.Text", String.valueOf(editable != null ? editable.getHealth() : 0));
-        cmd.set("#WisdomStatValueLabel.Text", String.valueOf(editable != null ? editable.getWisdom() : 0));
-        cmd.set("#StrengthStatValueLabel.Text", String.valueOf(editable != null ? editable.getStrength() : 0));
-        cmd.set("#IntelligenceStatValueLabel.Text", String.valueOf(editable != null ? editable.getIntelligence() : 0));
-        cmd.set("#ChanceStatValueLabel.Text", String.valueOf(editable != null ? editable.getChance() : 0));
-        cmd.set("#AgilityStatValueLabel.Text", String.valueOf(editable != null ? editable.getAgility() : 0));
-        cmd.set("#PodsTotalStatValueLabel.Text", String.valueOf(podsFromCharacteristics));
-        cmd.set("#LifeRegenStatValueLabel.Text", formatPercent(additionalCharacteristics.getLifeRegenPct()));
-        cmd.set("#DropChanceStatValueLabel.Text", formatPercent(additionalCharacteristics.getDropChance()));
-        cmd.set("#MoveSpeedStatValueLabel.Text", formatPercent(additionalCharacteristics.getMoveSpeed()));
-        cmd.set("#StaminaStatValueLabel.Text", String.valueOf(additionalCharacteristics.getStamina()));
-        cmd.set("#CriticalDamageStatValueLabel.Text", String.valueOf(additionalCharacteristics.getCriticalDamage()));
-        cmd.set("#CriticalPctStatValueLabel.Text", formatPercent(additionalCharacteristics.getCriticalPct()));
-        cmd.set("#CriticalResistanceStatValueLabel.Text", String.valueOf(additionalCharacteristics.getCriticalResistance()));
-        cmd.set("#EarthResistanceStatValueLabel.Text", formatPercent(additionalCharacteristics.getEarthResistance()));
-        cmd.set("#FireResistanceStatValueLabel.Text", formatPercent(additionalCharacteristics.getFireResistance()));
-        cmd.set("#WaterResistanceStatValueLabel.Text", formatPercent(additionalCharacteristics.getWaterResistance()));
-        cmd.set("#AirResistanceStatValueLabel.Text", formatPercent(additionalCharacteristics.getAirResistance()));
-
-        boolean showCharacteristics = TAB_CHARACTERISTICS.equals(selectedTab);
-        boolean showInventory = TAB_INVENTORY.equals(selectedTab);
-
-        cmd.set("#CharacteristicsPanel.Visible", showCharacteristics);
-        cmd.set("#MainInventorySection.Visible", showInventory);
-        cmd.set("#AltPanel.Visible", !showInventory && !showCharacteristics);
-
-        if (TAB_QUESTS.equals(selectedTab)) {
-            cmd.set("#AltPanelTitle.Text", "QUETES");
-            cmd.set("#AltPanelDescription.Text", "Journal de quetes - bientot disponible");
-        } else if (TAB_GUILD.equals(selectedTab)) {
-            cmd.set("#AltPanelTitle.Text", "GUILDE");
-            cmd.set("#AltPanelDescription.Text", "Gestion de guilde - bientot disponible");
-        } else {
-            cmd.set("#AltPanelTitle.Text", "");
-            cmd.set("#AltPanelDescription.Text", "");
+        if (cachedPodsValue == null) {
+            cachedPodsValue = calculatePodsValue(ref, store);
         }
+        cmd.set("#PodsValueLabel.Text", String.valueOf(cachedPodsValue));
+    }
+
+    private int calculatePodsValue(@NonNull Ref<EntityStore> ref, @NonNull Store<EntityStore> store) {
+        fr.welltale.player.Player playerData = getPlayerData(ref, store);
+        if (playerData == null) {
+            return 0;
+        }
+
+        Characteristics.EditableCharacteristics editable = playerData.getEditableCharacteristics();
+        int strength = editable != null ? editable.getStrength() : 0;
+        return Characteristics.DEFAULT_PODS + (strength * Characteristics.STRENGTH_TO_PODS);
     }
 
     private ItemStack getInventoryItem(Inventory inventory, int index) {
@@ -1085,10 +1033,6 @@ public class CustomInventoryPage extends InteractiveCustomUIPage<CustomInventory
         return slot;
     }
 
-    private String formatPercent(float value) {
-        return String.format("%.1f%%", value);
-    }
-
     private fr.welltale.player.Player getPlayerData(@NonNull Ref<EntityStore> ref, @NonNull Store<EntityStore> store) {
         UUIDComponent uuidComponent = store.getComponent(ref, UUIDComponent.getComponentType());
         if (uuidComponent == null) {
@@ -1098,41 +1042,4 @@ public class CustomInventoryPage extends InteractiveCustomUIPage<CustomInventory
         return this.playerRepository.getPlayerByUuid(uuidComponent.getUuid());
     }
 
-    private void spendCharacteristicPoint(@NonNull Ref<EntityStore> ref, @NonNull Store<EntityStore> store, @NonNull String characteristicType) {
-        fr.welltale.player.Player playerData = getPlayerData(ref, store);
-        if (playerData == null) {
-            return;
-        }
-
-        if (playerData.getCharacteristicPoints() <= 0) {
-            return;
-        }
-
-        Characteristics.EditableCharacteristics editableCharacteristics = playerData.getEditableCharacteristics();
-        if (editableCharacteristics == null) {
-            editableCharacteristics = new Characteristics.EditableCharacteristics();
-            playerData.setEditableCharacteristics(editableCharacteristics);
-        }
-
-        switch (characteristicType) {
-            case CHARACTERISTIC_HEALTH -> editableCharacteristics.setHealth(editableCharacteristics.getHealth() + 1);
-            case CHARACTERISTIC_WISDOM -> editableCharacteristics.setWisdom(editableCharacteristics.getWisdom() + 1);
-            case CHARACTERISTIC_STRENGTH -> editableCharacteristics.setStrength(editableCharacteristics.getStrength() + 1);
-            case CHARACTERISTIC_INTELLIGENCE -> editableCharacteristics.setIntelligence(editableCharacteristics.getIntelligence() + 1);
-            case CHARACTERISTIC_CHANCE -> editableCharacteristics.setChance(editableCharacteristics.getChance() + 1);
-            case CHARACTERISTIC_AGILITY -> editableCharacteristics.setAgility(editableCharacteristics.getAgility() + 1);
-            default -> {
-                return;
-            }
-        }
-
-        playerData.setCharacteristicPoints(playerData.getCharacteristicPoints() - 1);
-        Characteristics.setCharacteristicsToPlayer(ref, store, editableCharacteristics);
-
-        try {
-            this.playerRepository.updatePlayer(playerData);
-        } catch (Exception e) {
-            this.logger.atSevere().log("[INVENTORY] Failed to update player characteristics: " + e.getMessage());
-        }
-    }
 }
