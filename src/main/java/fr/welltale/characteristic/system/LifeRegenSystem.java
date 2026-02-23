@@ -35,6 +35,7 @@ public class LifeRegenSystem extends EntityTickingSystem<EntityStore> {
 
     // Cached stat indices
     private int intelligenceStatIndex = -1;
+    private int lifeRegenStatIndex = -1;
     private int healthStatIndex = -1;
 
     // Base natural regeneration in HP per second
@@ -70,6 +71,7 @@ public class LifeRegenSystem extends EntityTickingSystem<EntityStore> {
         // Lazy initialization of stat indices
         if (intelligenceStatIndex < 0) {
             intelligenceStatIndex = EntityStatType.getAssetMap().getIndex(Characteristics.STATIC_MODIFIER_INTELLIGENCE_KEY);
+            lifeRegenStatIndex = EntityStatType.getAssetMap().getIndex(Characteristics.STATIC_MODIFIER_LIFE_REGEN_PCT_KEY);
             healthStatIndex = DefaultEntityStatTypes.getHealth();
         }
 
@@ -102,6 +104,7 @@ public class LifeRegenSystem extends EntityTickingSystem<EntityStore> {
      */
     private float calculateRegenPerTick(@Nonnull EntityStatMap entityStatMap, float dt) {
         EntityStatValue intelligenceStatValue = entityStatMap.get(intelligenceStatIndex);
+        EntityStatValue lifeRegenStatValue = entityStatMap.get(lifeRegenStatIndex);
 
         // Base regeneration
         float totalRegen = BASE_REGEN_PER_SECOND;
@@ -112,6 +115,12 @@ public class LifeRegenSystem extends EntityTickingSystem<EntityStore> {
             float intelligenceValue = intelligenceStatValue.getMax();
             float intelligenceBonus = intelligenceValue * INTELLIGENCE_BONUS_PER_POINT;
             totalRegen *= (1.0f + intelligenceBonus);
+        }
+
+        // Additional LifeRegen % bonus (10 => +10% regen speed)
+        if (lifeRegenStatValue != null) {
+            float lifeRegenBonusPct = lifeRegenStatValue.getMax();
+            totalRegen *= (1.0f + (lifeRegenBonusPct / 100.0f));
         }
 
         // Apply delta time
@@ -133,12 +142,18 @@ public class LifeRegenSystem extends EntityTickingSystem<EntityStore> {
         }
 
         int intelligenceStatIndex = EntityStatType.getAssetMap().getIndex(Characteristics.STATIC_MODIFIER_INTELLIGENCE_KEY);
+        int lifeRegenStatIndex = EntityStatType.getAssetMap().getIndex(Characteristics.STATIC_MODIFIER_LIFE_REGEN_PCT_KEY);
         EntityStatValue intelligenceStatValue = entityStatMap.get(intelligenceStatIndex);
+        EntityStatValue lifeRegenStatValue = entityStatMap.get(lifeRegenStatIndex);
 
         float totalRegen = BASE_REGEN_PER_SECOND;
         if (intelligenceStatValue != null) {
             float intelligenceBonus = intelligenceStatValue.getMax() * INTELLIGENCE_BONUS_PER_POINT;
             totalRegen *= (1.0f + intelligenceBonus);
+        }
+
+        if (lifeRegenStatValue != null) {
+            totalRegen *= (1.0f + (lifeRegenStatValue.getMax() / 100.0f));
         }
 
         return totalRegen;
