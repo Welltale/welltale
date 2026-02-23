@@ -20,6 +20,8 @@ import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import fr.welltale.characteristic.Characteristics;
 import fr.welltale.inventory.CustomInventoryService;
 import fr.welltale.inventory.page.InventoryPage;
+import fr.welltale.level.PlayerLevelComponent;
+import fr.welltale.level.XPTable;
 import fr.welltale.player.PlayerRepository;
 import org.jspecify.annotations.NonNull;
 
@@ -171,9 +173,33 @@ public class CharacteristicsPage extends InteractiveCustomUIPage<Characteristics
         fr.welltale.player.Player playerData = getPlayerData(ref, store);
         int points = playerData != null ? playerData.getCharacteristicPoints() : 0;
         Characteristics.EditableCharacteristics editable = playerData != null ? playerData.getEditableCharacteristics() : null;
+        PlayerLevelComponent playerLevelComponent = store.getComponent(ref, PlayerLevelComponent.getComponentType());
+
+        long totalXp = 0;
+        int level = XPTable.START_LEVEL;
+        long currentLevelXp = 0;
+        long xpToNextLevel = XPTable.getXPToNextLevel(0);
+        float progressToNextLevel = 0.0f;
+
+        if (playerLevelComponent != null) {
+            totalXp = playerLevelComponent.getTotalExperience();
+            level = playerLevelComponent.getLevel();
+            currentLevelXp = playerLevelComponent.getCurrentLevelExp();
+            xpToNextLevel = playerLevelComponent.getXPToNextLevel();
+            progressToNextLevel = playerLevelComponent.getProgress();
+        } else if (playerData != null) {
+            totalXp = Math.max(0L, playerData.getExperience());
+            level = XPTable.getLevelForXP(totalXp);
+            currentLevelXp = XPTable.getXPInCurrentLevel(totalXp);
+            xpToNextLevel = XPTable.getXPToNextLevel(totalXp);
+            progressToNextLevel = XPTable.getProgressToNextLevel(totalXp);
+        }
 
         Characteristics.AdditionalCharacteristics additionalCharacteristics = Characteristics.getAdditionalCharacteristicsFromPlayer(ref, store);
 
+        cmd.set("#LevelLabel.Text", "NIV " + level);
+        cmd.set("#XpLabel.Text", currentLevelXp + " / " + xpToNextLevel + " XP");
+        cmd.set("#XpProgressBar.Value", progressToNextLevel);
         cmd.set("#CharacteristicPointsLabel.Text", String.valueOf(points));
         cmd.set("#HealthStatValueLabel.Text", String.valueOf(editable != null ? editable.getHealth() : 0));
         cmd.set("#WisdomStatValueLabel.Text", String.valueOf(editable != null ? editable.getWisdom() : 0));

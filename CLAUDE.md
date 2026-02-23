@@ -160,6 +160,16 @@ The mod heavily uses Hytale's Entity Component System:
 - Custom UI defined in `.ui` files using Hytale UI format
 - UI builders in Java code (e.g., `PlayerHudBuilder`, `ClassSelectPage`)
 - HUD components use custom textures from `Common/UI/Custom/`
+- Prefer responsive layouts using `FlexWeight` + parent constraints over fixed widths/heights.
+- Keep backgrounds constrained to parent groups (no visual overflow outside the frame).
+- For rows of stats/items, use `LayoutMode: Left` + fixed key columns + `FlexWeight: 1` spacer/content so values align and adapt.
+- Keep labels and terminology consistent in French across the same page.
+- Reuse existing shared textures/assets when possible instead of duplicating paths/styles.
+
+### UI Docs Reference
+
+- Layout docs: `https://hytalemodding.dev/en/docs/official-documentation/custom-ui/layout`
+- Type docs: `https://hytalemodding.dev/en/docs/official-documentation/custom-ui/type-documentation`
 
 ## Configuration
 
@@ -181,3 +191,11 @@ The mod heavily uses Hytale's Entity Component System:
 - All systems follow ECS pattern with explicit component registration
 - Characteristic system uses additive/multiplicative modifiers based on stat type
 - Damage calculation inspired by Dofus mechanics with elemental resistances capped at 50%
+
+## Code Style
+
+- Prefer early returns (guard clauses) to reduce nesting.
+- For simple guards, use inline returns when possible:
+  - `if (!variable) return;`
+  - `if (!variable) return false;`
+- Avoid verbose block form for trivial guards unless needed for readability or multiple statements.

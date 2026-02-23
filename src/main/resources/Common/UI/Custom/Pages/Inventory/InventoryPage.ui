@@ -51,12 +51,14 @@ Group #MainContainer {
       Anchor: (Top: 0, Bottom: 0);
       LayoutMode: Top;
 
-      Group #MainInventorySection {
-        Anchor: (Top: 0, Bottom: 0);
-        LayoutMode: Left;
+        Group #MainInventorySection {
+          Anchor: (Top: 0, Bottom: 0);
+          FlexWeight: 1;
+          LayoutMode: Left;
 
         Group #EquipmentPanel {
-          Anchor: (Width: 312, Top: 0, Bottom: 0);
+          Anchor: (Top: 0, Bottom: 0);
+          FlexWeight: 31;
           LayoutMode: Top;
           Padding: (Full: 10);
           Background: $C.@HytalePanelBackground;
@@ -94,14 +96,14 @@ Group #MainContainer {
             $C.@SmallSpacer {}
 
             Group {
-              Anchor: (Width: 196, Top: 0, Bottom: 0);
+              Anchor: (Top: 0, Bottom: 0);
+              FlexWeight: 1;
               LayoutMode: Top;
 
-              Group { Anchor: (Height: 60); LayoutMode: Center;
-                Group { Anchor: (Width: 58, Height: 58);
-                  Group #EquipHeadIcon { Anchor: (Width: 28, Height: 28, Top: 12); Background: "../../Commons/Equipments/Helmet.png"; }
-                  ItemGrid #EquipHeadGrid { Anchor: (Width: 56, Height: 56); SlotsPerRow: 1; AreItemsDraggable: true; DisplayItemQuantity: true; RenderItemQualityBackground: true; ShowScrollbar: false; Style: (SlotSize: 56, SlotIconSize: 46, SlotSpacing: 4, SlotBackground: "../../Common/BlockSelectorSlotBackground.png"); }
-                }
+              Group { Anchor: (Height: 60); LayoutMode: Left;
+                Group { Anchor: (Width: 62, Height: 56); }
+                Group { Anchor: (Width: 62, Height: 56); Group #EquipHeadIcon { Anchor: (Width: 28, Height: 28, Top: 12); Background: "../../Commons/Equipments/Helmet.png"; } ItemGrid #EquipHeadGrid { Anchor: (Width: 56, Height: 56); SlotsPerRow: 1; AreItemsDraggable: true; DisplayItemQuantity: true; RenderItemQualityBackground: true; ShowScrollbar: false; Style: (SlotSize: 56, SlotIconSize: 46, SlotSpacing: 4, SlotBackground: "../../Common/BlockSelectorSlotBackground.png"); } }
+                Group { Anchor: (Width: 62, Height: 56); }
               }
 
               Group { Anchor: (Height: 60); LayoutMode: Left;
@@ -122,11 +124,10 @@ Group #MainContainer {
                 Group { Anchor: (Width: 62, Height: 56); Group #EquipBootsIcon { Anchor: (Width: 26, Height: 26, Top: 14); Background: "../../Commons/Equipments/Boots.png"; } ItemGrid #EquipBootsGrid { Anchor: (Width: 56, Height: 56); SlotsPerRow: 1; AreItemsDraggable: true; DisplayItemQuantity: true; RenderItemQualityBackground: true; ShowScrollbar: false; Style: (SlotSize: 56, SlotIconSize: 46, SlotSpacing: 4, SlotBackground: "../../Common/BlockSelectorSlotBackground.png"); } }
               }
 
-              Group { Anchor: (Height: 60); LayoutMode: Center;
-                Group { Anchor: (Width: 58, Height: 58);
-                  Group #EquipPetIcon { Anchor: (Width: 26, Height: 26, Top: 14); Background: "../../Commons/Equipments/Pet.png"; }
-                  ItemGrid #EquipPetGrid { Anchor: (Width: 56, Height: 56); SlotsPerRow: 1; AreItemsDraggable: true; DisplayItemQuantity: true; RenderItemQualityBackground: true; ShowScrollbar: false; Style: (SlotSize: 56, SlotIconSize: 46, SlotSpacing: 4, SlotBackground: "../../Common/BlockSelectorSlotBackground.png"); }
-                }
+              Group { Anchor: (Height: 60); LayoutMode: Left;
+                Group { Anchor: (Width: 62, Height: 56); }
+                Group { Anchor: (Width: 62, Height: 56); Group #EquipPetIcon { Anchor: (Width: 26, Height: 26, Top: 14); Background: "../../Commons/Equipments/Pet.png"; } ItemGrid #EquipPetGrid { Anchor: (Width: 56, Height: 56); SlotsPerRow: 1; AreItemsDraggable: true; DisplayItemQuantity: true; RenderItemQualityBackground: true; ShowScrollbar: false; Style: (SlotSize: 56, SlotIconSize: 46, SlotSpacing: 4, SlotBackground: "../../Common/BlockSelectorSlotBackground.png"); } }
+                Group { Anchor: (Width: 62, Height: 56); }
               }
             }
           }
@@ -135,7 +136,8 @@ Group #MainContainer {
         $C.@HytaleVerticalSeparator {}
 
         Group #InventoryPanel {
-          Anchor: (Width: 500, Top: 0, Bottom: 0);
+          Anchor: (Top: 0, Bottom: 0);
+          FlexWeight: 50;
           LayoutMode: Top;
           Padding: (Full: 10);
           Background: $C.@HytalePanelBackground;
@@ -216,7 +218,8 @@ Group #MainContainer {
         $C.@HytaleVerticalSeparator {}
 
         Group #LootPanel {
-          Anchor: (Width: 240, Top: 0, Bottom: 0);
+          Anchor: (Top: 0, Bottom: 0);
+          FlexWeight: 24;
           LayoutMode: Top;
           Padding: (Full: 10);
           Background: $C.@HytalePanelBackground;
