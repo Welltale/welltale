@@ -24,7 +24,7 @@ import fr.welltale.level.system.OnDeathSystem;
 import fr.welltale.level.system.PlayerJoinSystem;
 import fr.welltale.inventory.CustomInventoryService;
 import fr.welltale.inventory.event.PlayerReadyInventoryPacketInterceptor;
-import fr.welltale.inventory.system.MobLootOnDeathSystem;
+import fr.welltale.mob.system.MobLootOnDeathSystem;
 import fr.welltale.mob.JsonMobFileLoader;
 import fr.welltale.mob.JsonMobRepository;
 import fr.welltale.mob.Mob;

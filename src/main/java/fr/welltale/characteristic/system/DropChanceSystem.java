@@ -103,7 +103,6 @@ public class DropChanceSystem extends EntityTickingSystem<EntityStore> {
      * @param store The entity store
      * @return The drop chance multiplier (e.g., 1.5 = 50% increased drop rate)
      */
-    //TODO ADD MOB DROP SYSTEM
     public static float getDropChanceMultiplier(@Nonnull Ref<EntityStore> ref, @Nonnull Store<EntityStore> store) {
         EntityStatMap entityStatMap = store.getComponent(ref, EntityStatMap.getComponentType());
         if (entityStatMap == null) {

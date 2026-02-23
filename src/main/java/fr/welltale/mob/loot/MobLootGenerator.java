@@ -1,4 +1,4 @@
-package fr.welltale.inventory.loot;
+package fr.welltale.mob.loot;
 
 import com.hypixel.hytale.server.core.inventory.ItemStack;
 import com.hypixel.hytale.server.core.modules.item.ItemModule;
