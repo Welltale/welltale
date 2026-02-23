@@ -1,5 +1,6 @@
 package fr.welltale.mob;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -7,6 +8,7 @@ import java.util.List;
 
 @NoArgsConstructor // <- Required for Jackson
 @Getter
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Mob {
     private String modelAsset;
     private int level;
@@ -19,8 +21,6 @@ public class Mob {
     private float fireResistance;
     private float waterResistance;
     private float airResistance;
-    private int lootRollsMin;
-    private int lootRollsMax;
     private List<Drop> drops;
 
     public Mob(
@@ -35,8 +35,6 @@ public class Mob {
             float fireResistance,
             float waterResistance,
             float airResistance,
-            int lootRollsMin,
-            int lootRollsMax,
             List<Drop> drops
     ) {
         this.modelAsset = modelAsset;
@@ -50,8 +48,6 @@ public class Mob {
         this.fireResistance = fireResistance;
         this.waterResistance = waterResistance;
         this.airResistance = airResistance;
-        this.lootRollsMin = lootRollsMin;
-        this.lootRollsMax = lootRollsMax;
         this.drops = drops;
     }
 
@@ -59,33 +55,24 @@ public class Mob {
         return modelAsset;
     }
 
-    public int getLootRollsMin() {
-        return lootRollsMin;
-    }
-
-    public int getLootRollsMax() {
-        return lootRollsMax;
-    }
-
     public List<Drop> getDrops() {
         return drops;
     }
 
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Drop {
         private String itemId;
         private int minQuantity;
         private int maxQuantity;
         private float dropChance;
-        private int weight;
 
         public Drop() {}
 
-        public Drop(String itemId, int minQuantity, int maxQuantity, float dropChance, int weight) {
+        public Drop(String itemId, int minQuantity, int maxQuantity, float dropChance) {
             this.itemId = itemId;
             this.minQuantity = minQuantity;
             this.maxQuantity = maxQuantity;
             this.dropChance = dropChance;
-            this.weight = weight;
         }
 
         public String getItemId() {
@@ -102,10 +89,6 @@ public class Mob {
 
         public float getDropChance() {
             return dropChance;
-        }
-
-        public int getWeight() {
-            return weight;
         }
     }
 }

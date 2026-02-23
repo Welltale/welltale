@@ -15,6 +15,7 @@ import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.entity.entities.player.pages.InteractiveCustomUIPage;
 import com.hypixel.hytale.server.core.inventory.Inventory;
 import com.hypixel.hytale.server.core.inventory.ItemStack;
+import com.hypixel.hytale.server.core.modules.item.ItemModule;
 import com.hypixel.hytale.server.core.ui.ItemGridSlot;
 import com.hypixel.hytale.server.core.inventory.transaction.ItemStackTransaction;
 import com.hypixel.hytale.server.core.ui.builder.EventData;
@@ -375,10 +376,10 @@ public class InventoryPage extends InteractiveCustomUIPage<InventoryPage.CustomI
         }
 
         String resolvedSourceArea = sourceSlot >= 0
-                ? resolveSourceArea(ref, store, data.area, sourceSlot, sourceItemId)
+                ? resolveSourceAreaForTransfer(ref, store, data.area, sourceSlot, sourceItemId)
                 : null;
 
-        if (resolvedSourceArea != null && sourceSlot >= 0 && targetSlot >= 0) {
+        if (resolvedSourceArea != null && targetSlot >= 0) {
             boolean applied = tryApplyTransfer(ref, store, resolvedSourceArea, sourceSlot, data.area, targetSlot);
             if (applied) {
                 resetDragState();
@@ -471,9 +472,9 @@ public class InventoryPage extends InteractiveCustomUIPage<InventoryPage.CustomI
 
     private boolean tryApplyTransfer(@NonNull Ref<EntityStore> ref,
                                    @NonNull Store<EntityStore> store,
-                                   String fromArea,
-                                   int fromSlot,
-                                   String toArea,
+                                    String fromArea,
+                                    int fromSlot,
+                                    String toArea,
                                   int toSlot) {
         if (fromArea == null || toArea == null || fromSlot < 0 || toSlot < 0) {
             return false;
@@ -481,6 +482,23 @@ public class InventoryPage extends InteractiveCustomUIPage<InventoryPage.CustomI
 
         if (fromArea.equals(toArea) && fromSlot == toSlot) {
             return false;
+        }
+
+        // Loot behavior is one-way: loot -> inventory only.
+        if (AREA_LOOT.equals(toArea) && !AREA_LOOT.equals(fromArea)) {
+            return false;
+        }
+
+        if (AREA_LOOT.equals(fromArea) && !isInventoryArea(toArea)) {
+            return false;
+        }
+
+        if (AREA_LOOT.equals(fromArea) && isInventoryArea(toArea)) {
+            boolean moved = transferLootToInventory(ref, store, fromSlot, toArea, toSlot);
+            if (moved) {
+                resetDragState();
+            }
+            return moved;
         }
 
         int fromSectionId = toInventorySectionId(fromArea);
@@ -557,6 +575,40 @@ public class InventoryPage extends InteractiveCustomUIPage<InventoryPage.CustomI
         return true;
     }
 
+    private boolean transferLootToInventory(
+            @NonNull Ref<EntityStore> ref,
+            @NonNull Store<EntityStore> store,
+            int lootSlot,
+            @NonNull String toArea,
+            int toSlot
+    ) {
+        Player player = store.getComponent(ref, Player.getComponentType());
+        if (player == null) return false;
+
+        UUIDComponent uuidComponent = store.getComponent(ref, UUIDComponent.getComponentType());
+        if (uuidComponent == null) return false;
+
+        List<ItemStack> loot = new ArrayList<>(customInventoryService.getLootSnapshot(uuidComponent.getUuid()));
+        if (lootSlot < 0 || lootSlot >= loot.size()) return false;
+
+        ItemStack source = loot.get(lootSlot);
+        if (ItemStack.isEmpty(source)) return false;
+
+        ItemStack target = getStackFromArea(ref, store, toArea, toSlot);
+        if (!ItemStack.isEmpty(target)) {
+            return false;
+        }
+
+        if (!setStackToArea(ref, store, toArea, toSlot, source)) {
+            return false;
+        }
+
+        loot.set(lootSlot, null);
+        compactLoot(loot);
+        customInventoryService.replaceLoot(uuidComponent.getUuid(), loot);
+        return true;
+    }
+
     private void resetDragState() {
         this.pendingDragArea = null;
         this.pendingDragSlot = -1;
@@ -566,14 +618,46 @@ public class InventoryPage extends InteractiveCustomUIPage<InventoryPage.CustomI
         this.pendingHoverAt = 0;
     }
 
-    private String resolveSourceArea(@NonNull Ref<EntityStore> ref,
-                                     @NonNull Store<EntityStore> store,
-                                     String preferredArea,
-                                     int slot,
-                                     String itemId) {
-        if (matchesItemAt(ref, store, preferredArea, slot, itemId)) {
-            return preferredArea;
+    private String resolveSourceAreaForTransfer(@NonNull Ref<EntityStore> ref,
+                                                @NonNull Store<EntityStore> store,
+                                                String targetArea,
+                                                int slot,
+                                                String itemId) {
+        if (matchesItemAt(ref, store, pendingDragArea, pendingDragSlot, itemId)) {
+            return pendingDragArea;
         }
+
+        if (AREA_LOOT.equals(targetArea)) {
+            String inventorySource = findMatchingInventoryOrEquipmentArea(ref, store, slot, itemId);
+            if (inventorySource != null) {
+                return inventorySource;
+            }
+
+            if (matchesItemAt(ref, store, AREA_LOOT, slot, itemId)) {
+                return AREA_LOOT;
+            }
+            return null;
+        }
+
+        if (isInventoryArea(targetArea) || isEquipmentArea(targetArea)) {
+            if (matchesItemAt(ref, store, AREA_LOOT, slot, itemId)) {
+                return AREA_LOOT;
+            }
+
+            return findMatchingInventoryOrEquipmentArea(ref, store, slot, itemId);
+        }
+
+        if (matchesItemAt(ref, store, AREA_LOOT, slot, itemId)) {
+            return AREA_LOOT;
+        }
+
+        return findMatchingInventoryOrEquipmentArea(ref, store, slot, itemId);
+    }
+
+    private String findMatchingInventoryOrEquipmentArea(@NonNull Ref<EntityStore> ref,
+                                                        @NonNull Store<EntityStore> store,
+                                                        int slot,
+                                                        String itemId) {
         if (matchesItemAt(ref, store, AREA_HOTBAR, slot, itemId)) {
             return AREA_HOTBAR;
         }
@@ -584,9 +668,6 @@ public class InventoryPage extends InteractiveCustomUIPage<InventoryPage.CustomI
             if (matchesItemAt(ref, store, equipmentArea, 0, itemId)) {
                 return equipmentArea;
             }
-        }
-        if (matchesItemAt(ref, store, AREA_LOOT, slot, itemId)) {
-            return AREA_LOOT;
         }
         return null;
     }
@@ -994,7 +1075,7 @@ public class InventoryPage extends InteractiveCustomUIPage<InventoryPage.CustomI
         cmd.set("#LootGrid.Slots", buildLootSlots(loot, LOOT_SLOT_COUNT));
 
         cmd.set("#InventoryCountLabel.Text", String.valueOf(VISIBLE_INVENTORY_SLOT_COUNT));
-        cmd.set("#LootCountLabel.Text", String.valueOf(loot.size()));
+        cmd.set("#LootCountLabel.Text", loot.size() + "/" + CustomInventoryService.LOOT_SLOT_CAPACITY);
     }
 
     private ItemStack getInventoryItem(Inventory inventory, int index) {
@@ -1028,7 +1109,8 @@ public class InventoryPage extends InteractiveCustomUIPage<InventoryPage.CustomI
         return -1;
     }
 
-    private ItemGridSlot[] buildLootSlots(@NonNull List<ItemStack> loot, int capacity) {
+    private ItemGridSlot[] buildLootSlots(@NonNull List<ItemStack> loot, int minCapacity) {
+        int capacity = Math.max(minCapacity, loot.size());
         ItemGridSlot[] slots = new ItemGridSlot[capacity];
         for (int i = 0; i < capacity; i++) {
             ItemStack itemStack = i < loot.size() ? loot.get(i) : null;
@@ -1056,6 +1138,11 @@ public class InventoryPage extends InteractiveCustomUIPage<InventoryPage.CustomI
 
         String itemId = itemStack.getItemId();
         if (itemId == null || itemId.isBlank()) {
+            return createActivatableSlot(null);
+        }
+
+        if (!ItemModule.exists(itemId)) {
+            this.logger.atSevere().log("[INVENTORY] Unknown item id hidden from UI to avoid client crash: " + itemId);
             return createActivatableSlot(null);
         }
 

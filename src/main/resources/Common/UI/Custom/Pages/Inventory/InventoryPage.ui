@@ -216,7 +216,7 @@ Group #MainContainer {
         $C.@HytaleVerticalSeparator {}
 
         Group #LootPanel {
-          Anchor: (Width: 200, Top: 0, Bottom: 0);
+          Anchor: (Width: 240, Top: 0, Bottom: 0);
           LayoutMode: Top;
           Padding: (Full: 10);
           Background: $C.@HytalePanelBackground;
@@ -229,12 +229,12 @@ Group #MainContainer {
           $C.@HytaleSectionSeparator {}
 
           ItemGrid #LootGrid {
-            Anchor: (Height: 190);
+            Anchor: (Height: 142);
             SlotsPerRow: 4;
             AreItemsDraggable: true;
             DisplayItemQuantity: true;
             RenderItemQualityBackground: true;
-            ShowScrollbar: false;
+            ShowScrollbar: true;
             Style: (
               SlotSize: 44,
               SlotIconSize: 36,
@@ -248,7 +248,7 @@ Group #MainContainer {
           TextButton #CollectAllButton {
             Text: "TOUT RECUPERER";
             Style: (...$C.@MainButtonStyle);
-            Anchor: (Height: 38, Width: 188);
+            Anchor: (Height: 38, Width: 220);
           }
 
           $C.@SmallSpacer {}
@@ -256,7 +256,7 @@ Group #MainContainer {
           TextButton #CloseButton {
             Text: "FERMER";
             Style: (...$C.@CancelButtonStyle);
-            Anchor: (Height: 38, Width: 188);
+            Anchor: (Height: 38, Width: 220);
           }
 
           $C.@SmallSpacer {}

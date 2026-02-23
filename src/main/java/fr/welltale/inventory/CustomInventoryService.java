@@ -10,34 +10,67 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class CustomInventoryService {
     public static final int EQUIPMENT_SLOT_COUNT = 17;
+    public static final int LOOT_SLOT_CAPACITY = 30;
+
+    public record AddLootResult(int addedStacks, int skippedStacks) {
+        public boolean isFull() {
+            return skippedStacks > 0;
+        }
+    }
 
     private final ConcurrentHashMap<UUID, List<ItemStack>> pendingLootByPlayer = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<UUID, List<ItemStack>> equipmentByPlayer = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, Boolean> itemIdValidationCache = new ConcurrentHashMap<>();
 
-    public void addLoot(UUID playerUuid, List<ItemStack> loot) {
-        if (playerUuid == null || loot == null || loot.isEmpty()) return;
+    public AddLootResult addLoot(UUID playerUuid, List<ItemStack> loot) {
+        if (playerUuid == null || loot == null || loot.isEmpty()) {
+            return new AddLootResult(0, 0);
+        }
 
-        List<ItemStack> sanitizedLoot = sanitizeLoot(loot);
-        if (sanitizedLoot.isEmpty()) return;
-
+        int[] counts = new int[2];
         pendingLootByPlayer.compute(playerUuid, (_, existing) -> {
-            List<ItemStack> next = existing == null ? new ArrayList<>() : new ArrayList<>(existing);
-            next.addAll(sanitizedLoot);
-            return next;
+            List<ItemStack> next = sanitizeAndTrimLoot(existing);
+            if (next.isEmpty()) {
+                next = new ArrayList<>(Math.min(LOOT_SLOT_CAPACITY, loot.size()));
+            }
+
+            int remainingSlots = Math.max(0, LOOT_SLOT_CAPACITY - next.size());
+            for (ItemStack stack : loot) {
+                if (ItemStack.isEmpty(stack)) continue;
+
+                String itemId = normalizeItemId(stack.getItemId());
+                if (itemId == null) continue;
+
+                if (remainingSlots <= 0) {
+                    counts[1]++;
+                    continue;
+                }
+
+                next.add(new ItemStack(itemId, Math.max(1, stack.getQuantity())));
+                counts[0]++;
+                remainingSlots--;
+            }
+
+            return next.isEmpty() ? null : next;
         });
+
+        return new AddLootResult(counts[0], counts[1]);
     }
 
     public List<ItemStack> getLootSnapshot(UUID playerUuid) {
         if (playerUuid == null) return List.of();
 
         List<ItemStack> loot = pendingLootByPlayer.get(playerUuid);
-        return loot == null ? List.of() : sanitizeLoot(loot);
+        if (loot == null) return List.of();
+        if (loot.isEmpty()) return List.of();
+
+        return new ArrayList<>(loot);
     }
 
     public void replaceLoot(UUID playerUuid, List<ItemStack> loot) {
         if (playerUuid == null) return;
 
-        List<ItemStack> sanitizedLoot = sanitizeLoot(loot);
+        List<ItemStack> sanitizedLoot = sanitizeAndTrimLoot(loot);
         if (sanitizedLoot.isEmpty()) {
             pendingLootByPlayer.remove(playerUuid);
             return;
@@ -100,13 +133,13 @@ public class CustomInventoryService {
         return trimmed.isBlank() ? null : trimmed;
     }
 
-    private List<ItemStack> sanitizeLoot(List<ItemStack> loot) {
-        if (loot == null || loot.isEmpty()) {
-            return List.of();
-        }
+    private List<ItemStack> sanitizeAndTrimLoot(List<ItemStack> loot) {
+        if (loot == null || loot.isEmpty()) return List.of();
 
-        List<ItemStack> sanitized = new ArrayList<>(loot.size());
+        List<ItemStack> sanitized = new ArrayList<>(Math.min(loot.size(), LOOT_SLOT_CAPACITY));
         for (ItemStack stack : loot) {
+            if (sanitized.size() >= LOOT_SLOT_CAPACITY) break;
+
             if (ItemStack.isEmpty(stack)) continue;
 
             String itemId = normalizeItemId(stack.getItemId());
@@ -121,35 +154,10 @@ public class CustomInventoryService {
     private String normalizeItemId(String rawItemId) {
         if (rawItemId == null) return null;
 
-        String normalized = rawItemId.trim().toLowerCase().replace(' ', '_');
-        if (normalized.isBlank()) return null;
-        if (!normalized.contains(":")) {
-            normalized = "hytale:" + normalized;
-        }
+        String trimmed = rawItemId.trim();
+        if (trimmed.isBlank()) return null;
+        if (!itemIdValidationCache.computeIfAbsent(trimmed, ItemModule::exists)) return null;
 
-        int separator = normalized.indexOf(':');
-        if (separator <= 0 || separator >= normalized.length() - 1) {
-            return null;
-        }
-
-        for (int i = 0; i < normalized.length(); i++) {
-            char c = normalized.charAt(i);
-            boolean allowed = (c >= 'a' && c <= 'z')
-                    || (c >= '0' && c <= '9')
-                    || c == ':'
-                    || c == '_'
-                    || c == '/'
-                    || c == '.'
-                    || c == '-';
-            if (!allowed) {
-                return null;
-            }
-        }
-
-        if (!ItemModule.exists(normalized)) {
-            return null;
-        }
-
-        return normalized;
+        return trimmed;
     }
 }

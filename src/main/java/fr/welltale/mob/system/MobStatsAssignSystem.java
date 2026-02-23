@@ -9,13 +9,15 @@ import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import fr.welltale.mob.Mob;
 import fr.welltale.mob.MobRepository;
 import fr.welltale.mob.MobStatsComponent;
-import lombok.AllArgsConstructor;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
-@AllArgsConstructor
 public class MobStatsAssignSystem extends RefSystem<EntityStore> {
     private final MobRepository mobRepository;
+
+    public MobStatsAssignSystem(MobRepository mobRepository) {
+        this.mobRepository = mobRepository;
+    }
 
     @Override
     public void onEntityAdded(

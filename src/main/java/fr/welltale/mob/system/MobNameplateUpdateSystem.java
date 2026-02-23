@@ -8,21 +8,21 @@ import com.hypixel.hytale.component.query.Query;
 import com.hypixel.hytale.component.system.tick.EntityTickingSystem;
 import com.hypixel.hytale.server.core.modules.entity.component.PersistentModel;
 import com.hypixel.hytale.server.core.modules.entitystats.EntityStatMap;
-import com.hypixel.hytale.server.core.modules.entitystats.EntityStatValue;
-import com.hypixel.hytale.server.core.modules.entitystats.asset.DefaultEntityStatTypes;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import fr.welltale.mob.Mob;
 import fr.welltale.mob.MobRepository;
 import fr.welltale.mob.MobStatsComponent;
 import fr.welltale.util.Nameplate;
-import lombok.AllArgsConstructor;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
-@AllArgsConstructor
 public class MobNameplateUpdateSystem extends EntityTickingSystem<EntityStore> {
     private final MobRepository mobRepository;
+
+    public MobNameplateUpdateSystem(MobRepository mobRepository) {
+        this.mobRepository = mobRepository;
+    }
 
     @Override
     public void tick(
@@ -41,9 +41,6 @@ public class MobNameplateUpdateSystem extends EntityTickingSystem<EntityStore> {
         EntityStatMap entityStatMap = store.getComponent(ref, EntityStatMap.getComponentType());
         if (entityStatMap == null) return;
 
-        EntityStatValue mobHealthStatValue = entityStatMap.get(DefaultEntityStatTypes.getHealth());
-        if (mobHealthStatValue == null) return;
-
         PersistentModel entityPersistentModel = store.getComponent(ref, PersistentModel.getComponentType());
         if (entityPersistentModel == null) return;
 
@@ -61,8 +58,9 @@ public class MobNameplateUpdateSystem extends EntityTickingSystem<EntityStore> {
 
     @Override
     public @Nullable Query<EntityStore> getQuery() {
-        return Query.and(
-                Query.not(PlayerRef.getComponentType())
-        );
+        var mobStatsType = MobStatsComponent.getComponentType();
+        if (mobStatsType == null) return Query.and(Query.not(PlayerRef.getComponentType()));
+
+        return Query.and(Query.not(PlayerRef.getComponentType()), mobStatsType);
     }
 }

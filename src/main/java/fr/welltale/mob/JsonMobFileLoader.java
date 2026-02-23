@@ -1,5 +1,6 @@
 package fr.welltale.mob;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.File;
@@ -31,12 +32,10 @@ public class JsonMobFileLoader {
                             0,
                             0,
                             0,
-                            1,
-                            3,
                             List.of(
-                                    new Mob.Drop("hytale:dirt", 1, 3, 0.90f, 10),
-                                    new Mob.Drop("hytale:stick", 1, 2, 0.60f, 8),
-                                    new Mob.Drop("hytale:coal", 1, 1, 0.20f, 3)
+                                    new Mob.Drop("hytale:dirt", 1, 2, 90.0f),
+                                    new Mob.Drop("hytale:stick", 1, 1, 60.0f),
+                                    new Mob.Drop("hytale:coal", 1, 1, 20.0f)
                             )
                     )
             };
@@ -47,6 +46,7 @@ public class JsonMobFileLoader {
 
     public List<Mob> getJsonData(File jsonFile) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         return new ArrayList<>(List.of(mapper.readValue(jsonFile, Mob[].class)));
     }
 }

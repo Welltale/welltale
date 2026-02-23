@@ -6,12 +6,14 @@ import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.component.query.Query;
 import com.hypixel.hytale.logger.HytaleLogger;
 import com.hypixel.hytale.server.core.Message;
+import com.hypixel.hytale.protocol.packets.interface_.NotificationStyle;
 import com.hypixel.hytale.server.core.modules.entity.component.PersistentModel;
 import com.hypixel.hytale.server.core.modules.entity.damage.Damage;
 import com.hypixel.hytale.server.core.modules.entity.damage.DeathComponent;
 import com.hypixel.hytale.server.core.modules.entity.damage.DeathSystems;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
+import com.hypixel.hytale.server.core.util.NotificationUtil;
 import fr.welltale.inventory.CustomInventoryService;
 import fr.welltale.inventory.loot.MobLootGenerator;
 import fr.welltale.mob.Mob;
@@ -20,12 +22,18 @@ import fr.welltale.characteristic.system.DropChanceSystem;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
+import java.util.Locale;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class MobLootOnDeathSystem extends DeathSystems.OnDeathSystem {
     private final CustomInventoryService customInventoryService;
     private final MobRepository mobRepository;
     private final HytaleLogger logger;
+    private final Map<String, Mob> mobByNormalizedAssetCache = new ConcurrentHashMap<>();
+    private final Set<String> unresolvedNormalizedAssets = ConcurrentHashMap.newKeySet();
 
     public MobLootOnDeathSystem(
             CustomInventoryService customInventoryService,
@@ -70,8 +78,10 @@ public class MobLootOnDeathSystem extends DeathSystems.OnDeathSystem {
             List<com.hypixel.hytale.server.core.inventory.ItemStack> loot = MobLootGenerator.rollLoot(mobConfig, dropChanceMultiplier);
             if (loot.isEmpty()) return;
 
-            customInventoryService.addLoot(killerPlayerRef.getUuid(), loot);
-            killerPlayerRef.sendMessage(Message.raw("Butin ajoute dans le panneau loot (" + loot.size() + ")"));
+            CustomInventoryService.AddLootResult addResult = customInventoryService.addLoot(killerPlayerRef.getUuid(), loot);
+            if (!addResult.isFull()) return;
+
+            NotificationUtil.sendNotification(killerPlayerRef.getPacketHandler(), Message.raw("Inventaire de butin plein !"), Message.raw("Videz-le pour continuer à récupérer du butin."), "", NotificationStyle.Danger);
         } catch (Exception e) {
             this.logger.atSevere().log("[LOOT] Mob loot roll failed: " + e.getMessage());
         }
@@ -88,10 +98,16 @@ public class MobLootOnDeathSystem extends DeathSystems.OnDeathSystem {
         Mob exact = mobRepository.getMobConfig(modelAssetId);
         if (exact != null) return exact;
 
+        String normalizedModelAsset = normalizeModelAsset(modelAssetId);
+        if (normalizedModelAsset.isBlank()) return null;
+
+        Mob cached = mobByNormalizedAssetCache.get(normalizedModelAsset);
+        if (cached != null) return cached;
+        if (unresolvedNormalizedAssets.contains(normalizedModelAsset)) return null;
+
         List<Mob> mobs = mobRepository.getMobsConfig();
         if (mobs == null) return null;
 
-        String normalizedModelAsset = normalizeModelAsset(modelAssetId);
         for (Mob mob : mobs) {
             if (mob == null || mob.getModelAsset() == null) continue;
 
@@ -99,15 +115,18 @@ public class MobLootOnDeathSystem extends DeathSystems.OnDeathSystem {
             if (normalizedConfigAsset.equals(normalizedModelAsset)
                     || normalizedModelAsset.contains(normalizedConfigAsset)
                     || normalizedConfigAsset.contains(normalizedModelAsset)) {
+                mobByNormalizedAssetCache.put(normalizedModelAsset, mob);
                 return mob;
             }
         }
+
+        unresolvedNormalizedAssets.add(normalizedModelAsset);
 
         return null;
     }
 
     private String normalizeModelAsset(String modelAssetId) {
-        String normalized = modelAssetId.toLowerCase();
+        String normalized = modelAssetId.toLowerCase(Locale.ROOT);
         int slashIndex = Math.max(normalized.lastIndexOf('/'), normalized.lastIndexOf('\\'));
         if (slashIndex >= 0 && slashIndex < normalized.length() - 1) {
             normalized = normalized.substring(slashIndex + 1);

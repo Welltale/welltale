@@ -45,14 +45,12 @@ public class PlayerReadyInventoryPacketInterceptor {
         PlayerRef playerRef = store.getComponent(ref, PlayerRef.getComponentType());
         if (playerRef == null) return;
 
-        if (installedPlayers.putIfAbsent(playerRef.getUuid(), true) != null) {
-            return;
-        }
-
         if (!(playerRef.getPacketHandler() instanceof GamePacketHandler packetHandler)) {
             this.logger.atSevere().log("[INVENTORY] Cannot install packet interceptor: unexpected packet handler type");
             return;
         }
+
+        if (installedPlayers.putIfAbsent(playerRef.getUuid(), true) != null) return;
 
         packetHandler.registerHandler(ClientOpenWindow.PACKET_ID, p -> this.handleClientOpenWindow((ClientOpenWindow) p, playerRef));
         packetHandler.registerHandler(CloseWindow.PACKET_ID, p -> this.handleCloseWindow((CloseWindow) p, playerRef));

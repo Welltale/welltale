@@ -62,8 +62,12 @@ public class DropChanceSystem extends EntityTickingSystem<EntityStore> {
 
         // Lazy initialization of stat indices
         if (chanceStatIndex < 0) {
-            chanceStatIndex = EntityStatType.getAssetMap().getIndex(Characteristics.STATIC_MODIFIER_CHANCE_KEY);
-            dropChanceStatIndex = EntityStatType.getAssetMap().getIndex(Characteristics.STATIC_MODIFIER_DROP_CHANCE_KEY);
+            chanceStatIndex = resolveStatIndex(Characteristics.STATIC_MODIFIER_CHANCE_KEY);
+            dropChanceStatIndex = resolveStatIndex(Characteristics.STATIC_MODIFIER_DROP_CHANCE_KEY);
+        }
+
+        if (chanceStatIndex < 0 || dropChanceStatIndex < 0) {
+            return;
         }
 
         // Get Chance and DropChance values from EntityStatMap
@@ -106,13 +110,32 @@ public class DropChanceSystem extends EntityTickingSystem<EntityStore> {
             return 1.0f;
         }
 
-        int dropChanceStatIndex = EntityStatType.getAssetMap().getIndex(Characteristics.STATIC_MODIFIER_DROP_CHANCE_KEY);
-        EntityStatValue dropChanceStatValue = entityStatMap.get(dropChanceStatIndex);
-        if (dropChanceStatValue != null) {
-            // The DropChance stat is stored as a percentage (e.g., 0.1 = 10%)
-            // Convert to multiplier: 1.0 + percentage
-            return 1.0f + dropChanceStatValue.getMax();
+        int chanceStatIndex = resolveStatIndex(Characteristics.STATIC_MODIFIER_CHANCE_KEY);
+        if (chanceStatIndex < 0) {
+            return 1.0f;
         }
+
+        EntityStatValue chanceStatValue = entityStatMap.get(chanceStatIndex);
+        if (chanceStatValue != null) {
+            float chanceValue = Math.max(0f, chanceStatValue.getMax());
+            float bonus = chanceValue * DROP_CHANCE_PER_CHANCE;
+            return 1.0f + bonus;
+        }
+
         return 1.0f;
+    }
+
+    private static int resolveStatIndex(String statKey) {
+        int index = EntityStatType.getAssetMap().getIndex(statKey);
+        if (index < 0) {
+            return -1;
+        }
+
+        EntityStatType statType = EntityStatType.getAssetMap().getAsset(index);
+        if (statType == null || !statKey.equals(statType.getId())) {
+            return -1;
+        }
+
+        return index;
     }
 }
