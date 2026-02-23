@@ -95,7 +95,6 @@ Group #MainContainer {
       $C.@HytaleSectionSeparator {}
 
       Group { Anchor: (Height: 34); Label { Text: "STATS SECONDAIRES"; Style: (FontName: "Secondary", FontSize: 14, RenderUppercase: true, RenderBold: true, TextColor: #b7cbd3, Alignment: Start); } }
-      Group { Anchor: (Height: 28); Label { Text: "Pods"; Style: (FontSize: 13, TextColor: #9fb3c6, Alignment: Start); } Label #PodsTotalStatValueLabel { Text: "0"; Style: (FontSize: 13, TextColor: #d9c38f, Alignment: End); } }
       Group { Anchor: (Height: 28); Label { Text: "Regeneration vie"; Style: (FontSize: 13, TextColor: #9fb3c6, Alignment: Start); } Label #LifeRegenStatValueLabel { Text: "0%"; Style: (FontSize: 13, TextColor: #d9c38f, Alignment: End); } }
       Group { Anchor: (Height: 28); Label { Text: "Chance de drop"; Style: (FontSize: 13, TextColor: #9fb3c6, Alignment: Start); } Label #DropChanceStatValueLabel { Text: "0%"; Style: (FontSize: 13, TextColor: #d9c38f, Alignment: End); } }
       Group { Anchor: (Height: 28); Label { Text: "Vitesse de deplacement"; Style: (FontSize: 13, TextColor: #9fb3c6, Alignment: Start); } Label #MoveSpeedStatValueLabel { Text: "0%"; Style: (FontSize: 13, TextColor: #d9c38f, Alignment: End); } }

@@ -52,7 +52,7 @@ Each game system follows a consistent pattern:
   - Critical hit system with damage and resistance calculations
 - Passive stat systems inspired by Dofus:
   - **MoveSpeedSystem**: Agility increases movement speed (0.1% per point)
-  - **PodsSystem**: Strength increases inventory capacity (0.5 pods per point)
+  - **Strength**: no passive bonus currently (TODO)
   - **LifeRegenSystem**: Intelligence increases health regeneration (0.1% per point as % bonus to base regen)
   - **DropChanceSystem**: Chance increases drop rate (0.1% per point)
   - **Wisdom**: Increases XP gain (0.1% per point) - handled in GiveXPHandler

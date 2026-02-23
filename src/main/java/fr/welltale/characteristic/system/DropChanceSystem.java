@@ -28,11 +28,14 @@ public class DropChanceSystem extends EntityTickingSystem<EntityStore> {
     );
 
     // Cached stat indices
-    private Integer chanceStatIndex = null;
-    private Integer dropChanceStatIndex = null;
+    private int chanceStatIndex = -1;
+    private int dropChanceStatIndex = -1;
 
     // Drop chance bonus per point of Chance: 0.1% (0.001)
     private static final float DROP_CHANCE_PER_CHANCE = 0.001f;
+    private static final float UPDATE_EPSILON = 0.0001f;
+    private static final String DROP_CHANCE_MODIFIER_KEY =
+            StaticModifier.CalculationType.ADDITIVE.createKey("ChanceDropBonus");
 
     public DropChanceSystem() {
     }
@@ -58,7 +61,7 @@ public class DropChanceSystem extends EntityTickingSystem<EntityStore> {
         if (entityStatMap == null) return;
 
         // Lazy initialization of stat indices
-        if (chanceStatIndex == null) {
+        if (chanceStatIndex < 0) {
             chanceStatIndex = EntityStatType.getAssetMap().getIndex(Characteristics.STATIC_MODIFIER_CHANCE_KEY);
             dropChanceStatIndex = EntityStatType.getAssetMap().getIndex(Characteristics.STATIC_MODIFIER_DROP_CHANCE_KEY);
         }
@@ -69,9 +72,13 @@ public class DropChanceSystem extends EntityTickingSystem<EntityStore> {
             float chanceValue = chanceStatValue.getMax();
             float calculatedDropChance = chanceValue * DROP_CHANCE_PER_CHANCE;
 
+            EntityStatValue dropChanceStatValue = entityStatMap.get(dropChanceStatIndex);
+            if (dropChanceStatValue != null && Math.abs(dropChanceStatValue.getMax() - calculatedDropChance) <= UPDATE_EPSILON) {
+                return;
+            }
+
             // Update the DropChance stat modifier based on Chance
             // This updates the DropChance stat value which can be used when processing drops
-            String modifierKey = "ChanceDropBonus";
             StaticModifier dropChanceModifier = new StaticModifier(
                     Modifier.ModifierTarget.MAX,
                     StaticModifier.CalculationType.ADDITIVE,
@@ -79,7 +86,7 @@ public class DropChanceSystem extends EntityTickingSystem<EntityStore> {
             );
             entityStatMap.putModifier(
                     dropChanceStatIndex,
-                    dropChanceModifier.getCalculationType().createKey(modifierKey),
+                    DROP_CHANCE_MODIFIER_KEY,
                     dropChanceModifier
             );
         }

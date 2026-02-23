@@ -23,13 +23,15 @@ import com.hypixel.hytale.server.core.ui.builder.UIEventBuilder;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import fr.welltale.characteristic.page.CharacteristicsPage;
-import fr.welltale.characteristic.Characteristics;
 import fr.welltale.inventory.CustomInventoryService;
 import fr.welltale.player.PlayerRepository;
 import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 public class InventoryPage extends InteractiveCustomUIPage<InventoryPage.CustomInventoryEventData> {
@@ -96,6 +98,9 @@ public class InventoryPage extends InteractiveCustomUIPage<InventoryPage.CustomI
             AREA_EQUIPMENT_TROPHY_6
     };
 
+    private static final Map<String, Integer> EQUIPMENT_SLOT_BY_AREA = buildEquipmentSlotByArea();
+    private static final Set<String> EQUIPMENT_AREA_SET = EQUIPMENT_SLOT_BY_AREA.keySet();
+
     private static final String[][] EQUIPMENT_GRID_BINDINGS = {
             {"#EquipHeadGrid", AREA_EQUIPMENT_HEAD},
             {"#EquipWeaponGrid", AREA_EQUIPMENT_WEAPON},
@@ -117,7 +122,6 @@ public class InventoryPage extends InteractiveCustomUIPage<InventoryPage.CustomI
     };
 
     private boolean closed;
-    private Integer cachedPodsValue;
     private String lastRawEventPayload;
     private String pendingDragArea;
     private int pendingDragSlot = -1;
@@ -135,6 +139,12 @@ public class InventoryPage extends InteractiveCustomUIPage<InventoryPage.CustomI
         public String itemStackId;
         public String fromSlotId;
         public String toSlotId;
+        public String sourceSlotId;
+        public String sourceItemGridIndex;
+        public String targetSlotId;
+        public String destinationSlotId;
+        public String fromItemGridIndex;
+        public String toItemGridIndex;
 
         public static final BuilderCodec<CustomInventoryEventData> CODEC =
                 BuilderCodec.builder(CustomInventoryEventData.class, CustomInventoryEventData::new)
@@ -356,22 +366,31 @@ public class InventoryPage extends InteractiveCustomUIPage<InventoryPage.CustomI
     private boolean handleTransfer(@NonNull Ref<EntityStore> ref,
                                    @NonNull Store<EntityStore> store,
                                    @NonNull CustomInventoryEventData data) {
-        int sourceSlot = firstValid(
-                extractIntFromRawPayload(lastRawEventPayload, "SourceSlotId"),
-                extractIntFromRawPayload(lastRawEventPayload, "SourceItemGridIndex"),
-                extractIntFromRawPayload(lastRawEventPayload, "SlotIndex"),
-                resolveIndex(data)
-        );
+        int sourceSlot = resolveSourceSlot(data);
+        int targetSlot = resolveTargetSlot(data);
         String sourceItemId = data.itemStackId;
 
-        if (sourceSlot < 0 || data.area == null) {
+        if (data.area == null) {
             return false;
         }
 
+        String resolvedSourceArea = sourceSlot >= 0
+                ? resolveSourceArea(ref, store, data.area, sourceSlot, sourceItemId)
+                : null;
+
+        if (resolvedSourceArea != null && sourceSlot >= 0 && targetSlot >= 0) {
+            boolean applied = tryApplyTransfer(ref, store, resolvedSourceArea, sourceSlot, data.area, targetSlot);
+            if (applied) {
+                resetDragState();
+                return true;
+            }
+        }
+
         long now = System.currentTimeMillis();
-        if (pendingDragArea != null && now - pendingDragAt <= 1500L) {
-            if (!(pendingDragArea.equals(data.area) && pendingDragSlot == sourceSlot)) {
-                boolean applied = tryApplyTransfer(ref, store, pendingDragArea, pendingDragSlot, data.area, sourceSlot);
+        if (pendingDragArea != null && pendingDragSlot >= 0 && now - pendingDragAt <= 1500L) {
+            int pendingTargetSlot = targetSlot >= 0 ? targetSlot : firstValid(resolveIndex(data), sourceSlot);
+            if (pendingTargetSlot >= 0 && !(pendingDragArea.equals(data.area) && pendingDragSlot == pendingTargetSlot)) {
+                boolean applied = tryApplyTransfer(ref, store, pendingDragArea, pendingDragSlot, data.area, pendingTargetSlot);
                 if (!applied) {
                     resetDragState();
                 }
@@ -390,11 +409,47 @@ public class InventoryPage extends InteractiveCustomUIPage<InventoryPage.CustomI
             }
         }
 
-        String resolvedSourceArea = resolveSourceArea(ref, store, data.area, sourceSlot, sourceItemId);
+        if (sourceSlot < 0) {
+            return false;
+        }
+
         pendingDragArea = resolvedSourceArea != null ? resolvedSourceArea : data.area;
         pendingDragSlot = sourceSlot;
         pendingDragAt = now;
         return false;
+    }
+
+    private int resolveSourceSlot(@NonNull CustomInventoryEventData data) {
+        return firstValid(
+                parseIndex(data.sourceSlotId),
+                parseIndex(data.fromSlotId),
+                parseIndex(data.sourceItemGridIndex),
+                parseIndex(data.fromItemGridIndex),
+                extractIntFromRawPayload(lastRawEventPayload, "SourceSlotId"),
+                extractIntFromRawPayload(lastRawEventPayload, "FromSlotId"),
+                extractIntFromRawPayload(lastRawEventPayload, "SourceItemGridIndex"),
+                extractIntFromRawPayload(lastRawEventPayload, "FromItemGridIndex"),
+                extractIntFromRawPayload(lastRawEventPayload, "SlotIndex"),
+                parseIndex(data.slotIndex),
+                parseIndex(data.index)
+        );
+    }
+
+    private int resolveTargetSlot(@NonNull CustomInventoryEventData data) {
+        return firstValid(
+                parseIndex(data.toSlotId),
+                parseIndex(data.targetSlotId),
+                parseIndex(data.destinationSlotId),
+                parseIndex(data.toItemGridIndex),
+                parseIndex(data.inventorySlotIndex),
+                extractIntFromRawPayload(lastRawEventPayload, "ToSlotId"),
+                extractIntFromRawPayload(lastRawEventPayload, "TargetSlotId"),
+                extractIntFromRawPayload(lastRawEventPayload, "DestinationSlotId"),
+                extractIntFromRawPayload(lastRawEventPayload, "ToItemGridIndex"),
+                extractIntFromRawPayload(lastRawEventPayload, "SlotIndex"),
+                parseIndex(data.slotIndex),
+                parseIndex(data.index)
+        );
     }
 
     private boolean handleDragHover(@NonNull CustomInventoryEventData data,
@@ -415,10 +470,10 @@ public class InventoryPage extends InteractiveCustomUIPage<InventoryPage.CustomI
     }
 
     private boolean tryApplyTransfer(@NonNull Ref<EntityStore> ref,
-                                  @NonNull Store<EntityStore> store,
-                                  String fromArea,
-                                  int fromSlot,
-                                  String toArea,
+                                   @NonNull Store<EntityStore> store,
+                                   String fromArea,
+                                   int fromSlot,
+                                   String toArea,
                                   int toSlot) {
         if (fromArea == null || toArea == null || fromSlot < 0 || toSlot < 0) {
             return false;
@@ -428,15 +483,15 @@ public class InventoryPage extends InteractiveCustomUIPage<InventoryPage.CustomI
             return false;
         }
 
-        if (toInventorySectionId(fromArea) != Integer.MIN_VALUE && toInventorySectionId(toArea) != Integer.MIN_VALUE) {
+        int fromSectionId = toInventorySectionId(fromArea);
+        int toSectionId = toInventorySectionId(toArea);
+        if (fromSectionId != Integer.MIN_VALUE && toSectionId != Integer.MIN_VALUE) {
             Player player = store.getComponent(ref, Player.getComponentType());
             if (player == null) {
                 return false;
             }
 
             Inventory inventory = player.getInventory();
-            int fromSectionId = toInventorySectionId(fromArea);
-            int toSectionId = toInventorySectionId(toArea);
             int fromSlotId = toInventorySectionSlot(fromArea, fromSlot);
             int toSlotId = toInventorySectionSlot(toArea, toSlot);
             if (fromSectionId == Integer.MIN_VALUE || toSectionId == Integer.MIN_VALUE || fromSlotId < 0 || toSlotId < 0) {
@@ -598,21 +653,21 @@ public class InventoryPage extends InteractiveCustomUIPage<InventoryPage.CustomI
     }
 
     private boolean isEquipmentArea(String area) {
-        for (String equipmentArea : EQUIPMENT_AREAS) {
-            if (equipmentArea.equals(area)) {
-                return true;
-            }
-        }
-        return false;
+        return area != null && EQUIPMENT_AREA_SET.contains(area);
     }
 
     private int toEquipmentSlotIndex(String area) {
+        if (area == null) return -1;
+        Integer index = EQUIPMENT_SLOT_BY_AREA.get(area);
+        return index == null ? -1 : index;
+    }
+
+    private static Map<String, Integer> buildEquipmentSlotByArea() {
+        Map<String, Integer> byArea = new HashMap<>(EQUIPMENT_AREAS.length);
         for (int i = 0; i < EQUIPMENT_AREAS.length; i++) {
-            if (EQUIPMENT_AREAS[i].equals(area)) {
-                return i;
-            }
+            byArea.put(EQUIPMENT_AREAS[i], i);
         }
-        return -1;
+        return byArea;
     }
 
     private boolean canEquip(String area, ItemStack stack) {
@@ -940,21 +995,6 @@ public class InventoryPage extends InteractiveCustomUIPage<InventoryPage.CustomI
 
         cmd.set("#InventoryCountLabel.Text", String.valueOf(VISIBLE_INVENTORY_SLOT_COUNT));
         cmd.set("#LootCountLabel.Text", String.valueOf(loot.size()));
-        if (cachedPodsValue == null) {
-            cachedPodsValue = calculatePodsValue(ref, store);
-        }
-        cmd.set("#PodsValueLabel.Text", String.valueOf(cachedPodsValue));
-    }
-
-    private int calculatePodsValue(@NonNull Ref<EntityStore> ref, @NonNull Store<EntityStore> store) {
-        fr.welltale.player.Player playerData = getPlayerData(ref, store);
-        if (playerData == null) {
-            return 0;
-        }
-
-        Characteristics.EditableCharacteristics editable = playerData.getEditableCharacteristics();
-        int strength = editable != null ? editable.getStrength() : 0;
-        return Characteristics.DEFAULT_PODS + (strength * Characteristics.STRENGTH_TO_PODS);
     }
 
     private ItemStack getInventoryItem(Inventory inventory, int index) {
@@ -1031,15 +1071,6 @@ public class InventoryPage extends InteractiveCustomUIPage<InventoryPage.CustomI
         ItemGridSlot slot = itemStack == null ? new ItemGridSlot() : new ItemGridSlot(itemStack);
         slot.setActivatable(true);
         return slot;
-    }
-
-    private fr.welltale.player.Player getPlayerData(@NonNull Ref<EntityStore> ref, @NonNull Store<EntityStore> store) {
-        UUIDComponent uuidComponent = store.getComponent(ref, UUIDComponent.getComponentType());
-        if (uuidComponent == null) {
-            return null;
-        }
-
-        return this.playerRepository.getPlayerByUuid(uuidComponent.getUuid());
     }
 
 }

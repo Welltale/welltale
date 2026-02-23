@@ -10,8 +10,6 @@ import com.hypixel.hytale.server.core.modules.entitystats.EntityStatMap;
 import com.hypixel.hytale.server.core.modules.entitystats.EntityStatValue;
 import com.hypixel.hytale.server.core.modules.entitystats.asset.DefaultEntityStatTypes;
 import com.hypixel.hytale.server.core.modules.entitystats.asset.EntityStatType;
-import com.hypixel.hytale.server.core.modules.entitystats.modifier.Modifier;
-import com.hypixel.hytale.server.core.modules.entitystats.modifier.StaticModifier;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import fr.welltale.characteristic.Characteristics;
@@ -36,8 +34,8 @@ public class LifeRegenSystem extends EntityTickingSystem<EntityStore> {
     );
 
     // Cached stat indices
-    private Integer intelligenceStatIndex = null;
-    private Integer healthStatIndex = null;
+    private int intelligenceStatIndex = -1;
+    private int healthStatIndex = -1;
 
     // Base natural regeneration in HP per second
     // This is the default regeneration a player gets without any Intelligence
@@ -70,7 +68,7 @@ public class LifeRegenSystem extends EntityTickingSystem<EntityStore> {
         if (entityStatMap == null) return;
 
         // Lazy initialization of stat indices
-        if (intelligenceStatIndex == null) {
+        if (intelligenceStatIndex < 0) {
             intelligenceStatIndex = EntityStatType.getAssetMap().getIndex(Characteristics.STATIC_MODIFIER_INTELLIGENCE_KEY);
             healthStatIndex = DefaultEntityStatTypes.getHealth();
         }

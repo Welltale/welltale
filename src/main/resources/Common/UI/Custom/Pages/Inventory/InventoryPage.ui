@@ -196,7 +196,7 @@ Group #MainContainer {
           }
 
           Group {
-            Anchor: (Height: 42, Top: 10);
+            Anchor: (Height: 20, Top: 10);
 
             Label #InventoryFooterLabel {
               Text: "Slots visibles:";
@@ -210,17 +210,6 @@ Group #MainContainer {
               Anchor: (Top: 0, Height: 20);
             }
 
-            Label #PodsLabel {
-              Text: "Pods:";
-              Style: (FontSize: 12, TextColor: #96a9be, Alignment: Start);
-              Anchor: (Bottom: 0, Height: 20);
-            }
-
-            Label #PodsValueLabel {
-              Text: "0";
-              Style: (FontSize: 12, TextColor: #ccb588, Alignment: End);
-              Anchor: (Bottom: 0, Height: 20);
-            }
           }
         }
 

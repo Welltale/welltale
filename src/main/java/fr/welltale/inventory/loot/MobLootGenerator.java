@@ -30,14 +30,18 @@ public final class MobLootGenerator {
     private static List<ItemStack> rollFromMobConfig(Mob mobConfig, float dropChanceMultiplier) {
         if (mobConfig.getDrops() == null || mobConfig.getDrops().isEmpty()) return List.of();
 
+        List<Mob.Drop> entries = mobConfig.getDrops();
+        int[] cumulativeWeights = buildCumulativeWeights(entries);
+        if (cumulativeWeights.length == 0) return List.of();
+
         ThreadLocalRandom random = ThreadLocalRandom.current();
         int minRolls = Math.max(1, mobConfig.getLootRollsMin());
         int maxRolls = Math.max(minRolls, mobConfig.getLootRollsMax());
         int rolls = random.nextInt(minRolls, maxRolls + 1);
 
-        List<ItemStack> out = new ArrayList<>();
+        List<ItemStack> out = new ArrayList<>(rolls);
         for (int i = 0; i < rolls; i++) {
-            Mob.Drop picked = pickEntry(mobConfig.getDrops(), random);
+            Mob.Drop picked = pickEntry(entries, cumulativeWeights, random);
             if (picked == null) continue;
 
             String itemId = normalizeItemId(picked.getItemId());
@@ -99,20 +103,26 @@ public final class MobLootGenerator {
         }
     }
 
-    private static Mob.Drop pickEntry(List<Mob.Drop> entries, ThreadLocalRandom random) {
+    private static int[] buildCumulativeWeights(List<Mob.Drop> entries) {
+        int[] cumulative = new int[entries.size()];
         int weightSum = 0;
+        int count = 0;
         for (Mob.Drop entry : entries) {
             weightSum += Math.max(1, entry.getWeight());
+            cumulative[count++] = weightSum;
         }
 
-        if (weightSum <= 0) return null;
+        if (weightSum <= 0) return new int[0];
+        return cumulative;
+    }
 
-        int roll = random.nextInt(weightSum);
-        int cursor = 0;
-        for (Mob.Drop entry : entries) {
-            cursor += Math.max(1, entry.getWeight());
-            if (roll < cursor) {
-                return entry;
+    private static Mob.Drop pickEntry(List<Mob.Drop> entries, int[] cumulativeWeights, ThreadLocalRandom random) {
+        if (entries.isEmpty() || cumulativeWeights.length == 0) return null;
+
+        int roll = random.nextInt(cumulativeWeights[cumulativeWeights.length - 1]);
+        for (int i = 0; i < cumulativeWeights.length; i++) {
+            if (roll < cumulativeWeights[i]) {
+                return entries.get(i);
             }
         }
 

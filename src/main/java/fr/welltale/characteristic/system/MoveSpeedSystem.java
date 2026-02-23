@@ -6,7 +6,6 @@ import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.component.query.Query;
 import com.hypixel.hytale.component.system.tick.EntityTickingSystem;
-import com.hypixel.hytale.logger.HytaleLogger;
 import com.hypixel.hytale.protocol.packets.player.UpdateMovementSettings;
 import com.hypixel.hytale.server.core.entity.entities.player.movement.MovementManager;
 import com.hypixel.hytale.server.core.modules.entitystats.EntityStatMap;
@@ -29,8 +28,8 @@ public class MoveSpeedSystem extends EntityTickingSystem<EntityStore> {
     );
 
     // Cached stat indices
-    private Integer moveSpeedStatIndex = null;
-    private Integer agilityStatIndex = null;
+    private int moveSpeedStatIndex = -1;
+    private int agilityStatIndex = -1;
 
     // Agility bonus per point: 0.1% (0.001)
     private static final float AGILITY_BONUS_PER_POINT = 0.001f;
@@ -65,7 +64,7 @@ public class MoveSpeedSystem extends EntityTickingSystem<EntityStore> {
         if (movementManager == null) return;
 
         // Lazy initialization of stat indices
-        if (moveSpeedStatIndex == null) {
+        if (moveSpeedStatIndex < 0) {
             moveSpeedStatIndex = EntityStatType.getAssetMap().getIndex(Characteristics.STATIC_MODIFIER_MOVE_SPEED_KEY);
             agilityStatIndex = EntityStatType.getAssetMap().getIndex(Characteristics.STATIC_MODIFIER_AGILITY_KEY);
         }

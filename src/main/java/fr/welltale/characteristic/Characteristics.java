@@ -22,8 +22,6 @@ public class Characteristics {
     public static final int DEFAULT_HEALTH = 20;
     public static final int DEFAULT_WISDOM = 0;
     public static final int DEFAULT_STRENGTH = 100;
-    public static final int DEFAULT_PODS = 10;
-    public static final int STRENGTH_TO_PODS = 5;
     public static final int DEFAULT_INTELLIGENCE = 0;
     public static final int DEFAULT_CHANCE = 0;
     public static final int DEFAULT_AGILITY = 0;
@@ -45,7 +43,6 @@ public class Characteristics {
     public static final String STATIC_MODIFIER_HEALTH_KEY = "Health";
     public static final String STATIC_MODIFIER_WISDOM_KEY = "Wisdom";
     public static final String STATIC_MODIFIER_STRENGTH_KEY = "Strength";
-    public static final String STATIC_MODIFIER_PODS_KEY = "Pods";
     public static final String STATIC_MODIFIER_INTELLIGENCE_KEY = "Intelligence";
     public static final String STATIC_MODIFIER_CHANCE_KEY = "Chance";
     public static final String STATIC_MODIFIER_AGILITY_KEY = "Agility";
@@ -60,6 +57,42 @@ public class Characteristics {
     public static final String STATIC_MODIFIER_FIRE_RESISTANCE_PCT_KEY = "FireResistance";
     public static final String STATIC_MODIFIER_WATER_RESISTANCE_PCT_KEY = "WaterResistance";
     public static final String STATIC_MODIFIER_AIR_RESISTANCE_PCT_KEY = "AirResistance";
+
+    private static final String MODIFIER_KEY_HEALTH = StaticModifier.CalculationType.ADDITIVE.createKey(STATIC_MODIFIER_HEALTH_KEY);
+    private static final String MODIFIER_KEY_WISDOM = StaticModifier.CalculationType.ADDITIVE.createKey(STATIC_MODIFIER_WISDOM_KEY);
+    private static final String MODIFIER_KEY_STRENGTH = StaticModifier.CalculationType.ADDITIVE.createKey(STATIC_MODIFIER_STRENGTH_KEY);
+    private static final String MODIFIER_KEY_INTELLIGENCE = StaticModifier.CalculationType.ADDITIVE.createKey(STATIC_MODIFIER_INTELLIGENCE_KEY);
+    private static final String MODIFIER_KEY_CHANCE = StaticModifier.CalculationType.ADDITIVE.createKey(STATIC_MODIFIER_CHANCE_KEY);
+    private static final String MODIFIER_KEY_AGILITY = StaticModifier.CalculationType.ADDITIVE.createKey(STATIC_MODIFIER_AGILITY_KEY);
+    private static final String MODIFIER_KEY_LIFE_REGEN = StaticModifier.CalculationType.MULTIPLICATIVE.createKey(STATIC_MODIFIER_LIFE_REGEN_PCT_KEY);
+    private static final String MODIFIER_KEY_DROP_CHANCE = StaticModifier.CalculationType.MULTIPLICATIVE.createKey(STATIC_MODIFIER_DROP_CHANCE_KEY);
+    private static final String MODIFIER_KEY_MOVE_SPEED = StaticModifier.CalculationType.MULTIPLICATIVE.createKey(STATIC_MODIFIER_MOVE_SPEED_KEY);
+    private static final String MODIFIER_KEY_STAMINA = StaticModifier.CalculationType.ADDITIVE.createKey(STATIC_MODIFIER_STAMINA_KEY);
+    private static final String MODIFIER_KEY_CRITICAL_DAMAGE = StaticModifier.CalculationType.ADDITIVE.createKey(STATIC_MODIFIER_CRITICAL_DAMAGE_KEY);
+    private static final String MODIFIER_KEY_CRITICAL_PCT = StaticModifier.CalculationType.MULTIPLICATIVE.createKey(STATIC_MODIFIER_CRITICAL_PCT_KEY);
+    private static final String MODIFIER_KEY_CRITICAL_RESISTANCE = StaticModifier.CalculationType.ADDITIVE.createKey(STATIC_MODIFIER_CRITICAL_RESISTANCE_KEY);
+    private static final String MODIFIER_KEY_EARTH_RESISTANCE = StaticModifier.CalculationType.MULTIPLICATIVE.createKey(STATIC_MODIFIER_EARTH_RESISTANCE_PCT_KEY);
+    private static final String MODIFIER_KEY_FIRE_RESISTANCE = StaticModifier.CalculationType.MULTIPLICATIVE.createKey(STATIC_MODIFIER_FIRE_RESISTANCE_PCT_KEY);
+    private static final String MODIFIER_KEY_WATER_RESISTANCE = StaticModifier.CalculationType.MULTIPLICATIVE.createKey(STATIC_MODIFIER_WATER_RESISTANCE_PCT_KEY);
+    private static final String MODIFIER_KEY_AIR_RESISTANCE = StaticModifier.CalculationType.MULTIPLICATIVE.createKey(STATIC_MODIFIER_AIR_RESISTANCE_PCT_KEY);
+
+    private static final class StatIndices {
+        private static final int WISDOM = EntityStatType.getAssetMap().getIndex(STATIC_MODIFIER_WISDOM_KEY);
+        private static final int STRENGTH = EntityStatType.getAssetMap().getIndex(STATIC_MODIFIER_STRENGTH_KEY);
+        private static final int INTELLIGENCE = EntityStatType.getAssetMap().getIndex(STATIC_MODIFIER_INTELLIGENCE_KEY);
+        private static final int CHANCE = EntityStatType.getAssetMap().getIndex(STATIC_MODIFIER_CHANCE_KEY);
+        private static final int AGILITY = EntityStatType.getAssetMap().getIndex(STATIC_MODIFIER_AGILITY_KEY);
+        private static final int LIFE_REGEN = EntityStatType.getAssetMap().getIndex(STATIC_MODIFIER_LIFE_REGEN_PCT_KEY);
+        private static final int DROP_CHANCE = EntityStatType.getAssetMap().getIndex(STATIC_MODIFIER_DROP_CHANCE_KEY);
+        private static final int MOVE_SPEED = EntityStatType.getAssetMap().getIndex(STATIC_MODIFIER_MOVE_SPEED_KEY);
+        private static final int CRITICAL_DAMAGE = EntityStatType.getAssetMap().getIndex(STATIC_MODIFIER_CRITICAL_DAMAGE_KEY);
+        private static final int CRITICAL_PCT = EntityStatType.getAssetMap().getIndex(STATIC_MODIFIER_CRITICAL_PCT_KEY);
+        private static final int CRITICAL_RESISTANCE = EntityStatType.getAssetMap().getIndex(STATIC_MODIFIER_CRITICAL_RESISTANCE_KEY);
+        private static final int EARTH_RESISTANCE = EntityStatType.getAssetMap().getIndex(STATIC_MODIFIER_EARTH_RESISTANCE_PCT_KEY);
+        private static final int FIRE_RESISTANCE = EntityStatType.getAssetMap().getIndex(STATIC_MODIFIER_FIRE_RESISTANCE_PCT_KEY);
+        private static final int WATER_RESISTANCE = EntityStatType.getAssetMap().getIndex(STATIC_MODIFIER_WATER_RESISTANCE_PCT_KEY);
+        private static final int AIR_RESISTANCE = EntityStatType.getAssetMap().getIndex(STATIC_MODIFIER_AIR_RESISTANCE_PCT_KEY);
+    }
 
     public enum DamageElement {
         EARTH,
@@ -85,7 +118,6 @@ public class Characteristics {
         private int health;
         private int wisdom;
         private int strength;
-        private int pods;
         private int intelligence;
         private int chance;
         private int agility;
@@ -118,52 +150,47 @@ public class Characteristics {
 
         AdditionalCharacteristics additionalCharacteristics = new AdditionalCharacteristics();
 
-        EntityStatValue healthStatValue = playerStatMap.get(EntityStatType.getAssetMap().getIndex(STATIC_MODIFIER_HEALTH_KEY));
+        EntityStatValue healthStatValue = playerStatMap.get(DefaultEntityStatTypes.getHealth());
         if (healthStatValue != null) {
             additionalCharacteristics.health = (int) healthStatValue.getMax();
         }
 
-        EntityStatValue wisdomStatValue = playerStatMap.get(EntityStatType.getAssetMap().getIndex(STATIC_MODIFIER_WISDOM_KEY));
+        EntityStatValue wisdomStatValue = playerStatMap.get(StatIndices.WISDOM);
         if (wisdomStatValue != null) {
             additionalCharacteristics.wisdom = (int) wisdomStatValue.getMax();
         }
 
-        EntityStatValue strengthStatValue = playerStatMap.get(EntityStatType.getAssetMap().getIndex(STATIC_MODIFIER_STRENGTH_KEY));
+        EntityStatValue strengthStatValue = playerStatMap.get(StatIndices.STRENGTH);
         if (strengthStatValue != null) {
             additionalCharacteristics.strength = (int) strengthStatValue.getMax();
         }
 
-        EntityStatValue podsStatValue = playerStatMap.get(EntityStatType.getAssetMap().getIndex(STATIC_MODIFIER_PODS_KEY));
-        if (podsStatValue != null) {
-            additionalCharacteristics.pods = (int) podsStatValue.getMax();
-        }
-
-        EntityStatValue intelligenceStatValue = playerStatMap.get(EntityStatType.getAssetMap().getIndex(STATIC_MODIFIER_INTELLIGENCE_KEY));
+        EntityStatValue intelligenceStatValue = playerStatMap.get(StatIndices.INTELLIGENCE);
         if (intelligenceStatValue != null) {
             additionalCharacteristics.intelligence = (int) intelligenceStatValue.getMax();
         }
 
-        EntityStatValue chanceStatValue = playerStatMap.get(EntityStatType.getAssetMap().getIndex(STATIC_MODIFIER_CHANCE_KEY));
+        EntityStatValue chanceStatValue = playerStatMap.get(StatIndices.CHANCE);
         if (chanceStatValue != null) {
             additionalCharacteristics.chance = (int) chanceStatValue.getMax();
         }
 
-        EntityStatValue agilityStatValue = playerStatMap.get(EntityStatType.getAssetMap().getIndex(STATIC_MODIFIER_AGILITY_KEY));
+        EntityStatValue agilityStatValue = playerStatMap.get(StatIndices.AGILITY);
         if (agilityStatValue != null) {
             additionalCharacteristics.agility = (int) agilityStatValue.getMax();
         }
 
-        EntityStatValue lifeRegenPctStatValue = playerStatMap.get(EntityStatType.getAssetMap().getIndex(STATIC_MODIFIER_LIFE_REGEN_PCT_KEY));
+        EntityStatValue lifeRegenPctStatValue = playerStatMap.get(StatIndices.LIFE_REGEN);
         if (lifeRegenPctStatValue != null) {
-            additionalCharacteristics.lifeRegenPct = (int) lifeRegenPctStatValue.getMax();
+            additionalCharacteristics.lifeRegenPct = lifeRegenPctStatValue.getMax();
         }
 
-        EntityStatValue dropChanceStatValue = playerStatMap.get(EntityStatType.getAssetMap().getIndex(STATIC_MODIFIER_DROP_CHANCE_KEY));
+        EntityStatValue dropChanceStatValue = playerStatMap.get(StatIndices.DROP_CHANCE);
         if (dropChanceStatValue != null) {
             additionalCharacteristics.dropChance = (int) dropChanceStatValue.getMax();
         }
 
-        EntityStatValue moveSpeedStatValue = playerStatMap.get(EntityStatType.getAssetMap().getIndex(STATIC_MODIFIER_MOVE_SPEED_KEY));
+        EntityStatValue moveSpeedStatValue = playerStatMap.get(StatIndices.MOVE_SPEED);
         if (moveSpeedStatValue != null) {
             additionalCharacteristics.moveSpeed = (int) moveSpeedStatValue.getMax();
         }
@@ -173,37 +200,37 @@ public class Characteristics {
             additionalCharacteristics.stamina = (int) staminaStatValue.getMax();
         }
 
-        EntityStatValue criticalDamageStatValue = playerStatMap.get(EntityStatType.getAssetMap().getIndex(STATIC_MODIFIER_CRITICAL_DAMAGE_KEY));
+        EntityStatValue criticalDamageStatValue = playerStatMap.get(StatIndices.CRITICAL_DAMAGE);
         if (criticalDamageStatValue != null) {
             additionalCharacteristics.criticalDamage = (int) criticalDamageStatValue.getMax();
         }
 
-        EntityStatValue criticalPctStatValue = playerStatMap.get(EntityStatType.getAssetMap().getIndex(STATIC_MODIFIER_CRITICAL_PCT_KEY));
+        EntityStatValue criticalPctStatValue = playerStatMap.get(StatIndices.CRITICAL_PCT);
         if (criticalPctStatValue != null) {
             additionalCharacteristics.criticalPct = criticalPctStatValue.getMax();
         }
 
-        EntityStatValue criticalResistanceStatValue = playerStatMap.get(EntityStatType.getAssetMap().getIndex(STATIC_MODIFIER_CRITICAL_RESISTANCE_KEY));
+        EntityStatValue criticalResistanceStatValue = playerStatMap.get(StatIndices.CRITICAL_RESISTANCE);
         if (criticalResistanceStatValue != null) {
             additionalCharacteristics.criticalResistance = (int) criticalResistanceStatValue.getMax();
         }
 
-        EntityStatValue earthResistanceStatValue = playerStatMap.get(EntityStatType.getAssetMap().getIndex(STATIC_MODIFIER_EARTH_RESISTANCE_PCT_KEY));
+        EntityStatValue earthResistanceStatValue = playerStatMap.get(StatIndices.EARTH_RESISTANCE);
         if (earthResistanceStatValue != null) {
             additionalCharacteristics.earthResistance = (int) earthResistanceStatValue.getMax();
         }
 
-        EntityStatValue fireResistanceStatValue = playerStatMap.get(EntityStatType.getAssetMap().getIndex(STATIC_MODIFIER_FIRE_RESISTANCE_PCT_KEY));
+        EntityStatValue fireResistanceStatValue = playerStatMap.get(StatIndices.FIRE_RESISTANCE);
         if (fireResistanceStatValue != null) {
             additionalCharacteristics.fireResistance = (int) fireResistanceStatValue.getMax();
         }
 
-        EntityStatValue waterResistanceStatValue = playerStatMap.get(EntityStatType.getAssetMap().getIndex(STATIC_MODIFIER_WATER_RESISTANCE_PCT_KEY));
+        EntityStatValue waterResistanceStatValue = playerStatMap.get(StatIndices.WATER_RESISTANCE);
         if (waterResistanceStatValue != null) {
             additionalCharacteristics.waterResistance = (int) waterResistanceStatValue.getMax();
         }
 
-        EntityStatValue airResistanceStatValue = playerStatMap.get(EntityStatType.getAssetMap().getIndex(STATIC_MODIFIER_AIR_RESISTANCE_PCT_KEY));
+        EntityStatValue airResistanceStatValue = playerStatMap.get(StatIndices.AIR_RESISTANCE);
         if (airResistanceStatValue != null) {
             additionalCharacteristics.airResistance = (int) airResistanceStatValue.getMax();
         }
@@ -232,7 +259,7 @@ public class Characteristics {
         );
         playerStatMap.putModifier(
                 DefaultEntityStatTypes.getHealth(),
-                staticModifierHealth.getCalculationType().createKey(STATIC_MODIFIER_HEALTH_KEY),
+                MODIFIER_KEY_HEALTH,
                 staticModifierHealth
         );
 
@@ -242,33 +269,23 @@ public class Characteristics {
                 DEFAULT_WISDOM
         );
         playerStatMap.putModifier(
-                EntityStatType.getAssetMap().getIndex(STATIC_MODIFIER_WISDOM_KEY),
-                staticModifierWisdom.getCalculationType().createKey(STATIC_MODIFIER_WISDOM_KEY),
+                StatIndices.WISDOM,
+                MODIFIER_KEY_WISDOM,
                 staticModifierWisdom
         );
 
         int effectiveStrength = DEFAULT_STRENGTH + playerEditableCharacteristics.strength;
 
+        // TODO: Implement Strength passive bonus.
         StaticModifier staticModifierStrength = new StaticModifier(
                 Modifier.ModifierTarget.MAX,
                 StaticModifier.CalculationType.ADDITIVE,
                 effectiveStrength
         );
         playerStatMap.putModifier(
-                EntityStatType.getAssetMap().getIndex(STATIC_MODIFIER_STRENGTH_KEY),
-                staticModifierStrength.getCalculationType().createKey(STATIC_MODIFIER_STRENGTH_KEY),
+                StatIndices.STRENGTH,
+                MODIFIER_KEY_STRENGTH,
                 staticModifierStrength
-        );
-
-        StaticModifier staticModifierPods = new StaticModifier(
-                Modifier.ModifierTarget.MAX,
-                StaticModifier.CalculationType.ADDITIVE,
-                DEFAULT_PODS + (playerEditableCharacteristics.strength * STRENGTH_TO_PODS)
-        );
-        playerStatMap.putModifier(
-                EntityStatType.getAssetMap().getIndex(STATIC_MODIFIER_PODS_KEY),
-                staticModifierPods.getCalculationType().createKey(STATIC_MODIFIER_PODS_KEY),
-                staticModifierPods
         );
 
         StaticModifier staticModifierIntelligence = new StaticModifier(
@@ -277,8 +294,8 @@ public class Characteristics {
                 DEFAULT_INTELLIGENCE
         );
         playerStatMap.putModifier(
-                EntityStatType.getAssetMap().getIndex(STATIC_MODIFIER_INTELLIGENCE_KEY),
-                staticModifierIntelligence.getCalculationType().createKey(STATIC_MODIFIER_INTELLIGENCE_KEY),
+                StatIndices.INTELLIGENCE,
+                MODIFIER_KEY_INTELLIGENCE,
                 staticModifierIntelligence
         );
 
@@ -288,8 +305,8 @@ public class Characteristics {
                 DEFAULT_CHANCE
         );
         playerStatMap.putModifier(
-                EntityStatType.getAssetMap().getIndex(STATIC_MODIFIER_CHANCE_KEY),
-                staticModifierChance.getCalculationType().createKey(STATIC_MODIFIER_CHANCE_KEY),
+                StatIndices.CHANCE,
+                MODIFIER_KEY_CHANCE,
                 staticModifierChance
         );
 
@@ -299,19 +316,19 @@ public class Characteristics {
                 DEFAULT_AGILITY
         );
         playerStatMap.putModifier(
-                EntityStatType.getAssetMap().getIndex(STATIC_MODIFIER_AGILITY_KEY),
-                staticModifierAgility.getCalculationType().createKey(STATIC_MODIFIER_AGILITY_KEY),
+                StatIndices.AGILITY,
+                MODIFIER_KEY_AGILITY,
                 staticModifierAgility
         );
 
         StaticModifier staticModifierLifeRegenPct = new StaticModifier(
                 Modifier.ModifierTarget.MAX,
-                StaticModifier.CalculationType.ADDITIVE,
+                StaticModifier.CalculationType.MULTIPLICATIVE,
                 DEFAULT_LIFE_REGEN_PCT
         );
         playerStatMap.putModifier(
-                EntityStatType.getAssetMap().getIndex(STATIC_MODIFIER_LIFE_REGEN_PCT_KEY),
-                staticModifierLifeRegenPct.getCalculationType().createKey(STATIC_MODIFIER_LIFE_REGEN_PCT_KEY),
+                StatIndices.LIFE_REGEN,
+                MODIFIER_KEY_LIFE_REGEN,
                 staticModifierLifeRegenPct
         );
 
@@ -321,8 +338,8 @@ public class Characteristics {
                 DEFAULT_DROP_CHANCE
         );
         playerStatMap.putModifier(
-                EntityStatType.getAssetMap().getIndex(STATIC_MODIFIER_DROP_CHANCE_KEY),
-                staticModifierDropChance.getCalculationType().createKey(STATIC_MODIFIER_DROP_CHANCE_KEY),
+                StatIndices.DROP_CHANCE,
+                MODIFIER_KEY_DROP_CHANCE,
                 staticModifierDropChance
         );
 
@@ -332,8 +349,8 @@ public class Characteristics {
                 DEFAULT_MOVE_SPEED
         );
         playerStatMap.putModifier(
-                EntityStatType.getAssetMap().getIndex(STATIC_MODIFIER_MOVE_SPEED_KEY),
-                staticModifierMoveSpeed.getCalculationType().createKey(STATIC_MODIFIER_MOVE_SPEED_KEY),
+                StatIndices.MOVE_SPEED,
+                MODIFIER_KEY_MOVE_SPEED,
                 staticModifierMoveSpeed
         );
 
@@ -344,7 +361,7 @@ public class Characteristics {
         );
         playerStatMap.putModifier(
                 DefaultEntityStatTypes.getStamina(),
-                staticModifierStamina.getCalculationType().createKey(STATIC_MODIFIER_STAMINA_KEY),
+                MODIFIER_KEY_STAMINA,
                 staticModifierStamina
         );
 
@@ -354,8 +371,8 @@ public class Characteristics {
                 DEFAULT_CRITICAL_DAMAGE
         );
         playerStatMap.putModifier(
-                EntityStatType.getAssetMap().getIndex(STATIC_MODIFIER_CRITICAL_DAMAGE_KEY),
-                staticModifierCriticalDamage.getCalculationType().createKey(STATIC_MODIFIER_CRITICAL_DAMAGE_KEY),
+                StatIndices.CRITICAL_DAMAGE,
+                MODIFIER_KEY_CRITICAL_DAMAGE,
                 staticModifierCriticalDamage
         );
 
@@ -365,8 +382,8 @@ public class Characteristics {
                 DEFAULT_CRITICAL_PCT
         );
         playerStatMap.putModifier(
-                EntityStatType.getAssetMap().getIndex(STATIC_MODIFIER_CRITICAL_PCT_KEY),
-                staticModifierCriticalPct.getCalculationType().createKey(STATIC_MODIFIER_CRITICAL_PCT_KEY),
+                StatIndices.CRITICAL_PCT,
+                MODIFIER_KEY_CRITICAL_PCT,
                 staticModifierCriticalPct
         );
 
@@ -376,8 +393,8 @@ public class Characteristics {
                 DEFAULT_CRITICAL_RESISTANCE
         );
         playerStatMap.putModifier(
-                EntityStatType.getAssetMap().getIndex(STATIC_MODIFIER_CRITICAL_RESISTANCE_KEY),
-                staticModifierCriticalResistance.getCalculationType().createKey(STATIC_MODIFIER_CRITICAL_RESISTANCE_KEY),
+                StatIndices.CRITICAL_RESISTANCE,
+                MODIFIER_KEY_CRITICAL_RESISTANCE,
                 staticModifierCriticalResistance
         );
 
@@ -387,8 +404,8 @@ public class Characteristics {
                 DEFAULT_EARTH_RESISTANCE_PCT
         );
         playerStatMap.putModifier(
-                EntityStatType.getAssetMap().getIndex(STATIC_MODIFIER_EARTH_RESISTANCE_PCT_KEY),
-                staticModifierEarthResistance.getCalculationType().createKey(STATIC_MODIFIER_EARTH_RESISTANCE_PCT_KEY),
+                StatIndices.EARTH_RESISTANCE,
+                MODIFIER_KEY_EARTH_RESISTANCE,
                 staticModifierEarthResistance
         );
 
@@ -398,8 +415,8 @@ public class Characteristics {
                 DEFAULT_FIRE_RESISTANCE_PCT
         );
         playerStatMap.putModifier(
-                EntityStatType.getAssetMap().getIndex(STATIC_MODIFIER_FIRE_RESISTANCE_PCT_KEY),
-                staticModifierFireResistance.getCalculationType().createKey(STATIC_MODIFIER_FIRE_RESISTANCE_PCT_KEY),
+                StatIndices.FIRE_RESISTANCE,
+                MODIFIER_KEY_FIRE_RESISTANCE,
                 staticModifierFireResistance
         );
 
@@ -409,8 +426,8 @@ public class Characteristics {
                 DEFAULT_WATER_RESISTANCE_PCT
         );
         playerStatMap.putModifier(
-                EntityStatType.getAssetMap().getIndex(STATIC_MODIFIER_WATER_RESISTANCE_PCT_KEY),
-                staticModifierWaterResistance.getCalculationType().createKey(STATIC_MODIFIER_WATER_RESISTANCE_PCT_KEY),
+                StatIndices.WATER_RESISTANCE,
+                MODIFIER_KEY_WATER_RESISTANCE,
                 staticModifierWaterResistance
         );
 
@@ -420,8 +437,8 @@ public class Characteristics {
                 DEFAULT_AIR_RESISTANCE_PCT
         );
         playerStatMap.putModifier(
-                EntityStatType.getAssetMap().getIndex(STATIC_MODIFIER_AIR_RESISTANCE_PCT_KEY),
-                staticModifierAirResistance.getCalculationType().createKey(STATIC_MODIFIER_AIR_RESISTANCE_PCT_KEY),
+                StatIndices.AIR_RESISTANCE,
+                MODIFIER_KEY_AIR_RESISTANCE,
                 staticModifierAirResistance
         );
     }

@@ -171,7 +171,6 @@ public class CharacteristicsPage extends InteractiveCustomUIPage<Characteristics
         fr.welltale.player.Player playerData = getPlayerData(ref, store);
         int points = playerData != null ? playerData.getCharacteristicPoints() : 0;
         Characteristics.EditableCharacteristics editable = playerData != null ? playerData.getEditableCharacteristics() : null;
-        int podsFromCharacteristics = Characteristics.DEFAULT_PODS + ((editable != null ? editable.getStrength() : 0) * Characteristics.STRENGTH_TO_PODS);
 
         Characteristics.AdditionalCharacteristics additionalCharacteristics = Characteristics.getAdditionalCharacteristicsFromPlayer(ref, store);
 
@@ -182,7 +181,6 @@ public class CharacteristicsPage extends InteractiveCustomUIPage<Characteristics
         cmd.set("#IntelligenceStatValueLabel.Text", String.valueOf(editable != null ? editable.getIntelligence() : 0));
         cmd.set("#ChanceStatValueLabel.Text", String.valueOf(editable != null ? editable.getChance() : 0));
         cmd.set("#AgilityStatValueLabel.Text", String.valueOf(editable != null ? editable.getAgility() : 0));
-        cmd.set("#PodsTotalStatValueLabel.Text", String.valueOf(podsFromCharacteristics));
         cmd.set("#LifeRegenStatValueLabel.Text", formatPercent(additionalCharacteristics.getLifeRegenPct()));
         cmd.set("#DropChanceStatValueLabel.Text", formatPercent(additionalCharacteristics.getDropChance()));
         cmd.set("#MoveSpeedStatValueLabel.Text", formatPercent(additionalCharacteristics.getMoveSpeed()));
