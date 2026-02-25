@@ -22,7 +22,7 @@ Group #MainContainer {
   }
 
   Group #Frame {
-    Anchor: (Top: 92);
+    Anchor: (Top: 92, Bottom: 10, Horizontal: 55);
     LayoutMode: Top;
     Padding: (Full: 10);
     Background: (TexturePath: "../../Commons/Container/ContainerFullPatch.png", HorizontalBorder: 30, VerticalBorder: 30);
@@ -47,8 +47,9 @@ Group #MainContainer {
       Group { FlexWeight: 1; }
 
         Group #MainInventorySection {
-          Anchor: (Height: 430);
+          Anchor: (Left: 0, Right: -18, Height: 430);
           LayoutMode: Left;
+          Padding: (Left: 10, Right: 10);
 
         Group #EquipmentPanel {
           FlexWeight: 31;
@@ -111,7 +112,7 @@ Group #MainContainer {
 
               Group {
                 Anchor: (Width: 62);
-                LayoutMode: Left;
+                LayoutMode: Center;
 
                 ItemGrid #EquipTrophy1Grid { Anchor: (Height: 44); SlotsPerRow: 1; AreItemsDraggable: true; DisplayItemQuantity: true; RenderItemQualityBackground: true; ShowScrollbar: false; Style: (SlotSize: 42, SlotIconSize: 34, SlotSpacing: 4, SlotBackground: "../../Commons/Tiles/SlotDefault.png"); }
                 $C.@SmallSpacer {}

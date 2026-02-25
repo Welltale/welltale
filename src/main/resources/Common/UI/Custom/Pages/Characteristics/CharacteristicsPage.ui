@@ -22,7 +22,7 @@ Group #MainContainer {
   }
 
   Group #Frame {
-    Anchor: (Top: 92, Horizontal: 55);
+    Anchor: (Top: 92, Bottom: 10, Horizontal: 55);
     LayoutMode: Top;
     Padding: (Full: 10);
     Background: (TexturePath: "../../Commons/Container/ContainerFullPatch.png", HorizontalBorder: 30, VerticalBorder: 30);
@@ -41,8 +41,9 @@ Group #MainContainer {
     $C.@SmallSpacer {}
 
     Group #CharacteristicsPanel {
-      Anchor: (Height: 430, Left: 0, Right: 0);
+      Anchor: (Left: 0, Right: 0, Height: 430);
       LayoutMode: Left;
+      Padding: (Left: 10, Right: 10);
 
       Group #LeftColumn {
         Anchor: (Height: 430);
