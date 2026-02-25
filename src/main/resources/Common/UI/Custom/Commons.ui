@@ -56,7 +56,7 @@ $Sounds = "Sound.ui";
 
 @HytaleContainerBackground = PatchStyle(TexturePath: "Commons/Container/ContainerPatch.png", Border: 23);
 @HytaleHeaderBackground = PatchStyle(TexturePath: "Commons/Container/ContainerHeaderNoRunes.png", HorizontalBorder: 35, VerticalBorder: 0);
-@HytalePanelBackground = PatchStyle(TexturePath: "Commons/Container/ContainerPanelLightPatch.png", Border: 18);
+@HytalePanelBackground = PatchStyle(TexturePath: "Commons/Container/ContainerPanelLightPatch.png", Border: 50);
 @HytaleSectionSeparator = Group {
   Anchor: (Height: 6, Right: 0, Left: 0, Top: 8, Bottom: 8);
   Background: (TexturePath: "Commons/Container/ContainerSectionSeparator.png", Border: 2);

@@ -47,7 +47,7 @@ Group #MainContainer {
       Group { FlexWeight: 1; }
 
         Group #MainInventorySection {
-          Anchor: (Height: 430);
+          Anchor: (Height: 450);
           LayoutMode: Left;
 
         Group #EquipmentPanel {
@@ -64,63 +64,66 @@ Group #MainContainer {
           $C.@HytaleSectionSeparator {}
 
           Group {
-            Anchor: (Top: 0, Bottom: 0);
-            LayoutMode: Left;
-
-            Group {
-              Anchor: (Width: 62);
-              LayoutMode: Top;
-
-              ItemGrid #EquipTrophy1Grid { Anchor: (Height: 44); SlotsPerRow: 1; AreItemsDraggable: true; DisplayItemQuantity: true; RenderItemQualityBackground: true; ShowScrollbar: false; Style: (SlotSize: 42, SlotIconSize: 34, SlotSpacing: 4, SlotBackground: "../../Commons/Tiles/SlotDefault.png"); }
-              $C.@SmallSpacer {}
-              ItemGrid #EquipTrophy2Grid { Anchor: (Height: 44); SlotsPerRow: 1; AreItemsDraggable: true; DisplayItemQuantity: true; RenderItemQualityBackground: true; ShowScrollbar: false; Style: (SlotSize: 42, SlotIconSize: 34, SlotSpacing: 4, SlotBackground: "../../Commons/Tiles/SlotDefault.png"); }
-              $C.@SmallSpacer {}
-              ItemGrid #EquipTrophy3Grid { Anchor: (Height: 44); SlotsPerRow: 1; AreItemsDraggable: true; DisplayItemQuantity: true; RenderItemQualityBackground: true; ShowScrollbar: false; Style: (SlotSize: 42, SlotIconSize: 34, SlotSpacing: 4, SlotBackground: "../../Commons/Tiles/SlotDefault.png"); }
-              $C.@SmallSpacer {}
-              ItemGrid #EquipTrophy4Grid { Anchor: (Height: 44); SlotsPerRow: 1; AreItemsDraggable: true; DisplayItemQuantity: true; RenderItemQualityBackground: true; ShowScrollbar: false; Style: (SlotSize: 42, SlotIconSize: 34, SlotSpacing: 4, SlotBackground: "../../Commons/Tiles/SlotDefault.png"); }
-              $C.@SmallSpacer {}
-              ItemGrid #EquipTrophy5Grid { Anchor: (Height: 44); SlotsPerRow: 1; AreItemsDraggable: true; DisplayItemQuantity: true; RenderItemQualityBackground: true; ShowScrollbar: false; Style: (SlotSize: 42, SlotIconSize: 34, SlotSpacing: 4, SlotBackground: "../../Commons/Tiles/SlotDefault.png"); }
-              $C.@SmallSpacer {}
-              ItemGrid #EquipTrophy6Grid { Anchor: (Height: 44); SlotsPerRow: 1; AreItemsDraggable: true; DisplayItemQuantity: true; RenderItemQualityBackground: true; ShowScrollbar: false; Style: (SlotSize: 42, SlotIconSize: 34, SlotSpacing: 4, SlotBackground: "../../Commons/Tiles/SlotDefault.png"); }
-            }
-
-            $C.@MediumSpacer {}
-            $C.@HytaleVerticalSeparator {}
-            $C.@MediumSpacer {}
+            LayoutMode: Center;
+            Anchor: (Top: 5);
 
             Group {
               Anchor: (Top: 0, Bottom: 0);
-              FlexWeight: 1;
               LayoutMode: Top;
 
-              Group { Anchor: (Height: 60); LayoutMode: Left;
-                Group { Anchor: (Width: 62, Height: 56); }
-                Group { Anchor: (Width: 62, Height: 56); Group #EquipHeadIcon { Anchor: (Width: 28, Height: 28, Top: 12); Background: "../../Commons/Equipments/Helmet.png"; } ItemGrid #EquipHeadGrid { Anchor: (Width: 56, Height: 56); SlotsPerRow: 1; AreItemsDraggable: true; DisplayItemQuantity: true; RenderItemQualityBackground: true; ShowScrollbar: false; Style: (SlotSize: 56, SlotIconSize: 46, SlotSpacing: 4, SlotBackground: "../../Commons/Slots/SlotBackground.png"); } }
-                Group { Anchor: (Width: 62, Height: 56); }
+              Group {
+                Anchor: (Top: 0, Bottom: 0);
+                FlexWeight: 1;
+                LayoutMode: Top;
+
+                Group { Anchor: (Height: 60); LayoutMode: Left;
+                  Group { Anchor: (Width: 62, Height: 56); }
+                  Group { Anchor: (Width: 62, Height: 56); Group #EquipHeadIcon { Anchor: (Width: 28, Height: 28, Top: 12); Background: "../../Commons/Equipments/Helmet.png"; } ItemGrid #EquipHeadGrid { Anchor: (Width: 56, Height: 56); SlotsPerRow: 1; AreItemsDraggable: true; DisplayItemQuantity: true; RenderItemQualityBackground: true; ShowScrollbar: false; Style: (SlotSize: 56, SlotIconSize: 46, SlotSpacing: 4, SlotBackground: "../../Commons/Slots/SlotBackground.png"); } }
+                  Group { Anchor: (Width: 62, Height: 56); }
+                }
+
+                Group { Anchor: (Height: 60); LayoutMode: Left;
+                  Group { Anchor: (Width: 62, Height: 56); Group #EquipWeaponIcon { Anchor: (Width: 26, Height: 26, Top: 14); Background: "../../Commons/Equipments/Weapon.png"; } ItemGrid #EquipWeaponGrid { Anchor: (Width: 56, Height: 56); SlotsPerRow: 1; AreItemsDraggable: true; DisplayItemQuantity: true; RenderItemQualityBackground: true; ShowScrollbar: false; Style: (SlotSize: 56, SlotIconSize: 46, SlotSpacing: 4, SlotBackground: "../../Commons/Slots/SlotBackground.png"); } }
+                  Group { Anchor: (Width: 62, Height: 56); Group #EquipAmuletIcon { Anchor: (Width: 24, Height: 24, Top: 15); Background: "../../Commons/Equipments/Amulet.png"; } ItemGrid #EquipAmuletGrid { Anchor: (Width: 56, Height: 56); SlotsPerRow: 1; AreItemsDraggable: true; DisplayItemQuantity: true; RenderItemQualityBackground: true; ShowScrollbar: false; Style: (SlotSize: 56, SlotIconSize: 46, SlotSpacing: 4, SlotBackground: "../../Commons/Slots/SlotBackground.png"); } }
+                  Group { Anchor: (Width: 62, Height: 56); Group #EquipGauntletsIcon { Anchor: (Width: 26, Height: 26, Top: 14); Background: "../../Commons/Equipments/Gauntlets.png"; } ItemGrid #EquipGauntletsGrid { Anchor: (Width: 56, Height: 56); SlotsPerRow: 1; AreItemsDraggable: true; DisplayItemQuantity: true; RenderItemQualityBackground: true; ShowScrollbar: false; Style: (SlotSize: 56, SlotIconSize: 46, SlotSpacing: 4, SlotBackground: "../../Commons/Slots/SlotBackground.png"); } }
+                }
+
+                Group { Anchor: (Height: 60); LayoutMode: Left;
+                  Group { Anchor: (Width: 62, Height: 56); Group #EquipRing1Icon { Anchor: (Width: 24, Height: 24, Top: 15); Background: "../../Commons/Equipments/Ring.png"; } ItemGrid #EquipRing1Grid { Anchor: (Width: 56, Height: 56); SlotsPerRow: 1; AreItemsDraggable: true; DisplayItemQuantity: true; RenderItemQualityBackground: true; ShowScrollbar: false; Style: (SlotSize: 56, SlotIconSize: 46, SlotSpacing: 4, SlotBackground: "../../Commons/Slots/SlotBackground.png"); } }
+                  Group { Anchor: (Width: 62, Height: 56); Group #EquipChestIcon { Anchor: (Width: 26, Height: 26, Top: 14); Background: "../../Commons/Equipments/Chest.png"; } ItemGrid #EquipChestGrid { Anchor: (Width: 56, Height: 56); SlotsPerRow: 1; AreItemsDraggable: true; DisplayItemQuantity: true; RenderItemQualityBackground: true; ShowScrollbar: false; Style: (SlotSize: 56, SlotIconSize: 46, SlotSpacing: 4, SlotBackground: "../../Commons/Slots/SlotBackground.png"); } }
+                  Group { Anchor: (Width: 62, Height: 56); Group #EquipRing2Icon { Anchor: (Width: 24, Height: 24, Top: 15); Background: "../../Commons/Equipments/Ring.png"; } ItemGrid #EquipRing2Grid { Anchor: (Width: 56, Height: 56); SlotsPerRow: 1; AreItemsDraggable: true; DisplayItemQuantity: true; RenderItemQualityBackground: true; ShowScrollbar: false; Style: (SlotSize: 56, SlotIconSize: 46, SlotSpacing: 4, SlotBackground: "../../Commons/Slots/SlotBackground.png"); } }
+                }
+
+                Group { Anchor: (Height: 60); LayoutMode: Left;
+                  Group { Anchor: (Width: 62, Height: 56); Group #EquipPantsIcon { Anchor: (Width: 26, Height: 26, Top: 14); Background: "../../Commons/Equipments/Pants.png"; } ItemGrid #EquipPantsGrid { Anchor: (Width: 56, Height: 56); SlotsPerRow: 1; AreItemsDraggable: true; DisplayItemQuantity: true; RenderItemQualityBackground: true; ShowScrollbar: false; Style: (SlotSize: 56, SlotIconSize: 46, SlotSpacing: 4, SlotBackground: "../../Commons/Slots/SlotBackground.png"); } }
+                  Group { Anchor: (Width: 62, Height: 56); Group #EquipBeltIcon { Anchor: (Width: 26, Height: 26, Top: 14); Background: "../../Commons/Equipments/Belt.png"; } ItemGrid #EquipBeltGrid { Anchor: (Width: 56, Height: 56); SlotsPerRow: 1; AreItemsDraggable: true; DisplayItemQuantity: true; RenderItemQualityBackground: true; ShowScrollbar: false; Style: (SlotSize: 56, SlotIconSize: 46, SlotSpacing: 4, SlotBackground: "../../Commons/Slots/SlotBackground.png"); } }
+                  Group { Anchor: (Width: 62, Height: 56); Group #EquipBootsIcon { Anchor: (Width: 26, Height: 26, Top: 14); Background: "../../Commons/Equipments/Boots.png"; } ItemGrid #EquipBootsGrid { Anchor: (Width: 56, Height: 56); SlotsPerRow: 1; AreItemsDraggable: true; DisplayItemQuantity: true; RenderItemQualityBackground: true; ShowScrollbar: false; Style: (SlotSize: 56, SlotIconSize: 46, SlotSpacing: 4, SlotBackground: "../../Commons/Slots/SlotBackground.png"); } }
+                }
+
+                Group { Anchor: (Height: 60); LayoutMode: Left;
+                  Group { Anchor: (Width: 62, Height: 56); }
+                  Group { Anchor: (Width: 62, Height: 56); Group #EquipPetIcon { Anchor: (Width: 26, Height: 26, Top: 14); Background: "../../Commons/Equipments/Pet.png"; } ItemGrid #EquipPetGrid { Anchor: (Width: 56, Height: 56); SlotsPerRow: 1; AreItemsDraggable: true; DisplayItemQuantity: true; RenderItemQualityBackground: true; ShowScrollbar: false; Style: (SlotSize: 56, SlotIconSize: 46, SlotSpacing: 4, SlotBackground: "../../Commons/Slots/SlotBackground.png"); } }
+                  Group { Anchor: (Width: 62, Height: 56); }
+                }
               }
 
-              Group { Anchor: (Height: 60); LayoutMode: Left;
-                Group { Anchor: (Width: 62, Height: 56); Group #EquipWeaponIcon { Anchor: (Width: 26, Height: 26, Top: 14); Background: "../../Commons/Equipments/Weapon.png"; } ItemGrid #EquipWeaponGrid { Anchor: (Width: 56, Height: 56); SlotsPerRow: 1; AreItemsDraggable: true; DisplayItemQuantity: true; RenderItemQualityBackground: true; ShowScrollbar: false; Style: (SlotSize: 56, SlotIconSize: 46, SlotSpacing: 4, SlotBackground: "../../Commons/Slots/SlotBackground.png"); } }
-                Group { Anchor: (Width: 62, Height: 56); Group #EquipAmuletIcon { Anchor: (Width: 24, Height: 24, Top: 15); Background: "../../Commons/Equipments/Amulet.png"; } ItemGrid #EquipAmuletGrid { Anchor: (Width: 56, Height: 56); SlotsPerRow: 1; AreItemsDraggable: true; DisplayItemQuantity: true; RenderItemQualityBackground: true; ShowScrollbar: false; Style: (SlotSize: 56, SlotIconSize: 46, SlotSpacing: 4, SlotBackground: "../../Commons/Slots/SlotBackground.png"); } }
-                Group { Anchor: (Width: 62, Height: 56); Group #EquipGauntletsIcon { Anchor: (Width: 26, Height: 26, Top: 14); Background: "../../Commons/Equipments/Gauntlets.png"; } ItemGrid #EquipGauntletsGrid { Anchor: (Width: 56, Height: 56); SlotsPerRow: 1; AreItemsDraggable: true; DisplayItemQuantity: true; RenderItemQualityBackground: true; ShowScrollbar: false; Style: (SlotSize: 56, SlotIconSize: 46, SlotSpacing: 4, SlotBackground: "../../Commons/Slots/SlotBackground.png"); } }
-              }
+              $C.@SmallSpacer {}
 
-              Group { Anchor: (Height: 60); LayoutMode: Left;
-                Group { Anchor: (Width: 62, Height: 56); Group #EquipRing1Icon { Anchor: (Width: 24, Height: 24, Top: 15); Background: "../../Commons/Equipments/Ring.png"; } ItemGrid #EquipRing1Grid { Anchor: (Width: 56, Height: 56); SlotsPerRow: 1; AreItemsDraggable: true; DisplayItemQuantity: true; RenderItemQualityBackground: true; ShowScrollbar: false; Style: (SlotSize: 56, SlotIconSize: 46, SlotSpacing: 4, SlotBackground: "../../Commons/Slots/SlotBackground.png"); } }
-                Group { Anchor: (Width: 62, Height: 56); Group #EquipChestIcon { Anchor: (Width: 26, Height: 26, Top: 14); Background: "../../Commons/Equipments/Chest.png"; } ItemGrid #EquipChestGrid { Anchor: (Width: 56, Height: 56); SlotsPerRow: 1; AreItemsDraggable: true; DisplayItemQuantity: true; RenderItemQualityBackground: true; ShowScrollbar: false; Style: (SlotSize: 56, SlotIconSize: 46, SlotSpacing: 4, SlotBackground: "../../Commons/Slots/SlotBackground.png"); } }
-                Group { Anchor: (Width: 62, Height: 56); Group #EquipRing2Icon { Anchor: (Width: 24, Height: 24, Top: 15); Background: "../../Commons/Equipments/Ring.png"; } ItemGrid #EquipRing2Grid { Anchor: (Width: 56, Height: 56); SlotsPerRow: 1; AreItemsDraggable: true; DisplayItemQuantity: true; RenderItemQualityBackground: true; ShowScrollbar: false; Style: (SlotSize: 56, SlotIconSize: 46, SlotSpacing: 4, SlotBackground: "../../Commons/Slots/SlotBackground.png"); } }
-              }
+              Group {
+                Anchor: (Width: 62);
+                LayoutMode: Left;
 
-              Group { Anchor: (Height: 60); LayoutMode: Left;
-                Group { Anchor: (Width: 62, Height: 56); Group #EquipPantsIcon { Anchor: (Width: 26, Height: 26, Top: 14); Background: "../../Commons/Equipments/Pants.png"; } ItemGrid #EquipPantsGrid { Anchor: (Width: 56, Height: 56); SlotsPerRow: 1; AreItemsDraggable: true; DisplayItemQuantity: true; RenderItemQualityBackground: true; ShowScrollbar: false; Style: (SlotSize: 56, SlotIconSize: 46, SlotSpacing: 4, SlotBackground: "../../Commons/Slots/SlotBackground.png"); } }
-                Group { Anchor: (Width: 62, Height: 56); Group #EquipBeltIcon { Anchor: (Width: 26, Height: 26, Top: 14); Background: "../../Commons/Equipments/Belt.png"; } ItemGrid #EquipBeltGrid { Anchor: (Width: 56, Height: 56); SlotsPerRow: 1; AreItemsDraggable: true; DisplayItemQuantity: true; RenderItemQualityBackground: true; ShowScrollbar: false; Style: (SlotSize: 56, SlotIconSize: 46, SlotSpacing: 4, SlotBackground: "../../Commons/Slots/SlotBackground.png"); } }
-                Group { Anchor: (Width: 62, Height: 56); Group #EquipBootsIcon { Anchor: (Width: 26, Height: 26, Top: 14); Background: "../../Commons/Equipments/Boots.png"; } ItemGrid #EquipBootsGrid { Anchor: (Width: 56, Height: 56); SlotsPerRow: 1; AreItemsDraggable: true; DisplayItemQuantity: true; RenderItemQualityBackground: true; ShowScrollbar: false; Style: (SlotSize: 56, SlotIconSize: 46, SlotSpacing: 4, SlotBackground: "../../Commons/Slots/SlotBackground.png"); } }
-              }
-
-              Group { Anchor: (Height: 60); LayoutMode: Left;
-                Group { Anchor: (Width: 62, Height: 56); }
-                Group { Anchor: (Width: 62, Height: 56); Group #EquipPetIcon { Anchor: (Width: 26, Height: 26, Top: 14); Background: "../../Commons/Equipments/Pet.png"; } ItemGrid #EquipPetGrid { Anchor: (Width: 56, Height: 56); SlotsPerRow: 1; AreItemsDraggable: true; DisplayItemQuantity: true; RenderItemQualityBackground: true; ShowScrollbar: false; Style: (SlotSize: 56, SlotIconSize: 46, SlotSpacing: 4, SlotBackground: "../../Commons/Slots/SlotBackground.png"); } }
-                Group { Anchor: (Width: 62, Height: 56); }
+                ItemGrid #EquipTrophy1Grid { Anchor: (Height: 44); SlotsPerRow: 1; AreItemsDraggable: true; DisplayItemQuantity: true; RenderItemQualityBackground: true; ShowScrollbar: false; Style: (SlotSize: 42, SlotIconSize: 34, SlotSpacing: 4, SlotBackground: "../../Commons/Tiles/SlotDefault.png"); }
+                $C.@SmallSpacer {}
+                ItemGrid #EquipTrophy2Grid { Anchor: (Height: 44); SlotsPerRow: 1; AreItemsDraggable: true; DisplayItemQuantity: true; RenderItemQualityBackground: true; ShowScrollbar: false; Style: (SlotSize: 42, SlotIconSize: 34, SlotSpacing: 4, SlotBackground: "../../Commons/Tiles/SlotDefault.png"); }
+                $C.@SmallSpacer {}
+                ItemGrid #EquipTrophy3Grid { Anchor: (Height: 44); SlotsPerRow: 1; AreItemsDraggable: true; DisplayItemQuantity: true; RenderItemQualityBackground: true; ShowScrollbar: false; Style: (SlotSize: 42, SlotIconSize: 34, SlotSpacing: 4, SlotBackground: "../../Commons/Tiles/SlotDefault.png"); }
+                $C.@SmallSpacer {}
+                ItemGrid #EquipTrophy4Grid { Anchor: (Height: 44); SlotsPerRow: 1; AreItemsDraggable: true; DisplayItemQuantity: true; RenderItemQualityBackground: true; ShowScrollbar: false; Style: (SlotSize: 42, SlotIconSize: 34, SlotSpacing: 4, SlotBackground: "../../Commons/Tiles/SlotDefault.png"); }
+                $C.@SmallSpacer {}
+                ItemGrid #EquipTrophy5Grid { Anchor: (Height: 44); SlotsPerRow: 1; AreItemsDraggable: true; DisplayItemQuantity: true; RenderItemQualityBackground: true; ShowScrollbar: false; Style: (SlotSize: 42, SlotIconSize: 34, SlotSpacing: 4, SlotBackground: "../../Commons/Tiles/SlotDefault.png"); }
+                $C.@SmallSpacer {}
+                ItemGrid #EquipTrophy6Grid { Anchor: (Height: 44); SlotsPerRow: 1; AreItemsDraggable: true; DisplayItemQuantity: true; RenderItemQualityBackground: true; ShowScrollbar: false; Style: (SlotSize: 42, SlotIconSize: 34, SlotSpacing: 4, SlotBackground: "../../Commons/Tiles/SlotDefault.png"); }
               }
             }
           }
@@ -146,46 +149,56 @@ Group #MainContainer {
 
             Label {
               Text: "Barre rapide";
-              Style: (FontSize: 12, TextColor: #96a9be, Alignment: Start);
+              Style: (FontSize: 12, TextColor: #96a9be, Alignment: Center);
               Anchor: (Height: 18);
             }
 
-            ItemGrid #HotbarGrid {
-              Anchor: (Height: 50);
-              SlotsPerRow: 9;
-              AreItemsDraggable: true;
-              DisplayItemQuantity: true;
-              RenderItemQualityBackground: true;
-              ShowScrollbar: false;
-              Style: (
-                SlotSize: 46,
-                SlotIconSize: 36,
-                SlotSpacing: 4,
-                SlotBackground: "../../Commons/Tiles/SlotDefault.png"
-              );
+            Group {
+              LayoutMode: Center;
+              Anchor: (Top: 10);
+
+              ItemGrid #HotbarGrid {
+                Anchor: (Height: 50);
+                SlotsPerRow: 9;
+                AreItemsDraggable: true;
+                DisplayItemQuantity: true;
+                RenderItemQualityBackground: true;
+                ShowScrollbar: false;
+                Style: (
+                  SlotSize: 46,
+                  SlotIconSize: 36,
+                  SlotSpacing: 4,
+                  SlotBackground: "../../Commons/Tiles/SlotDefault.png"
+                );
+              }
             }
 
             $C.@SmallSpacer {}
 
             Label {
               Text: "Sac";
-              Style: (FontSize: 12, TextColor: #96a9be, Alignment: Start);
+              Style: (FontSize: 12, TextColor: #96a9be, Alignment: Center);
               Anchor: (Height: 18);
             }
 
-            ItemGrid #StorageGrid {
-              Anchor: (Height: 214);
-              SlotsPerRow: 9;
-              AreItemsDraggable: true;
-              DisplayItemQuantity: true;
-              RenderItemQualityBackground: true;
-              ShowScrollbar: false;
-              Style: (
-                SlotSize: 46,
-                SlotIconSize: 36,
-                SlotSpacing: 4,
-                SlotBackground: "../../Commons/Tiles/SlotDefault.png"
-              );
+            Group {
+              LayoutMode: Center;
+              Anchor: (Top: 10);
+
+              ItemGrid #StorageGrid {
+                Anchor: (Height: 214);
+                SlotsPerRow: 9;
+                AreItemsDraggable: true;
+                DisplayItemQuantity: true;
+                RenderItemQualityBackground: true;
+                ShowScrollbar: false;
+                Style: (
+                  SlotSize: 46,
+                  SlotIconSize: 36,
+                  SlotSpacing: 4,
+                  SlotBackground: "../../Commons/Tiles/SlotDefault.png"
+                );
+              }
             }
           }
 
@@ -222,19 +235,24 @@ Group #MainContainer {
 
           $C.@HytaleSectionSeparator {}
 
-          ItemGrid #LootGrid {
-            Anchor: (Height: 142);
-            SlotsPerRow: 4;
-            AreItemsDraggable: true;
-            DisplayItemQuantity: true;
-            RenderItemQualityBackground: true;
-            ShowScrollbar: true;
-            Style: (
-              SlotSize: 44,
-              SlotIconSize: 36,
-              SlotSpacing: 4,
-              SlotBackground: "../../Commons/Tiles/SlotDefault.png"
-            );
+          Group {
+            LayoutMode: Center;
+            Anchor: (Top: 10);
+
+            ItemGrid #LootGrid {
+              Anchor: (Height: 240);
+              SlotsPerRow: 6;
+              AreItemsDraggable: true;
+              DisplayItemQuantity: true;
+              RenderItemQualityBackground: true;
+              ShowScrollbar: true;
+              Style: (
+                SlotSize: 44,
+                SlotIconSize: 36,
+                SlotSpacing: 4,
+                SlotBackground: "../../Commons/Tiles/SlotDefault.png"
+              );
+            }
           }
 
           $C.@MediumSpacer {}
@@ -259,12 +277,12 @@ Group #MainContainer {
             Anchor: (Height: 24);
 
             Label {
-              Text: "Piles de loot:";
+              Text: "Butins:";
               Style: (FontSize: 12, TextColor: #96a9be, Alignment: Start);
             }
 
             Label #LootCountLabel {
-              Text: "0";
+              Text: "0/0";
               Style: (FontSize: 12, TextColor: #ccb588, Alignment: End);
             }
           }
@@ -272,7 +290,6 @@ Group #MainContainer {
 
       Group { FlexWeight: 1; }
       }
-
     }
   }
 }

@@ -40,7 +40,7 @@ public class InventoryPage extends InteractiveCustomUIPage<InventoryPage.CustomI
     private static final int HOTBAR_SLOT_COUNT = 9;
     private static final int INVENTORY_SLOT_COUNT = HOTBAR_SLOT_COUNT + STORAGE_SLOT_COUNT;
     private static final int VISIBLE_INVENTORY_SLOT_COUNT = STORAGE_SLOT_COUNT + HOTBAR_SLOT_COUNT;
-    private static final int LOOT_SLOT_COUNT = 12;
+    private static final int LOOT_SLOT_COUNT = 30;
     private static final String ACTION_COLLECT_ALL = "COLLECT_ALL";
     private static final String ACTION_CLOSE = "CLOSE";
     private static final String ACTION_TRANSFER_DROP = "TRANSFER_DROP";
@@ -330,10 +330,6 @@ public class InventoryPage extends InteractiveCustomUIPage<InventoryPage.CustomI
         }
 
         customInventoryService.replaceLoot(playerUuid, remaining);
-        if (collectedStacks > 0) {
-            player.sendMessage(Message.raw("Butin collecte: " + collectedStacks + " pile(s)"));
-        }
-
         safeSendUpdate(ref, store);
     }
 
@@ -757,10 +753,6 @@ public class InventoryPage extends InteractiveCustomUIPage<InventoryPage.CustomI
         }
 
         String itemId = stack.getItemId();
-        if (itemId == null) {
-            return false;
-        }
-
         String id = itemId.toLowerCase();
         return switch (area) {
             case AREA_EQUIPMENT_HEAD -> containsAny(id, "head");
