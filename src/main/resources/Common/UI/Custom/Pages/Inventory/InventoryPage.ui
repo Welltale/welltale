@@ -22,7 +22,7 @@ Group #MainContainer {
   }
 
   Group #Frame {
-    Anchor: (Top: 92, Horizontal: 55);
+    Anchor: (Top: 92);
     LayoutMode: Top;
     Padding: (Full: 10);
     Background: (TexturePath: "../../Commons/Container/ContainerFullPatch.png", HorizontalBorder: 30, VerticalBorder: 30);
@@ -47,7 +47,7 @@ Group #MainContainer {
       Group { FlexWeight: 1; }
 
         Group #MainInventorySection {
-          Anchor: (Height: 450);
+          Anchor: (Height: 430);
           LayoutMode: Left;
 
         Group #EquipmentPanel {
@@ -203,18 +203,27 @@ Group #MainContainer {
           }
 
           Group {
-            Anchor: (Height: 20, Top: 10);
+            Anchor: (Height: 20, Top: 25);
+            LayoutMode: Left;
 
-            Label #InventoryFooterLabel {
-              Text: "Slots visibles:";
-              Style: (FontSize: 12, TextColor: #96a9be, Alignment: Start);
-              Anchor: (Top: 0, Height: 20);
+            Group {
+              LayoutMode: Top;
+              FlexWeight: 1;
+
+              Label #InventoryFooterLabel {
+                Text: "Slots visibles:";
+                Style: (FontSize: 12, TextColor: #96a9be, Alignment: Start);
+              }
             }
 
-            Label #InventoryCountLabel {
-              Text: "0";
-              Style: (FontSize: 12, TextColor: #ccb588, Alignment: End);
-              Anchor: (Top: 0, Height: 20);
+            Group {
+              LayoutMode: Top;
+              FlexWeight: 1;
+
+              Label #InventoryCountLabel {
+                Text: "0";
+                Style: (FontSize: 12, TextColor: #ccb588, Alignment: End);
+              }
             }
 
           }
@@ -255,7 +264,7 @@ Group #MainContainer {
             }
           }
 
-          $C.@MediumSpacer {}
+          $C.@SmallSpacer {}
 
           TextButton #CollectAllButton {
             Text: "TOUT RECUPERER";
@@ -274,16 +283,27 @@ Group #MainContainer {
           $C.@SmallSpacer {}
 
           Group {
-            Anchor: (Height: 24);
+            Anchor: (Height: 20);
+            LayoutMode: Left;
 
-            Label {
-              Text: "Butins:";
-              Style: (FontSize: 12, TextColor: #96a9be, Alignment: Start);
+            Group {
+              LayoutMode: Top;
+              FlexWeight: 1;
+
+              Label {
+                Text: "Butins:";
+                Style: (FontSize: 12, TextColor: #96a9be, Alignment: Start);
+              }
             }
 
-            Label #LootCountLabel {
-              Text: "0/0";
-              Style: (FontSize: 12, TextColor: #ccb588, Alignment: End);
+            Group {
+              LayoutMode: Top;
+              FlexWeight: 1;
+
+              Label #LootCountLabel {
+                Text: "0/0";
+                Style: (FontSize: 12, TextColor: #ccb588, Alignment: End);
+              }
             }
           }
         }
