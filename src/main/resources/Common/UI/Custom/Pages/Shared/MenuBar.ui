@@ -3,25 +3,25 @@
     LabelStyle: (FontSize: 18, TextColor: #7c8b99, RenderUppercase: true, RenderBold: true, VerticalAlignment: End, Alignment: Center)
   ),
   Hovered: (
-    Background: "../../Commons/HyMenu/Navigation/NavigationItemHovered.png",
+    Background: "../../Commons/Navigation/NavigationItemHovered.png",
     LabelStyle: (FontSize: 18, TextColor: #bbcedf, RenderUppercase: true, RenderBold: true, VerticalAlignment: End, Alignment: Center)
   )
 );
 
 @TopTabButtonActiveStyle = TextButtonStyle(
   Default: (
-    Background: "../../Commons/HyMenu/Navigation/NavigationItemSelected.png",
+    Background: "../../Commons/Navigation/NavigationItemSelected.png",
     LabelStyle: (FontSize: 18, TextColor: #e8bd6e, RenderUppercase: true, RenderBold: true, VerticalAlignment: End, Alignment: Center)
   ),
   Hovered: (
-    Background: "../../Commons/HyMenu/Navigation/NavigationItemSelected.png",
+    Background: "../../Commons/Navigation/NavigationItemSelected.png",
     LabelStyle: (FontSize: 18, TextColor: #e8bd6e, RenderUppercase: true, RenderBold: true, VerticalAlignment: End, Alignment: Center)
   )
 );
 
 @TopBar = Group {
   Anchor: (Top: 0, Left: 0, Right: 0, Height: 83);
-  Background: "../../Commons/HyMenu/TopBar/Background.png";
+  Background: "../../Commons/TopBar/Background.png";
   LayoutMode: Left;
 
   Group #TopBarLogo {
@@ -30,12 +30,12 @@
 
     Group {
       Anchor: (Width: 210, Height: 70);
-      Background: "../../Commons/HyMenu/TopBar/Logo.png";
+      Background: "../../Commons/TopBar/Logo.png";
     }
 
     Group {
       Anchor: (Height: 75, Width: 3);
-      Background: "../../Commons/HyMenu/TopBar/MenuSeperator.png";
+      Background: "../../Commons/TopBar/MenuSeperator.png";
     }
   }
 
