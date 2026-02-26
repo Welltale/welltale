@@ -18,6 +18,7 @@ import com.hypixel.hytale.server.core.ui.builder.UIEventBuilder;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import fr.welltale.characteristic.Characteristics;
+import fr.welltale.constant.Constant;
 import fr.welltale.inventory.CustomInventoryService;
 import fr.welltale.inventory.page.InventoryPage;
 import fr.welltale.level.PlayerLevelComponent;
@@ -197,7 +198,7 @@ public class CharacteristicsPage extends InteractiveCustomUIPage<Characteristics
 
         Characteristics.AdditionalCharacteristics additionalCharacteristics = Characteristics.getAdditionalCharacteristicsFromPlayer(ref, store);
 
-        cmd.set("#LevelLabel.Text", "NIV " + level);
+        cmd.set("#LevelLabel.Text", Constant.Prefix.LEVEL_PREFIX.toUpperCase() + level);
         cmd.set("#XpLabel.Text", currentLevelXp + " / " + xpToNextLevel + " XP");
         cmd.set("#XpProgressBar.Value", progressToNextLevel);
         cmd.set("#CharacteristicPointsLabel.Text", String.valueOf(points));
