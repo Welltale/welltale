@@ -207,24 +207,18 @@ Group #MainContainer {
             Anchor: (Height: 20, Top: 25);
             LayoutMode: Left;
 
-            Group {
-              LayoutMode: Top;
-              FlexWeight: 1;
-
-              Label #InventoryFooterLabel {
-                Text: "Slots visibles:";
-                Style: (FontSize: 12, TextColor: #96a9be, Alignment: Start);
-              }
+            Label #InventoryFooterLabel {
+              Text: "Slots visibles:";
+              Style: (FontSize: 12, TextColor: #96a9be, Alignment: Start, VerticalAlignment: Center);
+              Anchor: (Width: 130, Height: 20);
             }
 
-            Group {
-              LayoutMode: Top;
-              FlexWeight: 1;
+            Group { FlexWeight: 1; }
 
-              Label #InventoryCountLabel {
-                Text: "0";
-                Style: (FontSize: 12, TextColor: #ccb588, Alignment: End);
-              }
+            Label #InventoryCountLabel {
+              Text: "0";
+              Style: (FontSize: 12, TextColor: #ccb588, Alignment: End, VerticalAlignment: Center);
+              Anchor: (Width: 70, Height: 20);
             }
 
           }
@@ -287,24 +281,18 @@ Group #MainContainer {
             Anchor: (Height: 20);
             LayoutMode: Left;
 
-            Group {
-              LayoutMode: Top;
-              FlexWeight: 1;
-
-              Label {
-                Text: "Butins:";
-                Style: (FontSize: 12, TextColor: #96a9be, Alignment: Start);
-              }
+            Label {
+              Text: "Butins:";
+              Style: (FontSize: 12, TextColor: #96a9be, Alignment: Start, VerticalAlignment: Center);
+              Anchor: (Width: 100, Height: 20);
             }
 
-            Group {
-              LayoutMode: Top;
-              FlexWeight: 1;
+            Group { FlexWeight: 1; }
 
-              Label #LootCountLabel {
-                Text: "0/0";
-                Style: (FontSize: 12, TextColor: #ccb588, Alignment: End);
-              }
+            Label #LootCountLabel {
+              Text: "0/0";
+              Style: (FontSize: 12, TextColor: #ccb588, Alignment: End, VerticalAlignment: Center);
+              Anchor: (Width: 70, Height: 20);
             }
           }
         }
