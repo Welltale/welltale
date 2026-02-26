@@ -114,17 +114,17 @@ Group #MainContainer {
                 Anchor: (Width: 62);
                 LayoutMode: Center;
 
-                ItemGrid #EquipTrophy1Grid { Anchor: (Height: 44); SlotsPerRow: 1; AreItemsDraggable: true; DisplayItemQuantity: true; RenderItemQualityBackground: true; ShowScrollbar: false; Style: (SlotSize: 42, SlotIconSize: 34, SlotSpacing: 4, SlotBackground: "../../Commons/Tiles/SlotDefault.png"); }
+                ItemGrid #EquipTrophy1Grid { Anchor: (Height: 44); SlotsPerRow: 1; AreItemsDraggable: true; DisplayItemQuantity: true; RenderItemQualityBackground: true; ShowScrollbar: false; Style: (SlotSize: 42, SlotIconSize: 34, SlotSpacing: 4, SlotBackground: "../../Commons/Slots/SlotBackground.png"); }
                 $C.@SmallSpacer {}
-                ItemGrid #EquipTrophy2Grid { Anchor: (Height: 44); SlotsPerRow: 1; AreItemsDraggable: true; DisplayItemQuantity: true; RenderItemQualityBackground: true; ShowScrollbar: false; Style: (SlotSize: 42, SlotIconSize: 34, SlotSpacing: 4, SlotBackground: "../../Commons/Tiles/SlotDefault.png"); }
+                ItemGrid #EquipTrophy2Grid { Anchor: (Height: 44); SlotsPerRow: 1; AreItemsDraggable: true; DisplayItemQuantity: true; RenderItemQualityBackground: true; ShowScrollbar: false; Style: (SlotSize: 42, SlotIconSize: 34, SlotSpacing: 4, SlotBackground: "../../Commons/Slots/SlotBackground.png"); }
                 $C.@SmallSpacer {}
-                ItemGrid #EquipTrophy3Grid { Anchor: (Height: 44); SlotsPerRow: 1; AreItemsDraggable: true; DisplayItemQuantity: true; RenderItemQualityBackground: true; ShowScrollbar: false; Style: (SlotSize: 42, SlotIconSize: 34, SlotSpacing: 4, SlotBackground: "../../Commons/Tiles/SlotDefault.png"); }
+                ItemGrid #EquipTrophy3Grid { Anchor: (Height: 44); SlotsPerRow: 1; AreItemsDraggable: true; DisplayItemQuantity: true; RenderItemQualityBackground: true; ShowScrollbar: false; Style: (SlotSize: 42, SlotIconSize: 34, SlotSpacing: 4, SlotBackground: "../../Commons/Slots/SlotBackground.png"); }
                 $C.@SmallSpacer {}
-                ItemGrid #EquipTrophy4Grid { Anchor: (Height: 44); SlotsPerRow: 1; AreItemsDraggable: true; DisplayItemQuantity: true; RenderItemQualityBackground: true; ShowScrollbar: false; Style: (SlotSize: 42, SlotIconSize: 34, SlotSpacing: 4, SlotBackground: "../../Commons/Tiles/SlotDefault.png"); }
+                ItemGrid #EquipTrophy4Grid { Anchor: (Height: 44); SlotsPerRow: 1; AreItemsDraggable: true; DisplayItemQuantity: true; RenderItemQualityBackground: true; ShowScrollbar: false; Style: (SlotSize: 42, SlotIconSize: 34, SlotSpacing: 4, SlotBackground: "../../Commons/Slots/SlotBackground.png"); }
                 $C.@SmallSpacer {}
-                ItemGrid #EquipTrophy5Grid { Anchor: (Height: 44); SlotsPerRow: 1; AreItemsDraggable: true; DisplayItemQuantity: true; RenderItemQualityBackground: true; ShowScrollbar: false; Style: (SlotSize: 42, SlotIconSize: 34, SlotSpacing: 4, SlotBackground: "../../Commons/Tiles/SlotDefault.png"); }
+                ItemGrid #EquipTrophy5Grid { Anchor: (Height: 44); SlotsPerRow: 1; AreItemsDraggable: true; DisplayItemQuantity: true; RenderItemQualityBackground: true; ShowScrollbar: false; Style: (SlotSize: 42, SlotIconSize: 34, SlotSpacing: 4, SlotBackground: "../../Commons/Slots/SlotBackground.png"); }
                 $C.@SmallSpacer {}
-                ItemGrid #EquipTrophy6Grid { Anchor: (Height: 44); SlotsPerRow: 1; AreItemsDraggable: true; DisplayItemQuantity: true; RenderItemQualityBackground: true; ShowScrollbar: false; Style: (SlotSize: 42, SlotIconSize: 34, SlotSpacing: 4, SlotBackground: "../../Commons/Tiles/SlotDefault.png"); }
+                ItemGrid #EquipTrophy6Grid { Anchor: (Height: 44); SlotsPerRow: 1; AreItemsDraggable: true; DisplayItemQuantity: true; RenderItemQualityBackground: true; ShowScrollbar: false; Style: (SlotSize: 42, SlotIconSize: 34, SlotSpacing: 4, SlotBackground: "../../Commons/Slots/SlotBackground.png"); }
               }
             }
           }
@@ -201,26 +201,23 @@ Group #MainContainer {
                 );
               }
             }
-          }
 
-          Group {
-            Anchor: (Height: 20, Top: 25);
-            LayoutMode: Left;
+            Group {
+              Anchor: (Height: 20, Top: 5);
+              LayoutMode: Center;
 
-            Label #InventoryFooterLabel {
-              Text: "Slots visibles:";
-              Style: (FontSize: 12, TextColor: #96a9be, Alignment: Start, VerticalAlignment: Center);
-              Anchor: (Width: 130, Height: 20);
+              Label #GoldFooterAmount {
+                Text: "0";
+                Style: (FontSize: 12, TextColor: #57CD4BFF, Alignment: Center);
+              }
+
+              $C.@SmallSpacer {}
+
+              Label #GoldFooterLabel {
+                Text: "Gemmes";
+                Style: (FontSize: 12, TextColor: #96a9be, Alignment: Center);
+              }
             }
-
-            Group { FlexWeight: 1; }
-
-            Label #InventoryCountLabel {
-              Text: "0";
-              Style: (FontSize: 12, TextColor: #ccb588, Alignment: End, VerticalAlignment: Center);
-              Anchor: (Width: 70, Height: 20);
-            }
-
           }
         }
 

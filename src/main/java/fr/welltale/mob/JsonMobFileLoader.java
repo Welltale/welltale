@@ -33,9 +33,7 @@ public class JsonMobFileLoader {
                             0,
                             0,
                             List.of(
-                                    new Mob.Drop("hytale:dirt", 1, 2, 90.0f),
-                                    new Mob.Drop("hytale:stick", 1, 1, 60.0f),
-                                    new Mob.Drop("hytale:coal", 1, 1, 20.0f)
+                                    new Mob.Drop("Weapon_Sword_Beginner", 1, 2, 90.0f)
                             )
                     )
             };

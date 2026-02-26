@@ -17,10 +17,6 @@ public final class MobLootGenerator {
 
     private MobLootGenerator() {}
 
-    public static List<ItemStack> rollLoot(Mob mobConfig) {
-        return rollLoot(mobConfig, 1.0f);
-    }
-
     public static List<ItemStack> rollLoot(Mob mobConfig, float dropChanceMultiplier) {
         if (mobConfig == null || mobConfig.getDrops() == null || mobConfig.getDrops().isEmpty()) {
             return List.of();

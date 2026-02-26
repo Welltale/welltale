@@ -9,7 +9,6 @@ import com.hypixel.hytale.logger.HytaleLogger;
 import com.hypixel.hytale.protocol.packets.interface_.CustomPageLifetime;
 import com.hypixel.hytale.protocol.packets.interface_.CustomUIEventBindingType;
 import com.hypixel.hytale.protocol.packets.interface_.Page;
-import com.hypixel.hytale.server.core.Message;
 import com.hypixel.hytale.server.core.entity.UUIDComponent;
 import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.entity.entities.player.pages.InteractiveCustomUIPage;
@@ -39,7 +38,6 @@ public class InventoryPage extends InteractiveCustomUIPage<InventoryPage.CustomI
     private static final int STORAGE_SLOT_COUNT = 36;
     private static final int HOTBAR_SLOT_COUNT = 9;
     private static final int INVENTORY_SLOT_COUNT = HOTBAR_SLOT_COUNT + STORAGE_SLOT_COUNT;
-    private static final int VISIBLE_INVENTORY_SLOT_COUNT = STORAGE_SLOT_COUNT + HOTBAR_SLOT_COUNT;
     private static final int LOOT_SLOT_COUNT = 30;
     private static final String ACTION_COLLECT_ALL = "COLLECT_ALL";
     private static final String ACTION_CLOSE = "CLOSE";
@@ -202,7 +200,7 @@ public class InventoryPage extends InteractiveCustomUIPage<InventoryPage.CustomI
         bindItemGridEvents(event, "#HotbarGrid", AREA_HOTBAR);
         bindItemGridEvents(event, "#StorageGrid", AREA_STORAGE);
         bindItemGridEvents(event, "#LootGrid", AREA_LOOT);
-        applyState(cmd, ref, store);
+        applyState(cmd, ref, store, playerRepository);
     }
 
     private void bindActivating(@NonNull UIEventBuilder event, @NonNull String selector, @NonNull String action, String area) {
@@ -302,7 +300,7 @@ public class InventoryPage extends InteractiveCustomUIPage<InventoryPage.CustomI
     private void collectAllLoot(@NonNull Ref<EntityStore> ref, @NonNull Store<EntityStore> store, @NonNull Player player) {
         UUIDComponent uuidComponent = store.getComponent(ref, UUIDComponent.getComponentType());
         if (uuidComponent == null) {
-            this.logger.atSevere().log("[INVENTORY] CollectAll failed: player UUID is null");
+            this.logger.atSevere().log("[INVENTORY] InventoryPage CollectAllLoot Failed: Player UUID is null");
             return;
         }
 
@@ -1049,12 +1047,20 @@ public class InventoryPage extends InteractiveCustomUIPage<InventoryPage.CustomI
         return parseIndex(data.inventorySlotIndex);
     }
 
-    private void applyState(@NonNull UICommandBuilder cmd, @NonNull Ref<EntityStore> ref, @NonNull Store<EntityStore> store) {
+    private void applyState(
+            @NonNull UICommandBuilder cmd,
+            @NonNull Ref<EntityStore> ref,
+            @NonNull Store<EntityStore> store,
+            @NonNull PlayerRepository playerRepository
+    ) {
         Player player = store.getComponent(ref, Player.getComponentType());
         if (player == null) return;
 
         UUIDComponent uuidComponent = store.getComponent(ref, UUIDComponent.getComponentType());
         if (uuidComponent == null) return;
+
+        fr.welltale.player.Player playerData = playerRepository.getPlayerByUuid(uuidComponent.getUuid());
+        if (playerData == null) return;
 
         Inventory inventory = player.getInventory();
         List<ItemStack> loot = customInventoryService.getLootSnapshot(uuidComponent.getUuid());
@@ -1066,8 +1072,8 @@ public class InventoryPage extends InteractiveCustomUIPage<InventoryPage.CustomI
         cmd.set("#StorageGrid.Slots", buildInventorySlots(inventory, false));
         cmd.set("#LootGrid.Slots", buildLootSlots(loot, LOOT_SLOT_COUNT));
 
-        cmd.set("#InventoryCountLabel.Text", String.valueOf(VISIBLE_INVENTORY_SLOT_COUNT));
         cmd.set("#LootCountLabel.Text", loot.size() + "/" + CustomInventoryService.LOOT_SLOT_CAPACITY);
+        cmd.set("#GoldFooterAmount.Text", String.valueOf(playerData.getGems()));
     }
 
     private ItemStack getInventoryItem(Inventory inventory, int index) {
@@ -1134,14 +1140,14 @@ public class InventoryPage extends InteractiveCustomUIPage<InventoryPage.CustomI
         }
 
         if (!ItemModule.exists(itemId)) {
-            this.logger.atSevere().log("[INVENTORY] Unknown item id hidden from UI to avoid client crash: " + itemId);
+            this.logger.atSevere().log("[INVENTORY] InventoryPage CreateSafeLootSlot Failed: Unknown item id hidden from UI to avoid client crash:" + itemId);
             return createActivatableSlot(null);
         }
 
         try {
             return createActivatableSlot(itemStack);
         } catch (Exception e) {
-            this.logger.atSevere().log("[INVENTORY] Invalid loot stack rendered as empty slot: " + itemId);
+            this.logger.atSevere().log("[INVENTORY] InventoryPage CreateSafeLootSlot Failed: Invalid loot stack rendered as empty slot:" + itemId);
             return createActivatableSlot(null);
         }
     }

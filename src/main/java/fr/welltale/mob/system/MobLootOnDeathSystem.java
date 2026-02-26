@@ -70,7 +70,7 @@ public class MobLootOnDeathSystem extends DeathSystems.OnDeathSystem {
             String modelAssetId = persistentModel == null ? null : persistentModel.getModelReference().getModelAssetId();
             Mob mobConfig = resolveMobConfig(modelAssetId);
             if (mobConfig == null) {
-                this.logger.atInfo().log("[LOOT] No mob config found for model asset: " + modelAssetId);
+                this.logger.atInfo().log("[MOB] MobLootOnDeathSystem OnComponentAdded Failed: No mob config found for model asset: " + modelAssetId);
                 return;
             }
 
@@ -78,12 +78,19 @@ public class MobLootOnDeathSystem extends DeathSystems.OnDeathSystem {
             List<com.hypixel.hytale.server.core.inventory.ItemStack> loot = MobLootGenerator.rollLoot(mobConfig, dropChanceMultiplier);
             if (loot.isEmpty()) return;
 
+            //TODO ROLL LOOT WITH PLAYER GROUP
             CustomInventoryService.AddLootResult addResult = customInventoryService.addLoot(killerPlayerRef.getUuid(), loot);
             if (!addResult.isFull()) return;
 
-            NotificationUtil.sendNotification(killerPlayerRef.getPacketHandler(), Message.raw("Inventaire de butin plein !"), Message.raw("Videz-le pour continuer à récupérer du butin."), "", NotificationStyle.Danger);
+            NotificationUtil.sendNotification(
+                    killerPlayerRef.getPacketHandler(),
+                    Message.raw("Inventaire de butin plein !"),
+                    Message.raw("Videz-le pour continuer à récupérer du butin."),
+                    "",
+                    NotificationStyle.Danger
+            );
         } catch (Exception e) {
-            this.logger.atSevere().log("[LOOT] Mob loot roll failed: " + e.getMessage());
+            this.logger.atSevere().log("[MOB] MobLootOnDeathSystem OnComponentAdded Failed: " + e.getMessage());
         }
     }
 

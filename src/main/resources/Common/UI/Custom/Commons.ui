@@ -1,6 +1,6 @@
 $Sounds = "Sound.ui";
 
-@WelltaleColor = #7BA9FFFF;
+@WelltaleColor = #57CD4BFF;
 
 @CancelButtonStyle = TextButtonStyle(
   Default: (

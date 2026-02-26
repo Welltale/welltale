@@ -262,7 +262,7 @@ public class CharacteristicsPage extends InteractiveCustomUIPage<Characteristics
         try {
             this.playerRepository.updatePlayer(playerData);
         } catch (Exception e) {
-            this.logger.atSevere().log("[INVENTORY] Failed to update player characteristics: " + e.getMessage());
+            this.logger.atSevere().log("[CHARACTERISTIC] CharacteristicsPage SpendCharacteristicPoint: " + e.getMessage());
         }
     }
 }

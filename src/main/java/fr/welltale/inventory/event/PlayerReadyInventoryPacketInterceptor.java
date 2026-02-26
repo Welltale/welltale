@@ -46,7 +46,7 @@ public class PlayerReadyInventoryPacketInterceptor {
         if (playerRef == null) return;
 
         if (!(playerRef.getPacketHandler() instanceof GamePacketHandler packetHandler)) {
-            this.logger.atSevere().log("[INVENTORY] Cannot install packet interceptor: unexpected packet handler type");
+            this.logger.atSevere().log("[INVENTORY] PlayerReadyInventoryPacketInterceptor OnPlayerReady Failed: Cannot install packet interceptor: unexpected packet handler type");
             return;
         }
 
@@ -99,7 +99,7 @@ public class PlayerReadyInventoryPacketInterceptor {
     ) {
         Supplier<? extends Window> supplier = Window.CLIENT_REQUESTABLE_WINDOW_TYPES.get(packet.type);
         if (supplier == null) {
-            this.logger.atSevere().log("[INVENTORY] Unsupported window request: " + packet.type);
+            this.logger.atSevere().log("[INVENTORY] PlayerReadyInventoryPacketInterceptor OpenVanillaWindow Failed: Unsupported window request: " + packet.type);
             return;
         }
 
@@ -127,7 +127,7 @@ public class PlayerReadyInventoryPacketInterceptor {
                 player.getWindowManager().closeWindow(ref, packet.id, store);
             } catch (IllegalStateException e) {
                 if (packet.id != 0) {
-                    this.logger.atInfo().log("[INVENTORY] Ignored close window for non-open id " + packet.id);
+                    this.logger.atInfo().log("[INVENTORY] PlayerReadyIventoryPacketInterceptor HandleCloseWindow Failed: Ignored close window for non-open id" + packet.id);
                 }
             }
         });

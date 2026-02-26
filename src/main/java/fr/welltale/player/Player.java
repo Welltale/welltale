@@ -42,6 +42,6 @@ public class Player {
 
     @Getter
     @Setter
-    private long golds;
+    private long gems;
 }
 
