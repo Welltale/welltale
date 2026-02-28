@@ -18,6 +18,7 @@ import fr.welltale.constant.Constant;
 import fr.welltale.level.PlayerLevelComponent;
 import fr.welltale.level.event.GiveXPEvent;
 import fr.welltale.level.event.LevelUpEvent;
+import fr.welltale.player.hud.PlayerHud;
 import lombok.RequiredArgsConstructor;
 
 import javax.annotation.Nonnull;
@@ -72,7 +73,11 @@ public class GiveXPHandler implements Consumer<GiveXPEvent> {
                 store
         );
 
-        if (!leveledUp) return;
+        if (!leveledUp) {
+            PlayerHud.updatePlayerHud(event.playerRef(), store);
+            return;
+        }
+
         LevelUpEvent.dispatch(event.playerRef(), oldLevel, playerLevelComponent.getLevel());
     }
 

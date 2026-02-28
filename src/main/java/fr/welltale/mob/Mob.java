@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
+//TODO ADD GEMS DROP
 @NoArgsConstructor // <- Required for Jackson
 @Getter
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -51,14 +52,7 @@ public class Mob {
         this.drops = drops;
     }
 
-    public String getModelAsset() {
-        return modelAsset;
-    }
-
-    public List<Drop> getDrops() {
-        return drops;
-    }
-
+    @Getter
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Drop {
         private String itemId;
@@ -75,20 +69,5 @@ public class Mob {
             this.dropChance = dropChance;
         }
 
-        public String getItemId() {
-            return itemId;
-        }
-
-        public int getMinQuantity() {
-            return minQuantity;
-        }
-
-        public int getMaxQuantity() {
-            return maxQuantity;
-        }
-
-        public float getDropChance() {
-            return dropChance;
-        }
     }
 }

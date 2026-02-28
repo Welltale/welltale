@@ -30,13 +30,11 @@ import fr.welltale.mob.JsonMobRepository;
 import fr.welltale.mob.Mob;
 import fr.welltale.mob.MobStatsComponent;
 import fr.welltale.mob.system.MobNameplateAssignSystem;
-import fr.welltale.mob.system.MobNameplateUpdateSystem;
 import fr.welltale.mob.system.MobStatsAssignSystem;
 import fr.welltale.player.*;
 import fr.welltale.player.system.BreakBlockEventSystem;
 import fr.welltale.player.system.DropItemEventSystem;
 import fr.welltale.player.system.PlaceBlockEventSystem;
-import fr.welltale.player.system.UpdatePlayerHudSystem;
 import fr.welltale.rank.JsonRankFileLoader;
 import fr.welltale.rank.JsonRankRepository;
 import fr.welltale.rank.Rank;
@@ -98,7 +96,6 @@ public class Welltale extends JavaPlugin {
             this.getEntityStoreRegistry().registerSystem(new BreakBlockEventSystem(playerRepository, rankRepository, logger));
             this.getEntityStoreRegistry().registerSystem(new PlaceBlockEventSystem(playerRepository, rankRepository, logger));
             this.getEntityStoreRegistry().registerSystem(new DropItemEventSystem(playerRepository, rankRepository, logger));
-            this.getEntityStoreRegistry().registerSystem(new UpdatePlayerHudSystem());
 
             this.getEventRegistry().registerGlobal(
                     PlayerChatEvent.class,
@@ -180,13 +177,10 @@ public class Welltale extends JavaPlugin {
             File jsonMobFile = jsonMobFileLoader.loadJsonMobsFile();
             List<Mob> jsonMobData = jsonMobFileLoader.getJsonData(jsonMobFile);
             JsonMobRepository jsonMobRepository = new JsonMobRepository(jsonMobData);
-            MobStatsAssignSystem mobStatsAssignSystem = new MobStatsAssignSystem(jsonMobRepository);
-            MobNameplateAssignSystem mobNameplateAssignSystem = new MobNameplateAssignSystem(jsonMobRepository);
-            MobNameplateUpdateSystem mobNameplateUpdateSystem = new MobNameplateUpdateSystem(jsonMobRepository);
 
-            this.getEntityStoreRegistry().registerSystem(mobNameplateAssignSystem);
-            this.getEntityStoreRegistry().registerSystem(mobStatsAssignSystem);
-            this.getEntityStoreRegistry().registerSystem(mobNameplateUpdateSystem);
+            this.getEntityStoreRegistry().registerSystem(new MobNameplateAssignSystem(jsonMobRepository));
+            this.getEntityStoreRegistry().registerSystem(new MobStatsAssignSystem(jsonMobRepository));
+            this.getEntityStoreRegistry().registerSystem(new fr.welltale.mob.system.DamageSystem(jsonMobRepository));
             this.getEntityStoreRegistry().registerSystem(new MobLootOnDeathSystem(customInventoryService, jsonMobRepository, logger));
 
             var mobLevelType = this.getEntityStoreRegistry().registerComponent(

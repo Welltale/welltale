@@ -38,11 +38,7 @@ public class MobStatsAssignSystem extends RefSystem<EntityStore> {
         Mob mob = this.mobRepository.getMobConfig(entityModelAssetId);
         if (mob == null) return;
 
-        if (mobStatsComponent != null) {
-            commandBuffer.removeComponent(ref, MobStatsComponent.getComponentType());
-        }
-
-        mobStatsComponent = new MobStatsComponent(
+        MobStatsComponent newMobStatsComponent = new MobStatsComponent(
                 mob.getLevel(),
                 mob.getBaseXP(),
                 mob.getCriticalDamage(),
@@ -55,7 +51,12 @@ public class MobStatsAssignSystem extends RefSystem<EntityStore> {
                 mob.getAirResistance()
         );
 
-        commandBuffer.addComponent(ref, MobStatsComponent.getComponentType(), mobStatsComponent);
+        if (mobStatsComponent != null) {
+            commandBuffer.replaceComponent(ref, MobStatsComponent.getComponentType(), newMobStatsComponent);
+            return;
+        }
+
+        commandBuffer.addComponent(ref, MobStatsComponent.getComponentType(), newMobStatsComponent);
     }
 
     @Override

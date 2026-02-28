@@ -78,7 +78,7 @@ public class MobLootOnDeathSystem extends DeathSystems.OnDeathSystem {
             List<com.hypixel.hytale.server.core.inventory.ItemStack> loot = MobLootGenerator.rollLoot(mobConfig, dropChanceMultiplier);
             if (loot.isEmpty()) return;
 
-            //TODO ROLL LOOT WITH PLAYER GROUP
+            //TODO GIVE LOOT TO PLAYERS GROUP
             CustomInventoryService.AddLootResult addResult = customInventoryService.addLoot(killerPlayerRef.getUuid(), loot);
             if (!addResult.isFull()) return;
 

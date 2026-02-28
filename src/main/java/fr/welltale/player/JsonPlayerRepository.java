@@ -25,11 +25,12 @@ public class JsonPlayerRepository implements PlayerRepository {
             throw ERR_INVALID_PLAYER;
         }
 
-        for (Player cachedPlayer : this.cachedPlayers) {
-            if (cachedPlayer.getUuid() != player.getUuid()) {
-                continue;
-            }
+        Player cachedPlayer = cachedPlayers.stream()
+                .filter(p -> p.getUuid().equals(player.getUuid()))
+                .findFirst()
+                .orElse(null);
 
+        if (cachedPlayer != null) {
             throw ERR_PLAYER_ALREADY_EXISTS;
         }
 
@@ -58,6 +59,7 @@ public class JsonPlayerRepository implements PlayerRepository {
             cachedPlayers.set(i, player);
             return;
         }
+
         throw ERR_PLAYER_NOT_FOUND;
     }
 

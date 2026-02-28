@@ -5,8 +5,9 @@ import com.hypixel.hytale.component.CommandBuffer;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.component.query.Query;
-import com.hypixel.hytale.component.system.tick.EntityTickingSystem;
+import com.hypixel.hytale.component.system.EntityEventSystem;
 import com.hypixel.hytale.server.core.modules.entity.component.PersistentModel;
+import com.hypixel.hytale.server.core.modules.entity.damage.Damage;
 import com.hypixel.hytale.server.core.modules.entitystats.EntityStatMap;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
@@ -17,22 +18,22 @@ import fr.welltale.util.Nameplate;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
-public class MobNameplateUpdateSystem extends EntityTickingSystem<EntityStore> {
+public class DamageSystem extends EntityEventSystem<EntityStore, Damage> {
     private final MobRepository mobRepository;
 
-    public MobNameplateUpdateSystem(MobRepository mobRepository) {
+    public DamageSystem(MobRepository mobRepository) {super(Damage.class);
         this.mobRepository = mobRepository;
     }
 
     @Override
-    public void tick(
-            float dt,
-            int index,
+    public void handle(
+            int i,
             @NonNull ArchetypeChunk<EntityStore> archetypeChunk,
             @NonNull Store<EntityStore> store,
-            @NonNull CommandBuffer<EntityStore> commandBuffer
+            @NonNull CommandBuffer<EntityStore> commandBuffer,
+            @NonNull Damage damage
     ) {
-        Ref<EntityStore> ref = archetypeChunk.getReferenceTo(index);
+        Ref<EntityStore> ref = archetypeChunk.getReferenceTo(i);
         if (!ref.isValid()) return;
 
         MobStatsComponent mobStatsComponent = store.getComponent(ref, MobStatsComponent.getComponentType());
@@ -52,7 +53,8 @@ public class MobNameplateUpdateSystem extends EntityTickingSystem<EntityStore> {
                 ref,
                 store,
                 mob,
-                commandBuffer
+                commandBuffer,
+                damage
         );
     }
 

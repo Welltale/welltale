@@ -4,6 +4,7 @@ import com.hypixel.hytale.component.CommandBuffer;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.logger.HytaleLogger;
+import com.hypixel.hytale.server.core.modules.entity.damage.Damage;
 import com.hypixel.hytale.server.core.modules.entitystats.EntityStatMap;
 import com.hypixel.hytale.server.core.modules.entitystats.EntityStatValue;
 import com.hypixel.hytale.server.core.modules.entitystats.asset.DefaultEntityStatTypes;
@@ -59,25 +60,32 @@ public class Nameplate {
             @Nonnull Ref<EntityStore> ref,
             @NonNull Store<EntityStore> store,
             @Nonnull Mob mob,
-            @Nonnull CommandBuffer<EntityStore> commandBuffer
+            @Nonnull CommandBuffer<EntityStore> commandBuffer,
+            @Nullable Damage damage
     ) {
         EntityStatMap entityStatMap = store.getComponent(ref, EntityStatMap.getComponentType());
-        EntityStatValue mobHealthStatValue = entityStatMap != null
-                ? entityStatMap.get(DefaultEntityStatTypes.getHealth())
-                : null;
+        if (entityStatMap == null) return;
+
+        EntityStatValue mobHealthStatValue = entityStatMap.get(DefaultEntityStatTypes.getHealth());
+        if (mobHealthStatValue == null) return;
+
+        float mobHealth = mobHealthStatValue.get();
+        if (damage != null) {
+            mobHealth -= damage.getAmount();
+        }
 
         String nameplateText = "[" + Constant.Prefix.LEVEL_PREFIX + mob.getLevel() + "] " + mob.getModelAsset();
-        if (mobHealthStatValue != null) {
-            long currentHealthValue = (long) Math.max(0, mobHealthStatValue.get());
-            long maxHealthValue = (long) mobHealthStatValue.getMax();
-            nameplateText += " [" + currentHealthValue + " / " + maxHealthValue + " HP]";
-        }
+
+        long currentHealthValue = (long) Math.max(0, mobHealth);
+        long maxHealthValue = (long) mobHealthStatValue.getMax();
+        nameplateText += " [" + currentHealthValue + " / " + maxHealthValue + " HP]";
 
         com.hypixel.hytale.server.core.entity.nameplate.Nameplate nameplate = new com.hypixel.hytale.server.core.entity.nameplate.Nameplate(nameplateText);
         com.hypixel.hytale.server.core.entity.nameplate.Nameplate mobNameplate = store.getComponent(ref, com.hypixel.hytale.server.core.entity.nameplate.Nameplate.getComponentType());
         if (mobNameplate != null) {
             if (mobNameplate.getText().equals(nameplate.getText())) return;
-            commandBuffer.removeComponent(ref, com.hypixel.hytale.server.core.entity.nameplate.Nameplate.getComponentType());
+            commandBuffer.replaceComponent(ref, com.hypixel.hytale.server.core.entity.nameplate.Nameplate.getComponentType(), nameplate);
+            return;
         }
 
         commandBuffer.addComponent(ref, com.hypixel.hytale.server.core.entity.nameplate.Nameplate.getComponentType(), nameplate);

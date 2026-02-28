@@ -39,7 +39,8 @@ public class MobNameplateAssignSystem extends RefSystem<EntityStore> {
                 ref,
                 store,
                 mob,
-                commandBuffer
+                commandBuffer,
+                null
         );
     }
 

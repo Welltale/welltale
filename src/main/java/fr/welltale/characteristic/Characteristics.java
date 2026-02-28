@@ -266,7 +266,7 @@ public class Characteristics {
         StaticModifier staticModifierWisdom = new StaticModifier(
                 Modifier.ModifierTarget.MAX,
                 StaticModifier.CalculationType.ADDITIVE,
-                DEFAULT_WISDOM
+                DEFAULT_WISDOM + playerEditableCharacteristics.wisdom
         );
         playerStatMap.putModifier(
                 StatIndices.WISDOM,
@@ -274,13 +274,11 @@ public class Characteristics {
                 staticModifierWisdom
         );
 
-        int effectiveStrength = DEFAULT_STRENGTH + playerEditableCharacteristics.strength;
-
         // TODO: Implement Strength passive bonus.
         StaticModifier staticModifierStrength = new StaticModifier(
                 Modifier.ModifierTarget.MAX,
                 StaticModifier.CalculationType.ADDITIVE,
-                effectiveStrength
+                DEFAULT_STRENGTH + playerEditableCharacteristics.strength
         );
         playerStatMap.putModifier(
                 StatIndices.STRENGTH,
@@ -291,7 +289,7 @@ public class Characteristics {
         StaticModifier staticModifierIntelligence = new StaticModifier(
                 Modifier.ModifierTarget.MAX,
                 StaticModifier.CalculationType.ADDITIVE,
-                DEFAULT_INTELLIGENCE
+                DEFAULT_INTELLIGENCE + playerEditableCharacteristics.intelligence
         );
         playerStatMap.putModifier(
                 StatIndices.INTELLIGENCE,
@@ -302,7 +300,7 @@ public class Characteristics {
         StaticModifier staticModifierChance = new StaticModifier(
                 Modifier.ModifierTarget.MAX,
                 StaticModifier.CalculationType.ADDITIVE,
-                DEFAULT_CHANCE
+                DEFAULT_CHANCE + playerEditableCharacteristics.chance
         );
         playerStatMap.putModifier(
                 StatIndices.CHANCE,
@@ -313,7 +311,7 @@ public class Characteristics {
         StaticModifier staticModifierAgility = new StaticModifier(
                 Modifier.ModifierTarget.MAX,
                 StaticModifier.CalculationType.ADDITIVE,
-                DEFAULT_AGILITY
+                DEFAULT_AGILITY + playerEditableCharacteristics.agility
         );
         playerStatMap.putModifier(
                 StatIndices.AGILITY,

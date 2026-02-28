@@ -13,6 +13,7 @@ import fr.welltale.constant.Constant;
 import fr.welltale.level.event.LevelUpEvent;
 import fr.welltale.player.Player;
 import fr.welltale.player.PlayerRepository;
+import fr.welltale.player.hud.PlayerHud;
 import fr.welltale.util.Title;
 import lombok.AllArgsConstructor;
 
@@ -37,7 +38,14 @@ public class LevelUpHandler implements Consumer<LevelUpEvent> {
                     .log("[LEVEL] LevelUpHandler Accept Error: PlayerData is null");
             return;
         } else {
-            playerData.setCharacteristicPoints(playerData.getCharacteristicPoints() + Characteristics.LEVEL_UP_CHARACTERISTICS_POINTS);
+            playerData.setCharacteristicPoints(playerData.getCharacteristicPoints() + Characteristics.LEVEL_UP_CHARACTERISTICS_POINTS * event.levelsGained());
+
+            try {
+                playerRepository.updatePlayer(playerData);
+            } catch (Exception e) {
+                this.logger.atSevere()
+                        .log("[LEVEL] LevelUpHandler Accept Error: " + e.getMessage());
+            }
         }
 
         Title.sendTitle(
@@ -62,5 +70,7 @@ public class LevelUpHandler implements Consumer<LevelUpEvent> {
                 playerPosition,
                 store
         );
+
+        PlayerHud.updatePlayerHud(event.playerRef(), store);
     }
 }

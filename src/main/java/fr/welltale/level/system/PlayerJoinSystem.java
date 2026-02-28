@@ -50,12 +50,35 @@ public class PlayerJoinSystem extends RefSystem<EntityStore> {
 
         PlayerLevelComponent playerLevelComponent = store.getComponent(ref, PlayerLevelComponent.getComponentType());
         if (playerLevelComponent != null) {
-            if (playerData.getExperience() != playerLevelComponent.getTotalExperience()) {
+            if (playerData.getExperience() == playerLevelComponent.getTotalExperience()) return;
+
+            if (playerData.getExperience() > playerLevelComponent.getTotalExperience()) {
+                playerLevelComponent.setTotalExperience(playerData.getExperience());
+            } else {
                 playerData.setExperience(playerLevelComponent.getTotalExperience());
             }
-        } else {
-            playerLevelComponent = new PlayerLevelComponent();
-            commandBuffer.addComponent(ref, PlayerLevelComponent.getComponentType(), playerLevelComponent);
+
+            try {
+                playerRepository.updatePlayer(playerData);
+            } catch (Exception e) {
+                this.logger.atSevere()
+                        .log("[PLAYER] PlayerJoinSystem OnEntityAdded Failed: " + e.getMessage());
+            }
+            return;
+        }
+
+        playerLevelComponent = new PlayerLevelComponent();
+        if (playerData.getExperience() > 0) {
+            playerLevelComponent.setTotalExperience(playerData.getExperience());
+        }
+
+        commandBuffer.addComponent(ref, PlayerLevelComponent.getComponentType(), playerLevelComponent);
+
+        try {
+            playerRepository.updatePlayer(playerData);
+        } catch (Exception e) {
+            this.logger.atSevere()
+                    .log("[PLAYER] PlayerJoinSystem OnEntityAdded Failed: " + e.getMessage());
         }
     }
 
