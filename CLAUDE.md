@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Welltale is a Hytale mod that implements an RPG system with characteristics, classes, spells, levels, and mobs. Built with Java 25 using the Hytale Modding API and Gradle with Kotlin DSL.
+Welltale is a Hytale mod that implements an RPG/MMO system with characteristics, classes, spells, levels, mobs, and multi-character player profiles. Built with Java 25 using the Hytale Modding API and Gradle with Kotlin DSL.
 
 ## Build & Development Commands
 
@@ -62,13 +62,12 @@ Each game system follows a consistent pattern:
 - Levels 1-200 supported
 - PlayerLevelComponent attached to entities via custom component type
 - OnDeathSystem grants XP to killer
-- PlayerJoinSystem initializes new players
 - XPTable handles all XP/level calculations
 
 **Class System** (`fr.welltale.clazz`)
 - Classes contain spell slugs and configuration
-- Players select class via UI page
-- ClassSelectPage for class selection UI
+- Players select class via UI page when creating/choosing a character slot
+- ClassSelectPage handles class selection before entering gameplay
 
 **Spell System** (`fr.welltale.spell`)
 - SpellManager handles spell casting, cooldowns, and stamina costs
@@ -84,9 +83,10 @@ Each game system follows a consistent pattern:
 
 **Player System** (`fr.welltale.player`)
 - Player data stored in JSON at `./mods/welltale/players.json`
+- Multi-character flow: character slot selection + active runtime character cache
 - Characteristics points system for stat allocation
 - Event systems for player actions (blocks, items, chat)
-- HUD updates via UpdatePlayerHudSystem
+- HUD updates are event-driven from gameplay handlers/pages (no per-tick HUD update system)
 
 ## File Structure
 
@@ -98,20 +98,22 @@ src/main/java/fr/welltale/
 │   └── system/                 # DamageSystem, MoveSpeedSystem
 ├── clazz/                      # Class system
 │   ├── Class.java              # Class data model
-│   └── event/                  # PlayerReadyEvent for class assignment
+│   └── page/                   # Class selection UI (ClassSelectPage)
 ├── level/                      # XP and leveling
 │   ├── PlayerLevelComponent.java # ECS component
 │   ├── XPTable.java           # XP calculations
 │   ├── event/                  # GiveXPEvent, LevelUpEvent
 │   ├── handler/               # Event handlers
-│   └── system/                 # OnDeathSystem, PlayerJoinSystem
+│   └── system/                 # OnDeathSystem
 ├── mob/                        # Enemy mobs
 │   ├── Mob.java               # Mob data model
 │   ├── MobStatsComponent.java # ECS component
 │   └── system/                 # Mob stat assignment
 ├── player/                     # Player management
 │   ├── Player.java            # Player data model
+│   ├── charactercache/         # Active runtime character cache
 │   ├── event/                  # Player events
+│   ├── page/                   # CharacterSelectPage
 │   └── system/                 # Player action systems
 ├── rank/                       # Player ranks
 ├── spell/                      # Spell casting
@@ -124,7 +126,7 @@ src/main/resources/
 ├── manifest.json              # Plugin metadata (template with placeholders)
 ├── Common/UI/Custom/           # Custom UI definitions (.ui files)
 │   ├── Hud/Player/            # Player HUD components
-│   └── Pages/                  # Game pages (class selection, etc.)
+│   └── Pages/                  # Game pages (inventory, characteristics, class/character selection)
 ├── Server/                     # Server-side resources
 │   ├── Audio/                  # Sound events
 │   ├── Entity/                 # Entity stats and damage causes
@@ -134,7 +136,7 @@ src/main/resources/
 ## JSON Data Storage
 
 All game data (players, ranks, classes, mobs) is stored as JSON files in `./mods/welltale/`:
-- `players.json` - Player data with UUID, class, rank, characteristics, XP
+- `players.json` - Player data with UUID, rank, gems, friends, and `characters[]` (class, XP, stats, etc.)
 - `ranks.json` - Rank configurations
 - `classes.json` - Class definitions with spell slugs
 - `mobs.json` - Mob stat configurations
@@ -191,6 +193,8 @@ The mod heavily uses Hytale's Entity Component System:
 - All systems follow ECS pattern with explicit component registration
 - Characteristic system uses additive/multiplicative modifiers based on stat type
 - Damage calculation inspired by Dofus mechanics with elemental resistances capped at 50%
+- Active character state is cached in memory via `CharacterCacheRepository` and synced back on player entity removal
+- Repository read methods generally return immutable snapshots (`List.copyOf(...)`) to avoid accidental external mutations
 
 ## Code Style
 
