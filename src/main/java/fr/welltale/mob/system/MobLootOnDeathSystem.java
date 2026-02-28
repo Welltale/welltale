@@ -16,7 +16,7 @@ import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import com.hypixel.hytale.server.core.util.NotificationUtil;
 import fr.welltale.characteristic.system.DropChanceSystem;
-import fr.welltale.inventory.CustomInventoryService;
+import fr.welltale.inventory.InventoryService;
 import fr.welltale.mob.Mob;
 import fr.welltale.mob.MobRepository;
 import fr.welltale.mob.loot.MobLootGenerator;
@@ -30,18 +30,18 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class MobLootOnDeathSystem extends DeathSystems.OnDeathSystem {
-    private final CustomInventoryService customInventoryService;
+    private final InventoryService inventoryService;
     private final MobRepository mobRepository;
     private final HytaleLogger logger;
     private final Map<String, Mob> mobByNormalizedAssetCache = new ConcurrentHashMap<>();
     private final Set<String> unresolvedNormalizedAssets = ConcurrentHashMap.newKeySet();
 
     public MobLootOnDeathSystem(
-            CustomInventoryService customInventoryService,
+            InventoryService inventoryService,
             MobRepository mobRepository,
             HytaleLogger logger
     ) {
-        this.customInventoryService = customInventoryService;
+        this.inventoryService = inventoryService;
         this.mobRepository = mobRepository;
         this.logger = logger;
     }
@@ -80,7 +80,7 @@ public class MobLootOnDeathSystem extends DeathSystems.OnDeathSystem {
             if (loot.isEmpty()) return;
 
             //TODO GIVE LOOT TO PLAYERS GROUP
-            CustomInventoryService.AddLootResult addResult = customInventoryService.addLoot(killerPlayerRef.getUuid(), loot);
+            InventoryService.AddLootResult addResult = inventoryService.addLoot(killerPlayerRef.getUuid(), loot);
             if (!addResult.isFull()) return;
 
             NotificationUtil.sendNotification(

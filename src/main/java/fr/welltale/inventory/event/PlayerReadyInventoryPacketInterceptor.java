@@ -16,28 +16,29 @@ import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import fr.welltale.characteristic.page.CharacteristicsPage;
-import fr.welltale.inventory.CustomInventoryService;
+import fr.welltale.inventory.InventoryService;
 import fr.welltale.inventory.page.InventoryPage;
+import fr.welltale.player.PlayerRepository;
 import fr.welltale.player.charactercache.CharacterCacheRepository;
 
 import javax.annotation.Nonnull;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
 public class PlayerReadyInventoryPacketInterceptor {
-    private final CustomInventoryService customInventoryService;
+    private final InventoryService inventoryService;
     private final CharacterCacheRepository characterCacheRepository;
+    private final PlayerRepository playerRepository;
     private final HytaleLogger logger;
-    private final ConcurrentHashMap<UUID, Boolean> installedPlayers = new ConcurrentHashMap<>();
 
     public PlayerReadyInventoryPacketInterceptor(
-            @Nonnull CustomInventoryService customInventoryService,
+            @Nonnull InventoryService inventoryService,
             @Nonnull CharacterCacheRepository characterCacheRepository,
+            @Nonnull PlayerRepository playerRepository,
             @Nonnull HytaleLogger logger
     ) {
-        this.customInventoryService = customInventoryService;
+        this.inventoryService = inventoryService;
         this.characterCacheRepository = characterCacheRepository;
+        this.playerRepository = playerRepository;
         this.logger = logger;
     }
 
@@ -51,11 +52,9 @@ public class PlayerReadyInventoryPacketInterceptor {
         if (playerRef == null) return;
 
         if (!(playerRef.getPacketHandler() instanceof GamePacketHandler packetHandler)) {
-            this.logger.atSevere().log("[INVENTORY] PlayerReadyInventoryPacketInterceptor OnPlayerReady Failed: Cannot install packet interceptor: unexpected packet handler type");
+            this.logger.atSevere().log("[INVENTORY] PlayerReadyInventoryPacketInterceptor OnPlayerReady Failed: Unexpected packet handler type");
             return;
         }
-
-        if (installedPlayers.putIfAbsent(playerRef.getUuid(), true) != null) return;
 
         packetHandler.registerHandler(ClientOpenWindow.PACKET_ID, p -> this.handleClientOpenWindow((ClientOpenWindow) p, playerRef));
         packetHandler.registerHandler(CloseWindow.PACKET_ID, p -> this.handleCloseWindow((CloseWindow) p, playerRef));
@@ -86,7 +85,7 @@ public class PlayerReadyInventoryPacketInterceptor {
                 player.getPageManager().openCustomPage(
                         ref,
                         store,
-                        new InventoryPage(playerRef, customInventoryService, characterCacheRepository, logger)
+                        new InventoryPage(playerRef, this.inventoryService, this.characterCacheRepository, this.playerRepository, this.logger)
                 );
                 return;
             }

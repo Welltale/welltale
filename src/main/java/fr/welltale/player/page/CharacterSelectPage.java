@@ -51,8 +51,6 @@ public class CharacterSelectPage extends InteractiveCustomUIPage<CharacterSelect
     private final Universe universe;
     private final HytaleLogger logger;
 
-    private UICommandBuilder cmd;
-
     public static class CharacterSelectPageEventData {
         public String action;
         public String slotIndex;
@@ -98,8 +96,6 @@ public class CharacterSelectPage extends InteractiveCustomUIPage<CharacterSelect
             this.logger.atSevere().log("[PLAYER] CharacterSelectPage Build Failed: Ref is invalid");
             return;
         }
-
-        this.cmd = cmd;
 
         cmd.append("Pages/Player/CharacterSelectPage.ui");
         event.addEventBinding(CustomUIEventBindingType.Activating, "#DisconnectButton", EventData.of("Action", ACTION_DISCONNECT));
@@ -212,10 +208,9 @@ public class CharacterSelectPage extends InteractiveCustomUIPage<CharacterSelect
         try {
             this.characterCacheRepository.addCharacterCache(new CachedCharacter(
                     playerUuid,
+                    playerData.getGems(),
                     selectedCharacter.getCharacterUuid(),
                     selectedCharacter.getClassUuid(),
-                    selectedCharacter.getExperience(),
-                    playerData.getGems(),
                     selectedCharacter.getEditableCharacteristics(),
                     selectedCharacter.getCharacteristicPoints(),
                     selectedCharacter.getGuildUuid()

@@ -23,7 +23,8 @@ import com.hypixel.hytale.server.core.ui.builder.UIEventBuilder;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import fr.welltale.characteristic.page.CharacteristicsPage;
-import fr.welltale.inventory.CustomInventoryService;
+import fr.welltale.inventory.InventoryService;
+import fr.welltale.player.PlayerRepository;
 import fr.welltale.player.charactercache.CharacterCacheRepository;
 import org.jspecify.annotations.NonNull;
 
@@ -69,8 +70,9 @@ public class InventoryPage extends InteractiveCustomUIPage<InventoryPage.CustomI
     private static final int ARMOR_SLOT_GAUNTLETS = 2;
     private static final int ARMOR_SLOT_PANTS = 3;
 
-    private final CustomInventoryService customInventoryService;
+    private final InventoryService inventoryService;
     private final CharacterCacheRepository characterCacheRepository;
+    private final PlayerRepository playerRepository;
     private final HytaleLogger logger;
     private final PlayerRef playerRef;
     private static final String[] EQUIPMENT_AREAS = {
@@ -166,14 +168,15 @@ public class InventoryPage extends InteractiveCustomUIPage<InventoryPage.CustomI
 
     public InventoryPage(
             @NonNull PlayerRef playerRef,
-            @NonNull CustomInventoryService customInventoryService,
-            @NonNull CharacterCacheRepository characterCacheRepository,
+            @NonNull InventoryService inventoryService,
+            @NonNull CharacterCacheRepository characterCacheRepository, PlayerRepository playerRepository,
             @NonNull HytaleLogger logger
     ) {
         super(playerRef, CustomPageLifetime.CanDismiss, CustomInventoryEventData.CODEC);
         this.playerRef = playerRef;
-        this.customInventoryService = customInventoryService;
+        this.inventoryService = inventoryService;
         this.characterCacheRepository = characterCacheRepository;
+        this.playerRepository = playerRepository;
         this.logger = logger;
     }
 
@@ -267,20 +270,17 @@ public class InventoryPage extends InteractiveCustomUIPage<InventoryPage.CustomI
             return;
         }
 
-//        if (ACTION_DRAG_HOVER.equals(data.action)) {
-//            boolean changed = handleDragHover(data);
-//            if (changed) {
-//                safeSendUpdate(ref, store);
-//            }
-//            return;
-//        }
+        if (ACTION_DRAG_HOVER.equals(data.action)) {
+            handleDragHover(data);
+            return;
+        }
 
         if (ACTION_OPEN_CHARACTERISTICS.equals(data.action)) {
             this.closed = true;
             player.getPageManager().openCustomPage(
                     ref,
                     store,
-                    new CharacteristicsPage(playerRef, customInventoryService, characterCacheRepository, logger)
+                    new CharacteristicsPage(this.playerRef, this.inventoryService, this.characterCacheRepository, this.playerRepository, this.logger)
             );
             return;
         }
@@ -296,7 +296,7 @@ public class InventoryPage extends InteractiveCustomUIPage<InventoryPage.CustomI
         }
 
         UUID playerUuid = uuidComponent.getUuid();
-        ArrayList<ItemStack> loot = customInventoryService.getLootSnapshot(playerUuid);
+        ArrayList<ItemStack> loot = inventoryService.getLootSnapshot(playerUuid);
         if (loot.isEmpty()) {
             safeSendUpdate(ref, store);
             return;
@@ -313,7 +313,7 @@ public class InventoryPage extends InteractiveCustomUIPage<InventoryPage.CustomI
             }
         }
 
-        customInventoryService.replaceLoot(playerUuid, remaining);
+        inventoryService.replaceLoot(playerUuid, remaining);
         safeSendUpdate(ref, store);
     }
 
@@ -433,21 +433,20 @@ public class InventoryPage extends InteractiveCustomUIPage<InventoryPage.CustomI
         );
     }
 
-//    private boolean handleDragHover(@NonNull CustomInventoryEventData data) {
-//        int hovered = firstValid(
-//                extractIntFromRawPayload(lastRawEventPayload, "SlotIndex"),
-//                resolveIndex(data)
-//        );
-//
-//        if (hovered < 0 || data.area == null) {
-//            return false;
-//        }
-//
-//        this.pendingHoverArea = data.area;
-//        this.pendingHoverSlot = hovered;
-//        this.pendingHoverAt = System.currentTimeMillis();
-//        return false;
-//    }
+    private void handleDragHover(@NonNull CustomInventoryEventData data) {
+        int hovered = firstValid(
+                extractIntFromRawPayload(lastRawEventPayload, "SlotIndex"),
+                resolveIndex(data)
+        );
+
+        if (hovered < 0 || data.area == null) {
+            return;
+        }
+
+        this.pendingHoverArea = data.area;
+        this.pendingHoverSlot = hovered;
+        this.pendingHoverAt = System.currentTimeMillis();
+    }
 
     private boolean tryApplyTransfer(@NonNull Ref<EntityStore> ref,
                                    @NonNull Store<EntityStore> store,
@@ -567,7 +566,7 @@ public class InventoryPage extends InteractiveCustomUIPage<InventoryPage.CustomI
         UUIDComponent uuidComponent = store.getComponent(ref, UUIDComponent.getComponentType());
         if (uuidComponent == null) return false;
 
-        ArrayList<ItemStack> loot = new ArrayList<>(customInventoryService.getLootSnapshot(uuidComponent.getUuid()));
+        ArrayList<ItemStack> loot = new ArrayList<>(inventoryService.getLootSnapshot(uuidComponent.getUuid()));
         if (lootSlot < 0 || lootSlot >= loot.size()) return false;
 
         ItemStack source = loot.get(lootSlot);
@@ -584,7 +583,7 @@ public class InventoryPage extends InteractiveCustomUIPage<InventoryPage.CustomI
 
         loot.set(lootSlot, null);
         compactLoot(loot);
-        customInventoryService.replaceLoot(uuidComponent.getUuid(), loot);
+        inventoryService.replaceLoot(uuidComponent.getUuid(), loot);
         return true;
     }
 
@@ -851,7 +850,7 @@ public class InventoryPage extends InteractiveCustomUIPage<InventoryPage.CustomI
             UUIDComponent uuidComponent = store.getComponent(ref, UUIDComponent.getComponentType());
             if (uuidComponent == null) return null;
 
-            ArrayList<ItemStack> loot = customInventoryService.getLootSnapshot(uuidComponent.getUuid());
+            ArrayList<ItemStack> loot = inventoryService.getLootSnapshot(uuidComponent.getUuid());
             return index >= 0 && index < loot.size() ? loot.get(index) : null;
         }
 
@@ -859,7 +858,7 @@ public class InventoryPage extends InteractiveCustomUIPage<InventoryPage.CustomI
             UUIDComponent uuidComponent = store.getComponent(ref, UUIDComponent.getComponentType());
             if (uuidComponent == null) return null;
             int equipmentIndex = toEquipmentSlotIndex(area);
-            return customInventoryService.getEquipmentSlot(uuidComponent.getUuid(), equipmentIndex);
+            return inventoryService.getEquipmentSlot(uuidComponent.getUuid(), equipmentIndex);
         }
 
         return null;
@@ -896,13 +895,13 @@ public class InventoryPage extends InteractiveCustomUIPage<InventoryPage.CustomI
             UUIDComponent uuidComponent = store.getComponent(ref, UUIDComponent.getComponentType());
             if (uuidComponent == null) return null;
 
-            ArrayList<ItemStack> loot = new ArrayList<>(customInventoryService.getLootSnapshot(uuidComponent.getUuid()));
+            ArrayList<ItemStack> loot = new ArrayList<>(inventoryService.getLootSnapshot(uuidComponent.getUuid()));
             if (index < 0 || index >= loot.size()) return null;
 
             ItemStack stack = loot.get(index);
             loot.set(index, null);
             compactLoot(loot);
-            customInventoryService.replaceLoot(uuidComponent.getUuid(), loot);
+            inventoryService.replaceLoot(uuidComponent.getUuid(), loot);
             return stack;
         }
 
@@ -913,8 +912,8 @@ public class InventoryPage extends InteractiveCustomUIPage<InventoryPage.CustomI
             int equipmentIndex = toEquipmentSlotIndex(area);
             if (equipmentIndex < 0) return null;
 
-            ItemStack stack = customInventoryService.getEquipmentSlot(uuidComponent.getUuid(), equipmentIndex);
-            customInventoryService.setEquipmentSlot(uuidComponent.getUuid(), equipmentIndex, null);
+            ItemStack stack = inventoryService.getEquipmentSlot(uuidComponent.getUuid(), equipmentIndex);
+            inventoryService.setEquipmentSlot(uuidComponent.getUuid(), equipmentIndex, null);
             return stack;
         }
 
@@ -952,14 +951,14 @@ public class InventoryPage extends InteractiveCustomUIPage<InventoryPage.CustomI
             UUIDComponent uuidComponent = store.getComponent(ref, UUIDComponent.getComponentType());
             if (uuidComponent == null) return false;
 
-            ArrayList<ItemStack> loot = new ArrayList<>(customInventoryService.getLootSnapshot(uuidComponent.getUuid()));
+            ArrayList<ItemStack> loot = new ArrayList<>(inventoryService.getLootSnapshot(uuidComponent.getUuid()));
             while (loot.size() <= index) {
                 loot.add(null);
             }
 
             loot.set(index, stack);
             compactLoot(loot);
-            customInventoryService.replaceLoot(uuidComponent.getUuid(), loot);
+            inventoryService.replaceLoot(uuidComponent.getUuid(), loot);
             return true;
         }
 
@@ -974,7 +973,7 @@ public class InventoryPage extends InteractiveCustomUIPage<InventoryPage.CustomI
                 return false;
             }
 
-            customInventoryService.setEquipmentSlot(uuidComponent.getUuid(), equipmentIndex, stack);
+            inventoryService.setEquipmentSlot(uuidComponent.getUuid(), equipmentIndex, stack);
             return true;
         }
 
@@ -1047,7 +1046,7 @@ public class InventoryPage extends InteractiveCustomUIPage<InventoryPage.CustomI
         if (cachedCharacter == null) return;
 
         Inventory inventory = player.getInventory();
-        ArrayList<ItemStack> loot = customInventoryService.getLootSnapshot(uuidComponent.getUuid());
+        ArrayList<ItemStack> loot = inventoryService.getLootSnapshot(uuidComponent.getUuid());
 
         for (String[] binding : EQUIPMENT_GRID_BINDINGS) {
             cmd.set(binding[0] + ".Slots", oneSlotFromArea(ref, store, binding[1]));
@@ -1056,7 +1055,7 @@ public class InventoryPage extends InteractiveCustomUIPage<InventoryPage.CustomI
         cmd.set("#StorageGrid.Slots", buildInventorySlots(inventory, false));
         cmd.set("#LootGrid.Slots", buildLootSlots(loot));
 
-        cmd.set("#LootCountLabel.Text", loot.size() + "/" + CustomInventoryService.LOOT_SLOT_CAPACITY);
+        cmd.set("#LootCountLabel.Text", loot.size() + "/" + InventoryService.LOOT_SLOT_CAPACITY);
         cmd.set("#GoldFooterAmount.Text", String.valueOf(cachedCharacter.getGems()));
     }
 

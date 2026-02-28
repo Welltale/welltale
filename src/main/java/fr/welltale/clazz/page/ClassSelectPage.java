@@ -258,10 +258,9 @@ public class ClassSelectPage extends InteractiveCustomUIPage<ClassSelectPage.Cla
         try {
             this.characterCacheRepository.addCharacterCache(new CachedCharacter(
                     playerUuid.getUuid(),
+                    playerData.getGems(),
                     newCharacter.getCharacterUuid(),
                     newCharacter.getClassUuid(),
-                    newCharacter.getExperience(),
-                    playerData.getGems(),
                     newCharacter.getEditableCharacteristics(),
                     newCharacter.getCharacteristicPoints(),
                     newCharacter.getGuildUuid()

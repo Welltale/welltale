@@ -77,15 +77,9 @@ public class PlayerJoinSystem extends RefSystem<EntityStore> {
         currentCharacter.setExperience(playerLevelComponent.getTotalExperience());
         try {
             this.playerRepository.updatePlayer(playerData);
-        } catch (Exception e) {
-            this.logger.atInfo()
-                    .log("[PLAYER] PlayerJoinSystem OnEntityRemove Failed: " + e.getMessage());
-        }
-
-        try {
             this.characterCacheRepository.removeCharacter(playerRef.getUuid());
         } catch (Exception e) {
-            this.logger.atSevere()
+            this.logger.atInfo()
                     .log("[PLAYER] PlayerJoinSystem OnEntityRemove Failed: " + e.getMessage());
         }
     }

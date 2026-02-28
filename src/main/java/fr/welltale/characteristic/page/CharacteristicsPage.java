@@ -19,10 +19,11 @@ import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import fr.welltale.characteristic.Characteristics;
 import fr.welltale.constant.Constant;
-import fr.welltale.inventory.CustomInventoryService;
+import fr.welltale.inventory.InventoryService;
 import fr.welltale.inventory.page.InventoryPage;
 import fr.welltale.level.PlayerLevelComponent;
 import fr.welltale.level.XPTable;
+import fr.welltale.player.PlayerRepository;
 import fr.welltale.player.charactercache.CachedCharacter;
 import fr.welltale.player.charactercache.CharacterCacheRepository;
 import org.jspecify.annotations.NonNull;
@@ -45,9 +46,11 @@ public class CharacteristicsPage extends InteractiveCustomUIPage<Characteristics
     private static final String CHARACTERISTIC_AGILITY = "AGILITY";
 
     private final PlayerRef playerRef;
-    private final CustomInventoryService customInventoryService;
+    private final InventoryService inventoryService;
     private final CharacterCacheRepository characterCacheRepository;
+    private final PlayerRepository playerRepository;
     private final HytaleLogger logger;
+
     private boolean closed;
 
     public static class CharacteristicsEventData {
@@ -73,14 +76,15 @@ public class CharacteristicsPage extends InteractiveCustomUIPage<Characteristics
 
     public CharacteristicsPage(
             @NonNull PlayerRef playerRef,
-            @NonNull CustomInventoryService customInventoryService,
-            @NonNull CharacterCacheRepository characterCacheRepository,
+            @NonNull InventoryService inventoryService,
+            @NonNull CharacterCacheRepository characterCacheRepository, PlayerRepository playerRepository,
             @NonNull HytaleLogger logger
     ) {
         super(playerRef, CustomPageLifetime.CanDismiss, CharacteristicsEventData.CODEC);
         this.playerRef = playerRef;
-        this.customInventoryService = customInventoryService;
+        this.inventoryService = inventoryService;
         this.characterCacheRepository = characterCacheRepository;
+        this.playerRepository = playerRepository;
         this.logger = logger;
     }
 
@@ -141,7 +145,7 @@ public class CharacteristicsPage extends InteractiveCustomUIPage<Characteristics
             player.getPageManager().openCustomPage(
                     ref,
                     store,
-                    new InventoryPage(playerRef, customInventoryService, characterCacheRepository, logger)
+                    new InventoryPage(this.playerRef, this.inventoryService, this.characterCacheRepository, this.playerRepository, this.logger)
             );
             return;
         }
@@ -193,7 +197,21 @@ public class CharacteristicsPage extends InteractiveCustomUIPage<Characteristics
         Characteristics.EditableCharacteristics editable = cachedCharacter.getEditableCharacteristics();
         PlayerLevelComponent playerLevelComponent = store.getComponent(ref, PlayerLevelComponent.getComponentType());
         if (playerLevelComponent == null) {
-            playerLevelComponent = new PlayerLevelComponent(cachedCharacter.getExperience());
+            fr.welltale.player.Player playerData = this.playerRepository.getPlayer(uuidComponent.getUuid());
+            if (playerData == null) {
+                this.logger.atSevere().log("[CHARACTERISTIC] CharacteristicsPage ApplyState Failed: PlayerData is null");
+                return;
+            }
+            fr.welltale.player.Player.Character currentCharacter = playerData.getCharacters().stream()
+                    .filter(c -> c.getCharacterUuid().equals(cachedCharacter.getPlayerUuid()))
+                    .findFirst()
+                    .orElse(null);
+            if (currentCharacter == null) {
+                this.logger.atSevere().log("[CHARACTERISTIC] CharacteristicsPage ApplyState Failed: Character is null");
+                return;
+            }
+
+            playerLevelComponent = new PlayerLevelComponent(currentCharacter.getExperience());
             store.addComponent(ref, PlayerLevelComponent.getComponentType(), playerLevelComponent);
         }
 
@@ -204,7 +222,7 @@ public class CharacteristicsPage extends InteractiveCustomUIPage<Characteristics
         float progressToNextLevel;
 
         //TODO FIX XP NOT DISPLAY IN CHARACTIRISTICS PAGE
-        totalXp = Math.max(0L, cachedCharacter.getExperience());
+        totalXp = Math.max(0L, playerLevelComponent.getTotalExperience());
         level = XPTable.getLevelForXP(totalXp);
         currentLevelXp = XPTable.getXPInCurrentLevel(totalXp);
         xpToNextLevel = XPTable.getXPToNextLevel(totalXp);

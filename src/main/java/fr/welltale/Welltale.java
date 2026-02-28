@@ -15,7 +15,7 @@ import fr.welltale.characteristic.system.MoveSpeedSystem;
 import fr.welltale.clazz.Class;
 import fr.welltale.clazz.JsonClassFileLoader;
 import fr.welltale.clazz.JsonClassRepository;
-import fr.welltale.inventory.CustomInventoryService;
+import fr.welltale.inventory.InventoryService;
 import fr.welltale.inventory.event.PlayerReadyInventoryPacketInterceptor;
 import fr.welltale.level.PlayerLevelComponent;
 import fr.welltale.level.event.GiveXPEvent;
@@ -87,7 +87,7 @@ public class Welltale extends JavaPlugin {
             File jsonPlayerFile = jsonPlayerFileLoader.loadJsonPlayersFile();
             ArrayList<Player> jsonPlayerData = jsonPlayerFileLoader.getJsonData(jsonPlayerFile);
             JsonPlayerRepository playerRepository = new JsonPlayerRepository(jsonPlayerData, jsonPlayerFile, logger);
-            MemoryCharacterCache memoryCharacterCache = new MemoryCharacterCache();
+            MemoryCharacterCache characterCache = new MemoryCharacterCache();
 
             //Remove this if you don't use JsonPlayerRepository
             this.playerRepository = playerRepository;
@@ -102,7 +102,7 @@ public class Welltale extends JavaPlugin {
             );
             this.getEventRegistry().registerGlobal(
                     PlayerReadyEvent.class,
-                    new fr.welltale.player.event.PlayerReadyEvent(playerRepository, rankRepository, memoryCharacterCache, classRepository, logger, universe)::onPlayerReady
+                    new fr.welltale.player.event.PlayerReadyEvent(playerRepository, rankRepository, characterCache, classRepository, logger, universe)::onPlayerReady
             );
             this.getEntityStoreRegistry().registerSystem(new BreakBlockEventSystem(playerRepository, rankRepository, logger));
             this.getEntityStoreRegistry().registerSystem(new PlaceBlockEventSystem(playerRepository, rankRepository, logger));
@@ -128,7 +128,7 @@ public class Welltale extends JavaPlugin {
 
             //Spell
             logger.atInfo().log("Loading spells...");
-            SpellManager spellManager = new SpellManager(logger, universe, classRepository, memoryCharacterCache);
+            SpellManager spellManager = new SpellManager(logger, universe, classRepository, characterCache);
             SpellCooldownScheduler spellCooldownScheduler = new SpellCooldownScheduler();
             CastSpellInteraction castSpellInteraction = new CastSpellInteraction();
             castSpellInteraction.initStatics(spellManager, playerRepository, logger);
@@ -153,19 +153,18 @@ public class Welltale extends JavaPlugin {
             PlayerLevelComponent.setComponentType(levelType);
 
             this.getEventRegistry().register(GiveXPEvent.class, new GiveXPHandler(logger));
-            this.getEventRegistry().register(LevelUpEvent.class, new LevelUpHandler(memoryCharacterCache, logger));
+            this.getEventRegistry().register(LevelUpEvent.class, new LevelUpHandler(characterCache, logger));
             this.getEntityStoreRegistry().registerSystem(new OnDeathSystem(logger));
-            this.getEntityStoreRegistry().registerSystem(new PlayerJoinSystem(playerRepository, memoryCharacterCache, logger));
+            this.getEntityStoreRegistry().registerSystem(new PlayerJoinSystem(playerRepository, characterCache, logger));
             logger.atInfo().log("Level loaded!");
             //Level
 
             //Inventory
-            CustomInventoryService customInventoryService = new CustomInventoryService();
+            InventoryService inventoryService = new InventoryService();
             this.getEventRegistry().registerGlobal(
                     PlayerReadyEvent.class,
-                    new PlayerReadyInventoryPacketInterceptor(customInventoryService, memoryCharacterCache, logger)::onPlayerReady
+                    new PlayerReadyInventoryPacketInterceptor(inventoryService, characterCache, playerRepository, logger)::onPlayerReady
             );
-
             //Inventory
 
             //Mob
@@ -178,7 +177,7 @@ public class Welltale extends JavaPlugin {
             this.getEntityStoreRegistry().registerSystem(new MobNameplateAssignSystem(jsonMobRepository));
             this.getEntityStoreRegistry().registerSystem(new MobStatsAssignSystem(jsonMobRepository));
             this.getEntityStoreRegistry().registerSystem(new fr.welltale.mob.system.DamageSystem(jsonMobRepository));
-            this.getEntityStoreRegistry().registerSystem(new MobLootOnDeathSystem(customInventoryService, jsonMobRepository, logger));
+            this.getEntityStoreRegistry().registerSystem(new MobLootOnDeathSystem(inventoryService, jsonMobRepository, logger));
 
             var mobLevelType = this.getEntityStoreRegistry().registerComponent(
                     MobStatsComponent.class,

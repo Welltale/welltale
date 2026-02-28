@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class CustomInventoryService {
+public class InventoryService {
     public static final int EQUIPMENT_SLOT_COUNT = 17;
     public static final int LOOT_SLOT_CAPACITY = 30;
 
