@@ -78,7 +78,7 @@ public class PlayerChatEvent {
                 return;
             }
 
-            Player playerData = this.playerRepository.getPlayerByUuid(senderRef.getUuid());
+            Player playerData = this.playerRepository.getPlayer(senderRef.getUuid());
             if (playerData == null) {
                 this.logger.atSevere()
                         .log("[CHAT] PlayerChatEvent ReformatMessage Failed: PlayerData is null");

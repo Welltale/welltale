@@ -11,8 +11,8 @@ import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import fr.welltale.characteristic.Characteristics;
 import fr.welltale.constant.Constant;
 import fr.welltale.level.event.LevelUpEvent;
-import fr.welltale.player.Player;
-import fr.welltale.player.PlayerRepository;
+import fr.welltale.player.charactercache.CachedCharacter;
+import fr.welltale.player.charactercache.CharacterCacheRepository;
 import fr.welltale.player.hud.PlayerHud;
 import fr.welltale.util.Title;
 import lombok.AllArgsConstructor;
@@ -21,7 +21,7 @@ import java.util.function.Consumer;
 
 @AllArgsConstructor
 public class LevelUpHandler implements Consumer<LevelUpEvent> {
-    private final PlayerRepository playerRepository;
+    private final CharacterCacheRepository characterCacheRepository;
     private final HytaleLogger logger;
 
     @Override
@@ -32,16 +32,16 @@ public class LevelUpHandler implements Consumer<LevelUpEvent> {
         PlayerRef playerRef = store.getComponent(event.playerRef(), PlayerRef.getComponentType());
         if (playerRef == null) return;
 
-        Player playerData = this.playerRepository.getPlayerByUuid(playerRef.getUuid());
-        if (playerData == null) {
+        CachedCharacter cachedCharacter = this.characterCacheRepository.getCharacterCache(playerRef.getUuid());
+        if (cachedCharacter == null) {
             this.logger.atSevere()
-                    .log("[LEVEL] LevelUpHandler Accept Error: PlayerData is null");
+                    .log("[LEVEL] LevelUpHandler Accept Error: CachedCharacter is null");
             return;
         } else {
-            playerData.setCharacteristicPoints(playerData.getCharacteristicPoints() + Characteristics.LEVEL_UP_CHARACTERISTICS_POINTS * event.levelsGained());
+            cachedCharacter.setCharacteristicPoints(cachedCharacter.getCharacteristicPoints() + Characteristics.LEVEL_UP_CHARACTERISTICS_POINTS * event.levelsGained());
 
             try {
-                playerRepository.updatePlayer(playerData);
+                this.characterCacheRepository.updateCharacter(cachedCharacter);
             } catch (Exception e) {
                 this.logger.atSevere()
                         .log("[LEVEL] LevelUpHandler Accept Error: " + e.getMessage());

@@ -50,7 +50,7 @@ public class BreakBlockEventSystem extends EntityEventSystem<EntityStore, com.hy
             return;
         }
 
-        Player playerData = this.playerRepository.getPlayerByUuid(playerRef.getUuid());
+        Player playerData = this.playerRepository.getPlayer(playerRef.getUuid());
         if (playerData == null) {
             this.logger.atSevere()
                     .log("[PLAYER] BreakBlockEvent Handle Failed: PlayerData is null");

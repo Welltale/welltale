@@ -5,8 +5,9 @@ import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.component.query.Query;
 import com.hypixel.hytale.logger.HytaleLogger;
-import com.hypixel.hytale.server.core.Message;
 import com.hypixel.hytale.protocol.packets.interface_.NotificationStyle;
+import com.hypixel.hytale.server.core.Message;
+import com.hypixel.hytale.server.core.inventory.ItemStack;
 import com.hypixel.hytale.server.core.modules.entity.component.PersistentModel;
 import com.hypixel.hytale.server.core.modules.entity.damage.Damage;
 import com.hypixel.hytale.server.core.modules.entity.damage.DeathComponent;
@@ -14,16 +15,16 @@ import com.hypixel.hytale.server.core.modules.entity.damage.DeathSystems;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import com.hypixel.hytale.server.core.util.NotificationUtil;
+import fr.welltale.characteristic.system.DropChanceSystem;
 import fr.welltale.inventory.CustomInventoryService;
-import fr.welltale.mob.loot.MobLootGenerator;
 import fr.welltale.mob.Mob;
 import fr.welltale.mob.MobRepository;
-import fr.welltale.characteristic.system.DropChanceSystem;
+import fr.welltale.mob.loot.MobLootGenerator;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
-import java.util.Locale;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -75,7 +76,7 @@ public class MobLootOnDeathSystem extends DeathSystems.OnDeathSystem {
             }
 
             float dropChanceMultiplier = DropChanceSystem.getDropChanceMultiplier(killerRef, store);
-            List<com.hypixel.hytale.server.core.inventory.ItemStack> loot = MobLootGenerator.rollLoot(mobConfig, dropChanceMultiplier);
+            List<ItemStack> loot = MobLootGenerator.rollLoot(mobConfig, dropChanceMultiplier);
             if (loot.isEmpty()) return;
 
             //TODO GIVE LOOT TO PLAYERS GROUP

@@ -15,26 +15,27 @@ import fr.welltale.characteristic.system.MoveSpeedSystem;
 import fr.welltale.clazz.Class;
 import fr.welltale.clazz.JsonClassFileLoader;
 import fr.welltale.clazz.JsonClassRepository;
+import fr.welltale.inventory.CustomInventoryService;
+import fr.welltale.inventory.event.PlayerReadyInventoryPacketInterceptor;
 import fr.welltale.level.PlayerLevelComponent;
 import fr.welltale.level.event.GiveXPEvent;
 import fr.welltale.level.event.LevelUpEvent;
 import fr.welltale.level.handler.GiveXPHandler;
 import fr.welltale.level.handler.LevelUpHandler;
 import fr.welltale.level.system.OnDeathSystem;
-import fr.welltale.level.system.PlayerJoinSystem;
-import fr.welltale.inventory.CustomInventoryService;
-import fr.welltale.inventory.event.PlayerReadyInventoryPacketInterceptor;
-import fr.welltale.mob.system.MobLootOnDeathSystem;
 import fr.welltale.mob.JsonMobFileLoader;
 import fr.welltale.mob.JsonMobRepository;
 import fr.welltale.mob.Mob;
 import fr.welltale.mob.MobStatsComponent;
+import fr.welltale.mob.system.MobLootOnDeathSystem;
 import fr.welltale.mob.system.MobNameplateAssignSystem;
 import fr.welltale.mob.system.MobStatsAssignSystem;
 import fr.welltale.player.*;
+import fr.welltale.player.charactercache.MemoryCharacterCache;
 import fr.welltale.player.system.BreakBlockEventSystem;
 import fr.welltale.player.system.DropItemEventSystem;
 import fr.welltale.player.system.PlaceBlockEventSystem;
+import fr.welltale.player.system.PlayerJoinSystem;
 import fr.welltale.rank.JsonRankFileLoader;
 import fr.welltale.rank.JsonRankRepository;
 import fr.welltale.rank.Rank;
@@ -44,7 +45,7 @@ import fr.welltale.spell.SpellManager;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.util.List;
+import java.util.ArrayList;
 
 
 public class Welltale extends JavaPlugin {
@@ -66,17 +67,27 @@ public class Welltale extends JavaPlugin {
             logger.atInfo().log("Loading ranks...");
             JsonRankFileLoader jsonRankFileLoader = new JsonRankFileLoader();
             File jsonRankFile = jsonRankFileLoader.loadJsonRanksFile();
-            List<Rank> jsonRankData = jsonRankFileLoader.getJsonData(jsonRankFile);
+            ArrayList<Rank> jsonRankData = jsonRankFileLoader.getJsonData(jsonRankFile);
             JsonRankRepository rankRepository = new JsonRankRepository(jsonRankData);
             logger.atInfo().log(jsonRankData.size() + " rank(s) loaded!");
             //Rank
+
+            //Class
+            logger.atInfo().log("Loading classes...");
+            JsonClassFileLoader jsonClassFileLoader = new JsonClassFileLoader();
+            File jsonClassFile = jsonClassFileLoader.loadJsonClassesFile();
+            ArrayList<Class> jsonClassData = jsonClassFileLoader.getJsonData(jsonClassFile);
+            JsonClassRepository classRepository = new JsonClassRepository(jsonClassData);
+            logger.atInfo().log(jsonClassData.size() + " class(es) loaded!");
+            //Class
 
             //Player
             logger.atInfo().log("Loading players...");
             JsonPlayerFileLoader jsonPlayerFileLoader = new JsonPlayerFileLoader();
             File jsonPlayerFile = jsonPlayerFileLoader.loadJsonPlayersFile();
-            List<Player> jsonPlayerData = jsonPlayerFileLoader.getJsonData(jsonPlayerFile);
+            ArrayList<Player> jsonPlayerData = jsonPlayerFileLoader.getJsonData(jsonPlayerFile);
             JsonPlayerRepository playerRepository = new JsonPlayerRepository(jsonPlayerData, jsonPlayerFile, logger);
+            MemoryCharacterCache memoryCharacterCache = new MemoryCharacterCache();
 
             //Remove this if you don't use JsonPlayerRepository
             this.playerRepository = playerRepository;
@@ -91,7 +102,7 @@ public class Welltale extends JavaPlugin {
             );
             this.getEventRegistry().registerGlobal(
                     PlayerReadyEvent.class,
-                    new fr.welltale.player.event.PlayerReadyEvent(playerRepository, rankRepository, logger, universe)::onPlayerReady
+                    new fr.welltale.player.event.PlayerReadyEvent(playerRepository, rankRepository, memoryCharacterCache, classRepository, logger, universe)::onPlayerReady
             );
             this.getEntityStoreRegistry().registerSystem(new BreakBlockEventSystem(playerRepository, rankRepository, logger));
             this.getEntityStoreRegistry().registerSystem(new PlaceBlockEventSystem(playerRepository, rankRepository, logger));
@@ -115,23 +126,9 @@ public class Welltale extends JavaPlugin {
             this.getEntityStoreRegistry().registerSystem(dropChanceSystem);
             //Characteristic
 
-            //Class
-            logger.atInfo().log("Loading classes...");
-            JsonClassFileLoader jsonClassFileLoader = new JsonClassFileLoader();
-            File jsonClassFile = jsonClassFileLoader.loadJsonClassesFile();
-            List<Class> jsonClassData = jsonClassFileLoader.getJsonData(jsonClassFile);
-            JsonClassRepository classRepository = new JsonClassRepository(jsonClassData);
-            logger.atInfo().log(jsonClassData.size() + " class(es) loaded!");
-
-            this.getEventRegistry().registerGlobal(
-                    PlayerReadyEvent.class,
-                    new fr.welltale.clazz.event.PlayerReadyEvent(playerRepository, classRepository, logger)::onPlayerReadyEvent
-            );
-            //Class
-
             //Spell
             logger.atInfo().log("Loading spells...");
-            SpellManager spellManager = new SpellManager(logger, universe, classRepository);
+            SpellManager spellManager = new SpellManager(logger, universe, classRepository, memoryCharacterCache);
             SpellCooldownScheduler spellCooldownScheduler = new SpellCooldownScheduler();
             CastSpellInteraction castSpellInteraction = new CastSpellInteraction();
             castSpellInteraction.initStatics(spellManager, playerRepository, logger);
@@ -156,9 +153,9 @@ public class Welltale extends JavaPlugin {
             PlayerLevelComponent.setComponentType(levelType);
 
             this.getEventRegistry().register(GiveXPEvent.class, new GiveXPHandler(logger));
-            this.getEventRegistry().register(LevelUpEvent.class, new LevelUpHandler(playerRepository, logger));
+            this.getEventRegistry().register(LevelUpEvent.class, new LevelUpHandler(memoryCharacterCache, logger));
             this.getEntityStoreRegistry().registerSystem(new OnDeathSystem(logger));
-            this.getEntityStoreRegistry().registerSystem(new PlayerJoinSystem(playerRepository, logger, universe));
+            this.getEntityStoreRegistry().registerSystem(new PlayerJoinSystem(playerRepository, memoryCharacterCache, logger));
             logger.atInfo().log("Level loaded!");
             //Level
 
@@ -166,7 +163,7 @@ public class Welltale extends JavaPlugin {
             CustomInventoryService customInventoryService = new CustomInventoryService();
             this.getEventRegistry().registerGlobal(
                     PlayerReadyEvent.class,
-                    new PlayerReadyInventoryPacketInterceptor(customInventoryService, playerRepository, logger)::onPlayerReady
+                    new PlayerReadyInventoryPacketInterceptor(customInventoryService, memoryCharacterCache, logger)::onPlayerReady
             );
 
             //Inventory
@@ -175,7 +172,7 @@ public class Welltale extends JavaPlugin {
             logger.atInfo().log("Loading mobs...");
             JsonMobFileLoader jsonMobFileLoader = new JsonMobFileLoader();
             File jsonMobFile = jsonMobFileLoader.loadJsonMobsFile();
-            List<Mob> jsonMobData = jsonMobFileLoader.getJsonData(jsonMobFile);
+            ArrayList<Mob> jsonMobData = jsonMobFileLoader.getJsonData(jsonMobFile);
             JsonMobRepository jsonMobRepository = new JsonMobRepository(jsonMobData);
 
             this.getEntityStoreRegistry().registerSystem(new MobNameplateAssignSystem(jsonMobRepository));

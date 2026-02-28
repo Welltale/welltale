@@ -18,8 +18,8 @@ public class CustomInventoryService {
         }
     }
 
-    private final ConcurrentHashMap<UUID, List<ItemStack>> pendingLootByPlayer = new ConcurrentHashMap<>();
-    private final ConcurrentHashMap<UUID, List<ItemStack>> equipmentByPlayer = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<UUID, ArrayList<ItemStack>> pendingLootByPlayer = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<UUID, ArrayList<ItemStack>> equipmentByPlayer = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<String, Boolean> itemIdValidationCache = new ConcurrentHashMap<>();
 
     public AddLootResult addLoot(UUID playerUuid, List<ItemStack> loot) {
@@ -29,7 +29,7 @@ public class CustomInventoryService {
 
         int[] counts = new int[2];
         pendingLootByPlayer.compute(playerUuid, (_, existing) -> {
-            List<ItemStack> next = sanitizeAndTrimLoot(existing);
+            ArrayList<ItemStack> next = sanitizeAndTrimLoot(existing);
             if (next.isEmpty()) {
                 next = new ArrayList<>(Math.min(LOOT_SLOT_CAPACITY, loot.size()));
             }
@@ -57,12 +57,12 @@ public class CustomInventoryService {
         return new AddLootResult(counts[0], counts[1]);
     }
 
-    public List<ItemStack> getLootSnapshot(UUID playerUuid) {
-        if (playerUuid == null) return List.of();
+    public ArrayList<ItemStack> getLootSnapshot(UUID playerUuid) {
+        if (playerUuid == null) return new ArrayList<>();
 
-        List<ItemStack> loot = pendingLootByPlayer.get(playerUuid);
-        if (loot == null) return List.of();
-        if (loot.isEmpty()) return List.of();
+        ArrayList<ItemStack> loot = pendingLootByPlayer.get(playerUuid);
+        if (loot == null) return new ArrayList<>();
+        if (loot.isEmpty()) return new ArrayList<>();
 
         return new ArrayList<>(loot);
     }
@@ -70,7 +70,7 @@ public class CustomInventoryService {
     public void replaceLoot(UUID playerUuid, List<ItemStack> loot) {
         if (playerUuid == null) return;
 
-        List<ItemStack> sanitizedLoot = sanitizeAndTrimLoot(loot);
+        ArrayList<ItemStack> sanitizedLoot = sanitizeAndTrimLoot(loot);
         if (sanitizedLoot.isEmpty()) {
             pendingLootByPlayer.remove(playerUuid);
             return;
@@ -84,7 +84,7 @@ public class CustomInventoryService {
             return null;
         }
 
-        List<ItemStack> equipment = equipmentByPlayer.get(playerUuid);
+        ArrayList<ItemStack> equipment = equipmentByPlayer.get(playerUuid);
         if (equipment == null || slotIndex >= equipment.size()) {
             return null;
         }
@@ -99,7 +99,7 @@ public class CustomInventoryService {
         }
 
         equipmentByPlayer.compute(playerUuid, (_, existing) -> {
-            List<ItemStack> next = existing == null ? new ArrayList<>(EQUIPMENT_SLOT_COUNT) : new ArrayList<>(existing);
+            ArrayList<ItemStack> next = existing == null ? new ArrayList<>(EQUIPMENT_SLOT_COUNT) : new ArrayList<>(existing);
             while (next.size() < EQUIPMENT_SLOT_COUNT) {
                 next.add(null);
             }
@@ -133,10 +133,10 @@ public class CustomInventoryService {
         return trimmed.isBlank() ? null : trimmed;
     }
 
-    private List<ItemStack> sanitizeAndTrimLoot(List<ItemStack> loot) {
-        if (loot == null || loot.isEmpty()) return List.of();
+    private ArrayList<ItemStack> sanitizeAndTrimLoot(List<ItemStack> loot) {
+        if (loot == null || loot.isEmpty()) return new ArrayList<>();
 
-        List<ItemStack> sanitized = new ArrayList<>(Math.min(loot.size(), LOOT_SLOT_CAPACITY));
+        ArrayList<ItemStack> sanitized = new ArrayList<>(Math.min(loot.size(), LOOT_SLOT_CAPACITY));
         for (ItemStack stack : loot) {
             if (sanitized.size() >= LOOT_SLOT_CAPACITY) break;
 

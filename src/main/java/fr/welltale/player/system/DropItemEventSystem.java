@@ -51,7 +51,7 @@ public class DropItemEventSystem extends EntityEventSystem<EntityStore, com.hypi
             return;
         }
 
-        Player playerData = this.playerRepository.getPlayerByUuid(playerRef.getUuid());
+        Player playerData = this.playerRepository.getPlayer(playerRef.getUuid());
         if (playerData == null) {
             this.logger.atSevere()
                     .log("[PLAYER] DropItemEvent Handle Failed: PlayerData is null");

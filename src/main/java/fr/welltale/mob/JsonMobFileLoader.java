@@ -32,9 +32,9 @@ public class JsonMobFileLoader {
                             0,
                             0,
                             0,
-                            List.of(
+                            new ArrayList<>(List.of(
                                     new Mob.Drop("Weapon_Sword_Beginner", 1, 2, 90.0f)
-                            )
+                            ))
                     )
             };
             mapper.writeValue(jsonDataFile, exampleMobs);
@@ -42,7 +42,7 @@ public class JsonMobFileLoader {
         return jsonDataFile;
     }
 
-    public List<Mob> getJsonData(File jsonFile) throws IOException {
+    public ArrayList<Mob> getJsonData(File jsonFile) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         return new ArrayList<>(List.of(mapper.readValue(jsonFile, Mob[].class)));

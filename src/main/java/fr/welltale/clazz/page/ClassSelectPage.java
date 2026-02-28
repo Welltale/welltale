@@ -16,10 +16,17 @@ import com.hypixel.hytale.server.core.ui.builder.EventData;
 import com.hypixel.hytale.server.core.ui.builder.UICommandBuilder;
 import com.hypixel.hytale.server.core.ui.builder.UIEventBuilder;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
+import com.hypixel.hytale.server.core.universe.Universe;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
+import fr.welltale.characteristic.Characteristics;
 import fr.welltale.clazz.Class;
 import fr.welltale.clazz.ClassRepository;
+import fr.welltale.constant.Constant;
+import fr.welltale.level.PlayerLevelComponent;
 import fr.welltale.player.PlayerRepository;
+import fr.welltale.player.charactercache.CachedCharacter;
+import fr.welltale.player.charactercache.CharacterCacheRepository;
+import fr.welltale.util.Teleport;
 import fr.welltale.util.Title;
 import org.jspecify.annotations.NonNull;
 
@@ -36,6 +43,8 @@ public class ClassSelectPage extends InteractiveCustomUIPage<ClassSelectPage.Cla
 
     private final ClassRepository classRepository;
     private final PlayerRepository playerRepository;
+    private final CharacterCacheRepository characterCacheRepository;
+    private final Universe universe;
     private final HytaleLogger logger;
 
     public static class ClassSelectPageEventData {
@@ -61,7 +70,13 @@ public class ClassSelectPage extends InteractiveCustomUIPage<ClassSelectPage.Cla
                         .build();
     }
 
-    public ClassSelectPage(@NonNull PlayerRef playerRef, ClassRepository classRepository, PlayerRepository playerRepository, HytaleLogger logger) {
+    public ClassSelectPage(
+            @NonNull PlayerRef playerRef,
+            @NonNull ClassRepository classRepository,
+            @NonNull PlayerRepository playerRepository, CharacterCacheRepository characterCacheRepository,
+            @NonNull Universe universe,
+            @NonNull HytaleLogger logger
+    ) {
         super(
                 playerRef,
                 CustomPageLifetime.CantClose,
@@ -69,6 +84,8 @@ public class ClassSelectPage extends InteractiveCustomUIPage<ClassSelectPage.Cla
         );
         this.classRepository = classRepository;
         this.playerRepository = playerRepository;
+        this.characterCacheRepository = characterCacheRepository;
+        this.universe = universe;
         this.logger = logger;
     }
 
@@ -179,14 +196,9 @@ public class ClassSelectPage extends InteractiveCustomUIPage<ClassSelectPage.Cla
             return;
         }
 
-        fr.welltale.player.Player playerData = this.playerRepository.getPlayerByUuid(playerUuid.getUuid());
+        fr.welltale.player.Player playerData = this.playerRepository.getPlayer(playerUuid.getUuid());
         if (playerData == null) {
             player.remove();
-            return;
-        }
-
-        if (playerData.getClassUuid() != null) {
-            player.getPageManager().setPage(ref, store, Page.None);
             return;
         }
 
@@ -196,7 +208,24 @@ public class ClassSelectPage extends InteractiveCustomUIPage<ClassSelectPage.Cla
             return;
         }
 
-        playerData.setClassUuid(selectedClass.getUuid());
+        Characteristics.setCharacteristicsToPlayer(ref, store, new Characteristics.EditableCharacteristics());
+
+        PlayerLevelComponent playerLevelComponent = store.getComponent(ref, PlayerLevelComponent.getComponentType());
+        if (playerLevelComponent != null) {
+            store.removeComponent(ref, PlayerLevelComponent.getComponentType());
+        }
+
+        store.addComponent(ref, PlayerLevelComponent.getComponentType(), new PlayerLevelComponent());
+
+        fr.welltale.player.Player.Character newCharacter = new fr.welltale.player.Player.Character(
+                UUID.randomUUID(),
+                selectedClass.getUuid(),
+                0,
+                new Characteristics.EditableCharacteristics(),
+                0,
+                null
+        );
+        playerData.getCharacters().add(newCharacter);
 
         try {
             playerRepository.updatePlayer(playerData);
@@ -206,6 +235,24 @@ public class ClassSelectPage extends InteractiveCustomUIPage<ClassSelectPage.Cla
             return;
         }
 
+        try {
+            this.characterCacheRepository.addCharacterCache(new CachedCharacter(
+                    playerUuid.getUuid(),
+                    newCharacter.getCharacterUuid(),
+                    newCharacter.getClassUuid(),
+                    newCharacter.getExperience(),
+                    playerData.getGems(),
+                    newCharacter.getEditableCharacteristics(),
+                    newCharacter.getCharacteristicPoints(),
+                    newCharacter.getGuildUuid()
+            ));
+        } catch (Exception e) {
+            this.logger.atSevere().log("[CLASS] ClassSelectPage HandlePlayer Failed: " + e.getMessage());
+            player.remove();
+            return;
+        }
+
+        Teleport.teleportPlayerToSpawn(this.logger, this.universe, playerData.getUuid(), ref, store, Constant.World.CelesteIslandWorld.WORLD_NAME, Constant.Particle.PLAYER_SPAWN_SPAWN);
         player.getPageManager().setPage(ref, store, Page.None);
         Title.sendWelcomeTitle(playerRef);
     }

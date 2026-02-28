@@ -16,25 +16,11 @@ public class Player {
     private UUID uuid;
 
     @Setter
-    private UUID classUuid;
-
-    @Setter
-    private long experience;
-
-    @Setter
     private UUID rankUuid;
 
-    @Getter
     @Setter
-    private Characteristics.EditableCharacteristics editableCharacteristics;
-
     @Getter
-    @Setter
-    private int characteristicPoints;
-
-    @Getter
-    @Setter
-    private UUID guildUuid;
+    private List<Character> characters;
 
     @Getter
     @Setter
@@ -43,5 +29,18 @@ public class Player {
     @Getter
     @Setter
     private long gems;
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class Character {
+        private UUID characterUuid;
+        private UUID classUuid;
+        private long experience;
+        private Characteristics.EditableCharacteristics editableCharacteristics;
+        private int characteristicPoints;
+        private UUID guildUuid;
+    }
 }
 

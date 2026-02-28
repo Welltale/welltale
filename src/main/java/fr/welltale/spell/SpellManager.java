@@ -14,6 +14,8 @@ import com.hypixel.hytale.server.core.universe.Universe;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import fr.welltale.clazz.Class;
 import fr.welltale.clazz.ClassRepository;
+import fr.welltale.player.charactercache.CachedCharacter;
+import fr.welltale.player.charactercache.CharacterCacheRepository;
 import fr.welltale.spell.spells.Jump;
 import fr.welltale.spell.spells.Supershot;
 import fr.welltale.util.Color;
@@ -26,21 +28,24 @@ import java.util.concurrent.ConcurrentHashMap;
 import static fr.welltale.spell.SpellCooldownScheduler.COOLDOWN_DELAY;
 
 public class SpellManager {
-    private static final List<Spell> spellRegistry = new ArrayList<>();
+    private final List<Spell> spellRegistry = new ArrayList<>();
     private final Map<String, Float> playerCooldowns = new ConcurrentHashMap<>(); // playerUUID_spellName → remaining
 
     private final HytaleLogger logger;
     private final Universe universe;
     private final ClassRepository classRepository;
+    private final CharacterCacheRepository characterCacheRepository;
 
     public SpellManager(
             @Nonnull HytaleLogger logger,
             @Nonnull Universe universe,
-            @Nonnull ClassRepository classRepository
+            @Nonnull ClassRepository classRepository,
+            @Nonnull CharacterCacheRepository characterCacheRepository
     ) {
         this.logger = logger;
         this.universe = universe;
         this.classRepository = classRepository;
+        this.characterCacheRepository = characterCacheRepository;
         registerSpells();
     }
 
@@ -57,7 +62,14 @@ public class SpellManager {
             @Nonnull InteractionType type,
             @Nonnull CommandBuffer<EntityStore> cmdBuffer
     ) {
-        Class casterClass = this.classRepository.getClassConfig(casterData.getClassUuid());
+        CachedCharacter cachedCharacter = this.characterCacheRepository.getCharacterCache(casterData.getUuid());
+        if (cachedCharacter == null) {
+            this.logger.atSevere()
+                    .log("[SPELL] SpellManager Cast Failed: CachedCharacter is null");
+            return;
+        }
+
+        Class casterClass = this.classRepository.getClassConfig(cachedCharacter.getClassUuid());
         if (casterClass == null) {
             this.logger.atSevere()
                     .log("[SPELL] SpellManager Cast Failed: Caster Class is null");
@@ -89,7 +101,6 @@ public class SpellManager {
 
         this.consumeStamina(casterStatMap, spell.getStaminaCost());
         spell.run(caster, casterRef, casterStore, this.universe, cmdBuffer);
-        playerCooldowns.put(casterData.getUuid().toString() + "_" + spell.getSlug(), spell.getCooldown());
         this.startCooldown(casterData.getUuid(), spell.getSlug(), spell.getCooldown());
 
         caster.sendMessage(Message.raw("Cast spell: " + spell.getName()).color(Color.DARK_GREEN));

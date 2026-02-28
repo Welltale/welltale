@@ -17,20 +17,20 @@ public final class MobLootGenerator {
 
     private MobLootGenerator() {}
 
-    public static List<ItemStack> rollLoot(Mob mobConfig, float dropChanceMultiplier) {
+    public static ArrayList<ItemStack> rollLoot(Mob mobConfig, float dropChanceMultiplier) {
         if (mobConfig == null || mobConfig.getDrops() == null || mobConfig.getDrops().isEmpty()) {
-            return List.of();
+            return new ArrayList<>();
         }
 
         return rollFromMobConfig(mobConfig, Math.max(MIN_DROP_MULTIPLIER, dropChanceMultiplier));
     }
 
-    private static List<ItemStack> rollFromMobConfig(Mob mobConfig, float dropChanceMultiplier) {
-        if (mobConfig.getDrops() == null || mobConfig.getDrops().isEmpty()) return List.of();
+    private static ArrayList<ItemStack> rollFromMobConfig(Mob mobConfig, float dropChanceMultiplier) {
+        if (mobConfig.getDrops() == null || mobConfig.getDrops().isEmpty()) return new ArrayList<>();
 
         ThreadLocalRandom random = ThreadLocalRandom.current();
         List<Mob.Drop> entries = mobConfig.getDrops();
-        List<ItemStack> out = new ArrayList<>(entries.size());
+        ArrayList<ItemStack> out = new ArrayList<>(entries.size());
         for (Mob.Drop entry : entries) {
             if (entry == null) continue;
 

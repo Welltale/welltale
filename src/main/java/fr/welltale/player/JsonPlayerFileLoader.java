@@ -26,7 +26,7 @@ public class JsonPlayerFileLoader {
         return jsonDataFile;
     }
 
-    public List<Player> getJsonData(File jsonFile) throws IOException {
+    public ArrayList<Player> getJsonData(File jsonFile) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         return new ArrayList<>(List.of(mapper.readValue(jsonFile, Player[].class)));
     }

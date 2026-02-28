@@ -25,7 +25,7 @@ public class JsonClassFileLoader {
                             UUID.randomUUID(),
                             "Example",
                             "GOLD",
-                            List.of()
+                            new ArrayList<>()
                     )
             };
             mapper.writeValue(jsonDataFile, exampleClass);
@@ -33,7 +33,7 @@ public class JsonClassFileLoader {
         return jsonDataFile;
     }
 
-    public List<Class> getJsonData(File jsonFile) throws IOException {
+    public ArrayList<Class> getJsonData(File jsonFile) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         return new ArrayList<>(List.of(mapper.readValue(jsonFile, Class[].class)));
     }

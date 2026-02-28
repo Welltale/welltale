@@ -71,7 +71,7 @@ public class CastSpellInteraction extends SimpleInteraction {
             return;
         }
 
-        Player playerData = staticPlayerRepository.getPlayerByUuid(playerRef.getUuid());
+        Player playerData = staticPlayerRepository.getPlayer(playerRef.getUuid());
         if (playerData == null) {
             staticLogger.atSevere()
                     .log("[SPELL] CastSpellInteraction Tick0 Failed: PlayerData is null");

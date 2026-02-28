@@ -3,19 +3,18 @@ package fr.welltale.player;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hypixel.hytale.logger.HytaleLogger;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
 import org.jspecify.annotations.NonNull;
 
 import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 @AllArgsConstructor
 public class JsonPlayerRepository implements PlayerRepository {
-    @Getter
-    private List<Player> cachedPlayers;
+    private ArrayList<Player> cachedPlayers;
     private File jsonFile;
     private HytaleLogger logger;
 
@@ -25,7 +24,7 @@ public class JsonPlayerRepository implements PlayerRepository {
             throw ERR_INVALID_PLAYER;
         }
 
-        Player cachedPlayer = cachedPlayers.stream()
+        Player cachedPlayer = this.cachedPlayers.stream()
                 .filter(p -> p.getUuid().equals(player.getUuid()))
                 .findFirst()
                 .orElse(null);
@@ -38,11 +37,16 @@ public class JsonPlayerRepository implements PlayerRepository {
     }
 
     @Override
-    public @Nullable Player getPlayerByUuid(@NonNull UUID playerUuid) {
-        return cachedPlayers.stream()
+    public @Nullable Player getPlayer(@NonNull UUID playerUuid) {
+        return this.cachedPlayers.stream()
                 .filter(p -> p.getUuid().equals(playerUuid))
                 .findFirst()
                 .orElse(null);
+    }
+
+    @Override
+    public List<Player> getPlayers() {
+        return List.copyOf(this.cachedPlayers);
     }
 
     @Override
@@ -51,12 +55,12 @@ public class JsonPlayerRepository implements PlayerRepository {
             throw ERR_INVALID_PLAYER;
         }
 
-        for (int i = 0; i < cachedPlayers.size(); i++) {
-            if (!cachedPlayers.get(i).getUuid().equals(player.getUuid())) {
+        for (int i = 0; i < this.cachedPlayers.size(); i++) {
+            if (!this.cachedPlayers.get(i).getUuid().equals(player.getUuid())) {
                 continue;
             }
 
-            cachedPlayers.set(i, player);
+            this.cachedPlayers.set(i, player);
             return;
         }
 

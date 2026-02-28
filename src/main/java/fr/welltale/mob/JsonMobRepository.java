@@ -4,11 +4,12 @@ import lombok.AllArgsConstructor;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @AllArgsConstructor
 public class JsonMobRepository implements MobRepository{
-    private List<Mob> cachedMobs;
+    private ArrayList<Mob> cachedMobs;
 
     @Override
     public @Nullable Mob getMobConfig(@NonNull String modelAsset) {
@@ -35,7 +36,8 @@ public class JsonMobRepository implements MobRepository{
 
     @Override
     public @Nullable List<Mob> getMobsConfig() {
-        return this.cachedMobs;
+        if (this.cachedMobs == null) return null;
+        return List.copyOf(this.cachedMobs);
     }
 
     private String normalizeModelAsset(@NonNull String modelAssetId) {

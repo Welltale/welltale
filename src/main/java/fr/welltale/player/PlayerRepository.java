@@ -12,9 +12,9 @@ public interface PlayerRepository {
 
     void addPlayer(@Nonnull Player player) throws Exception;
 
-    @Nullable Player getPlayerByUuid(@Nonnull UUID playerUuid);
+    @Nullable Player getPlayer(@Nonnull UUID playerUuid);
 
-    List<Player> getCachedPlayers();
+    List<Player> getPlayers();
 
     void updatePlayer(@Nonnull Player player) throws Exception;
 

@@ -15,24 +15,29 @@ import com.hypixel.hytale.server.core.io.handlers.game.GamePacketHandler;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
+import fr.welltale.characteristic.page.CharacteristicsPage;
 import fr.welltale.inventory.CustomInventoryService;
 import fr.welltale.inventory.page.InventoryPage;
-import fr.welltale.characteristic.page.CharacteristicsPage;
-import fr.welltale.player.PlayerRepository;
+import fr.welltale.player.charactercache.CharacterCacheRepository;
 
+import javax.annotation.Nonnull;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
 public class PlayerReadyInventoryPacketInterceptor {
     private final CustomInventoryService customInventoryService;
-    private final PlayerRepository playerRepository;
+    private final CharacterCacheRepository characterCacheRepository;
     private final HytaleLogger logger;
     private final ConcurrentHashMap<UUID, Boolean> installedPlayers = new ConcurrentHashMap<>();
 
-    public PlayerReadyInventoryPacketInterceptor(CustomInventoryService customInventoryService, PlayerRepository playerRepository, HytaleLogger logger) {
+    public PlayerReadyInventoryPacketInterceptor(
+            @Nonnull CustomInventoryService customInventoryService,
+            @Nonnull CharacterCacheRepository characterCacheRepository,
+            @Nonnull HytaleLogger logger
+    ) {
         this.customInventoryService = customInventoryService;
-        this.playerRepository = playerRepository;
+        this.characterCacheRepository = characterCacheRepository;
         this.logger = logger;
     }
 
@@ -81,7 +86,7 @@ public class PlayerReadyInventoryPacketInterceptor {
                 player.getPageManager().openCustomPage(
                         ref,
                         store,
-                        new InventoryPage(playerRef, customInventoryService, playerRepository, logger)
+                        new InventoryPage(playerRef, customInventoryService, characterCacheRepository, logger)
                 );
                 return;
             }

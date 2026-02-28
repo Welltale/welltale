@@ -7,13 +7,12 @@ import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.Universe;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
-import fr.welltale.characteristic.Characteristics;
+import fr.welltale.clazz.ClassRepository;
 import fr.welltale.constant.Constant;
-import fr.welltale.level.PlayerLevelComponent;
 import fr.welltale.player.PlayerRepository;
-import fr.welltale.rank.Rank;
+import fr.welltale.player.charactercache.CharacterCacheRepository;
+import fr.welltale.player.page.CharacterSelectPage;
 import fr.welltale.rank.RankRepository;
-import fr.welltale.util.Nameplate;
 import fr.welltale.util.Teleport;
 import lombok.AllArgsConstructor;
 
@@ -23,6 +22,8 @@ import javax.annotation.Nonnull;
 public class PlayerReadyEvent {
     private final PlayerRepository playerRepository;
     private final RankRepository rankRepository;
+    private final CharacterCacheRepository characterCacheRepository;
+    private final ClassRepository classRepository;
     private final HytaleLogger logger;
     private final Universe universe;
 
@@ -46,7 +47,7 @@ public class PlayerReadyEvent {
             return;
         }
 
-        fr.welltale.player.Player playerData = this.playerRepository.getPlayerByUuid(playerRef.getUuid());
+        fr.welltale.player.Player playerData = this.playerRepository.getPlayer(playerRef.getUuid());
         if (playerData == null) {
             player.remove();
             this.logger.atSevere()
@@ -54,37 +55,17 @@ public class PlayerReadyEvent {
             return;
         }
 
-        Characteristics.setCharacteristicsToPlayer(ref, store, playerData.getEditableCharacteristics());
-
-        PlayerLevelComponent playerLevelComponent = store.getComponent(ref, PlayerLevelComponent.getComponentType());
-        if (playerLevelComponent == null) {
-            player.remove();
-            this.logger.atSevere()
-                    .log("[PLAYER] PlayerReadyEvent OnPlayerReady Failed: PlayerLevelComponent is null");
-            return;
-        }
-
-        Rank playerRank = null;
-        if (playerData.getRankUuid() != null) {
-            Rank rank = this.rankRepository.getRankConfig(playerData.getRankUuid());
-            if (rank != null) {
-                playerRank = rank;
-            }
-        }
-
-        Nameplate.setPlayerNameplate(
-                ref,
-                store,
-                playerData,
+        player.getPageManager().openCustomPage(ref, store, new CharacterSelectPage(
                 playerRef,
-                playerRank,
-                logger
-        );
+                this.playerRepository,
+                this.characterCacheRepository,
+                this.rankRepository,
+                this.classRepository,
+                this.universe,
+                this.logger
+        ));
 
-        if (playerData.getClassUuid() != null) {
-            return;
-        }
-
+        //TODO TELEPORT TO SELECT CLASS SPAWN
         Teleport.teleportPlayerToSpawn(this.logger, this.universe, playerRef.getUuid(), ref, store, Constant.World.CelesteIslandWorld.WORLD_NAME, Constant.Particle.PLAYER_SPAWN_SPAWN);
     }
 }

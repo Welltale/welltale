@@ -20,14 +20,14 @@ public class JsonRankFileLoader {
             ObjectMapper mapper = new ObjectMapper();
 
             Rank[] exampleRanks = new Rank[] {
-                    new Rank(UUID.randomUUID(), "Example", "EX", "RED", List.of("permission.example"))
+                    new Rank(UUID.randomUUID(), "Example", "EX", "RED", new ArrayList<>(List.of("permission.example")))
             };
             mapper.writeValue(jsonDataFile, exampleRanks);
         }
         return jsonDataFile;
     }
 
-    public List<Rank> getJsonData(File jsonFile) throws IOException {
+    public ArrayList<Rank> getJsonData(File jsonFile) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         return new ArrayList<>(List.of(mapper.readValue(jsonFile, Rank[].class)));
     }

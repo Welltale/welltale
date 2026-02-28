@@ -4,12 +4,13 @@ import lombok.AllArgsConstructor;
 import org.jspecify.annotations.NonNull;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 @AllArgsConstructor
 public class JsonRankRepository implements RankRepository {
-    private List<Rank> cachedRanks;
+    private ArrayList<Rank> cachedRanks;
 
     @Override
     public void addRankConfig(@NonNull Rank rank) throws Exception {
@@ -35,7 +36,7 @@ public class JsonRankRepository implements RankRepository {
     }
 
     public List<Rank> getCachedRanksConfigs() {
-        return this.cachedRanks;
+        return List.copyOf(this.cachedRanks);
     }
 
     @Override

@@ -23,7 +23,8 @@ import fr.welltale.inventory.CustomInventoryService;
 import fr.welltale.inventory.page.InventoryPage;
 import fr.welltale.level.PlayerLevelComponent;
 import fr.welltale.level.XPTable;
-import fr.welltale.player.PlayerRepository;
+import fr.welltale.player.charactercache.CachedCharacter;
+import fr.welltale.player.charactercache.CharacterCacheRepository;
 import org.jspecify.annotations.NonNull;
 
 import java.util.Locale;
@@ -45,7 +46,7 @@ public class CharacteristicsPage extends InteractiveCustomUIPage<Characteristics
 
     private final PlayerRef playerRef;
     private final CustomInventoryService customInventoryService;
-    private final PlayerRepository playerRepository;
+    private final CharacterCacheRepository characterCacheRepository;
     private final HytaleLogger logger;
     private boolean closed;
 
@@ -73,13 +74,13 @@ public class CharacteristicsPage extends InteractiveCustomUIPage<Characteristics
     public CharacteristicsPage(
             @NonNull PlayerRef playerRef,
             @NonNull CustomInventoryService customInventoryService,
-            @NonNull PlayerRepository playerRepository,
+            @NonNull CharacterCacheRepository characterCacheRepository,
             @NonNull HytaleLogger logger
     ) {
         super(playerRef, CustomPageLifetime.CanDismiss, CharacteristicsEventData.CODEC);
         this.playerRef = playerRef;
         this.customInventoryService = customInventoryService;
-        this.playerRepository = playerRepository;
+        this.characterCacheRepository = characterCacheRepository;
         this.logger = logger;
     }
 
@@ -140,7 +141,7 @@ public class CharacteristicsPage extends InteractiveCustomUIPage<Characteristics
             player.getPageManager().openCustomPage(
                     ref,
                     store,
-                    new InventoryPage(playerRef, customInventoryService, playerRepository, logger)
+                    new InventoryPage(playerRef, customInventoryService, characterCacheRepository, logger)
             );
             return;
         }
@@ -171,30 +172,42 @@ public class CharacteristicsPage extends InteractiveCustomUIPage<Characteristics
     }
 
     private void applyState(@NonNull UICommandBuilder cmd, @NonNull Ref<EntityStore> ref, @NonNull Store<EntityStore> store) {
-        fr.welltale.player.Player playerData = getPlayerData(ref, store);
-        int points = playerData != null ? playerData.getCharacteristicPoints() : 0;
-        Characteristics.EditableCharacteristics editable = playerData != null ? playerData.getEditableCharacteristics() : null;
-        PlayerLevelComponent playerLevelComponent = store.getComponent(ref, PlayerLevelComponent.getComponentType());
-
-        long totalXp = 0;
-        int level = XPTable.START_LEVEL;
-        long currentLevelXp = 0;
-        long xpToNextLevel = XPTable.getXPToNextLevel(0);
-        float progressToNextLevel = 0.0f;
-
-        if (playerLevelComponent != null) {
-            totalXp = playerLevelComponent.getTotalExperience();
-            level = playerLevelComponent.getLevel();
-            currentLevelXp = playerLevelComponent.getCurrentLevelExp();
-            xpToNextLevel = playerLevelComponent.getXPToNextLevel();
-            progressToNextLevel = playerLevelComponent.getProgress();
-        } else if (playerData != null) {
-            totalXp = Math.max(0L, playerData.getExperience());
-            level = XPTable.getLevelForXP(totalXp);
-            currentLevelXp = XPTable.getXPInCurrentLevel(totalXp);
-            xpToNextLevel = XPTable.getXPToNextLevel(totalXp);
-            progressToNextLevel = XPTable.getProgressToNextLevel(totalXp);
+        if (!ref.isValid()) {
+            this.logger.atSevere().log("[CHARACTERISTIC] CharacteristicsPage ApplyState Failed: Ref is invalid");
+            return;
         }
+
+        UUIDComponent uuidComponent = store.getComponent(ref, UUIDComponent.getComponentType());
+        if (uuidComponent == null) {
+            this.logger.atSevere().log("[CHARACTERISTIC] CharacteristicsPage ApplyState Failed: UUIDComponent is null");
+            return;
+        }
+
+        CachedCharacter cachedCharacter = this.characterCacheRepository.getCharacterCache(uuidComponent.getUuid());
+        if (cachedCharacter == null) {
+            this.logger.atSevere().log("[CHARACTERISTIC] CharacteristicsPage ApplyState Failed: CachedCharacter is null");
+            return;
+        }
+
+        int points = cachedCharacter.getCharacteristicPoints();
+        Characteristics.EditableCharacteristics editable = cachedCharacter.getEditableCharacteristics();
+        PlayerLevelComponent playerLevelComponent = store.getComponent(ref, PlayerLevelComponent.getComponentType());
+        if (playerLevelComponent == null) {
+            playerLevelComponent = new PlayerLevelComponent(cachedCharacter.getExperience());
+            store.addComponent(ref, PlayerLevelComponent.getComponentType(), playerLevelComponent);
+        }
+
+        long totalXp;
+        int level;
+        long currentLevelXp;
+        long xpToNextLevel;
+        float progressToNextLevel;
+
+        totalXp = Math.max(0L, cachedCharacter.getExperience());
+        level = XPTable.getLevelForXP(totalXp);
+        currentLevelXp = XPTable.getXPInCurrentLevel(totalXp);
+        xpToNextLevel = XPTable.getXPToNextLevel(totalXp);
+        progressToNextLevel = XPTable.getProgressToNextLevel(totalXp);
 
         Characteristics.AdditionalCharacteristics additionalCharacteristics = Characteristics.getAdditionalCharacteristicsFromPlayer(ref, store);
 
@@ -225,23 +238,30 @@ public class CharacteristicsPage extends InteractiveCustomUIPage<Characteristics
         return String.format(Locale.ROOT, "%.1f%%", value);
     }
 
-    private fr.welltale.player.Player getPlayerData(@NonNull Ref<EntityStore> ref, @NonNull Store<EntityStore> store) {
-        UUIDComponent uuidComponent = store.getComponent(ref, UUIDComponent.getComponentType());
-        if (uuidComponent == null) return null;
-
-        return this.playerRepository.getPlayerByUuid(uuidComponent.getUuid());
-    }
-
     private void spendCharacteristicPoint(@NonNull Ref<EntityStore> ref, @NonNull Store<EntityStore> store, @NonNull String characteristicType) {
-        fr.welltale.player.Player playerData = getPlayerData(ref, store);
-        if (playerData == null) return;
+        if (!ref.isValid()) {
+            this.logger.atSevere().log("[CHARACTERISTIC] CharacteristicsPage SpendCharacteristicPoint Failed: Ref is invalid");
+            return;
+        }
 
-        if (playerData.getCharacteristicPoints() <= 0) return;
+        UUIDComponent uuidComponent = store.getComponent(ref, UUIDComponent.getComponentType());
+        if (uuidComponent == null) {
+            this.logger.atSevere().log("[CHARACTERISTIC] CharacteristicsPage SpendCharacteristicPoint Failed: UUIDComponent is null");
+            return;
+        }
 
-        Characteristics.EditableCharacteristics editableCharacteristics = playerData.getEditableCharacteristics();
+        CachedCharacter cachedCharacter = this.characterCacheRepository.getCharacterCache(uuidComponent.getUuid());
+        if (cachedCharacter == null) {
+            this.logger.atSevere().log("[CHARACTERISTIC] CharacteristicsPage SpendCharacteristicPoint Failed: CachedCharacter is null");
+            return;
+        }
+
+        if (cachedCharacter.getCharacteristicPoints() <= 0) return;
+
+        Characteristics.EditableCharacteristics editableCharacteristics = cachedCharacter.getEditableCharacteristics();
         if (editableCharacteristics == null) {
             editableCharacteristics = new Characteristics.EditableCharacteristics();
-            playerData.setEditableCharacteristics(editableCharacteristics);
+            cachedCharacter.setEditableCharacteristics(editableCharacteristics);
         }
 
         switch (characteristicType) {
@@ -256,11 +276,11 @@ public class CharacteristicsPage extends InteractiveCustomUIPage<Characteristics
             }
         }
 
-        playerData.setCharacteristicPoints(playerData.getCharacteristicPoints() - 1);
+        cachedCharacter.setCharacteristicPoints(cachedCharacter.getCharacteristicPoints() - 1);
         Characteristics.setCharacteristicsToPlayer(ref, store, editableCharacteristics);
 
         try {
-            this.playerRepository.updatePlayer(playerData);
+            this.characterCacheRepository.updateCharacter(cachedCharacter);
         } catch (Exception e) {
             this.logger.atSevere().log("[CHARACTERISTIC] CharacteristicsPage SpendCharacteristicPoint: " + e.getMessage());
         }

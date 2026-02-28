@@ -3,13 +3,12 @@ package fr.welltale.player.event;
 import com.hypixel.hytale.logger.HytaleLogger;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.Universe;
-import fr.welltale.characteristic.Characteristics;
 import fr.welltale.player.Player;
 import fr.welltale.player.PlayerRepository;
 import lombok.AllArgsConstructor;
 
 import javax.annotation.Nonnull;
-import java.util.List;
+import java.util.ArrayList;
 
 @AllArgsConstructor
 public class PlayerConnectEvent {
@@ -35,7 +34,7 @@ public class PlayerConnectEvent {
     }
 
     private void addNewPlayerToDatabase(@Nonnull PlayerRef playerRef) throws Exception {
-        Player playerData = this.playerRepository.getPlayerByUuid(playerRef.getUuid());
+        Player playerData = this.playerRepository.getPlayer(playerRef.getUuid());
         if (playerData != null) {
             return;
         }
@@ -43,12 +42,8 @@ public class PlayerConnectEvent {
         Player newPlayer = new Player(
                 playerRef.getUuid(),
                 null,
-                0,
-                null,
-                new Characteristics.EditableCharacteristics(),
-                0,
-                null,
-                List.of(),
+                new ArrayList<>(),
+                new ArrayList<>(),
                 0
         );
 
