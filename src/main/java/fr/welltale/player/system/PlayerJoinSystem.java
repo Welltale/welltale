@@ -61,11 +61,7 @@ public class PlayerJoinSystem extends RefSystem<EntityStore> {
         }
 
         CachedCharacter cachedCharacter = this.characterCacheRepository.getCharacterCache(playerRef.getUuid());
-        if (cachedCharacter == null) {
-            this.logger.atSevere()
-                    .log("[PLAYER] PlayerJoinSystem OnEntityRemove Failed: CachedCharacter is null");
-            return;
-        }
+        if (cachedCharacter == null) return;
 
         Player.Character currentCharacter = playerData.getCharacters().stream()
                 .filter(c -> c.getCharacterUuid().equals(cachedCharacter.getCharacterUuid()))

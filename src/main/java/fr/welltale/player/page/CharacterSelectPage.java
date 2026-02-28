@@ -21,6 +21,8 @@ import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import fr.welltale.characteristic.Characteristics;
 import fr.welltale.clazz.ClassRepository;
 import fr.welltale.clazz.page.ClassSelectPage;
+import fr.welltale.constant.Constant;
+import fr.welltale.hud.PlayerHudBuilder;
 import fr.welltale.level.PlayerLevelComponent;
 import fr.welltale.level.XPTable;
 import fr.welltale.player.PlayerRepository;
@@ -48,6 +50,8 @@ public class CharacterSelectPage extends InteractiveCustomUIPage<CharacterSelect
     private final CharacterCacheRepository characterCacheRepository;
     private final Universe universe;
     private final HytaleLogger logger;
+
+    private UICommandBuilder cmd;
 
     public static class CharacterSelectPageEventData {
         public String action;
@@ -95,6 +99,8 @@ public class CharacterSelectPage extends InteractiveCustomUIPage<CharacterSelect
             return;
         }
 
+        this.cmd = cmd;
+
         cmd.append("Pages/Player/CharacterSelectPage.ui");
         event.addEventBinding(CustomUIEventBindingType.Activating, "#DisconnectButton", EventData.of("Action", ACTION_DISCONNECT));
         for (int i = 0; i < SLOT_COUNT; i++) {
@@ -107,7 +113,11 @@ public class CharacterSelectPage extends InteractiveCustomUIPage<CharacterSelect
     }
 
     @Override
-    public void handleDataEvent(@NonNull Ref<EntityStore> ref, @NonNull Store<EntityStore> store, @NonNull CharacterSelectPageEventData data) {
+    public void handleDataEvent(
+            @NonNull Ref<EntityStore> ref,
+            @NonNull Store<EntityStore> store,
+            @NonNull CharacterSelectPageEventData data
+    ) {
         if (!ref.isValid()) {
             this.logger.atSevere().log("[PLAYER] CharacterSelectPage HandleDataEvent Failed: Ref is invalid");
             return;
@@ -197,6 +207,8 @@ public class CharacterSelectPage extends InteractiveCustomUIPage<CharacterSelect
                 logger
         );
 
+        player.getHudManager().setCustomHud(playerRef, new PlayerHudBuilder(playerRef));
+
         try {
             this.characterCacheRepository.addCharacterCache(new CachedCharacter(
                     playerUuid,
@@ -221,7 +233,7 @@ public class CharacterSelectPage extends InteractiveCustomUIPage<CharacterSelect
         player.getPageManager().openCustomPage(
                 ref,
                 store,
-                new ClassSelectPage(this.playerRef, this.classRepository, this.playerRepository, this.characterCacheRepository, this.universe, this.logger)
+                new ClassSelectPage(this.playerRef, this.classRepository, this.playerRepository, this.characterCacheRepository, this.rankRepository, this.universe, this.logger)
         );
     }
 
@@ -258,33 +270,28 @@ public class CharacterSelectPage extends InteractiveCustomUIPage<CharacterSelect
             String prefix = "#CharacterSlot" + slotNumber;
 
             fr.welltale.player.Player.Character character = i < characters.size() ? characters.get(i) : null;
-            UUID classUuid = character != null ? character.getClassUuid() : null;
-            if (character == null || classUuid == null) {
-                cmd.set(prefix + "Name.Text", "CREER UNE CLASSE");
-                cmd.set(prefix + "Class.Text", "Slot libre");
-                cmd.set(prefix + "Level.Text", "");
-                cmd.set(prefix + "Action.Text", "Cliquer pour creer");
+            if (character == null) {
                 continue;
             }
 
-            String className = resolveClassName(classUuid);
+            String className = resolveClassName(character.getClassUuid());
             int level = XPTable.getLevelForXP(Math.max(0L, character.getExperience()));
 
             cmd.set(prefix + "Name.Text", "PERSONNAGE " + slotNumber);
             cmd.set(prefix + "Class.Text", className);
-            cmd.set(prefix + "Level.Text", "Lv." + level);
+            cmd.set(prefix + "Level.Text", Constant.Prefix.LEVEL_PREFIX.toUpperCase() + level);
             cmd.set(prefix + "Action.Text", "Cliquer pour jouer");
         }
     }
 
     private String resolveClassName(UUID classUuid) {
         if (classUuid == null) {
-            return "NULL";
+            return "UNKNOWN";
         }
 
         fr.welltale.clazz.Class classConfig = this.classRepository.getClassConfig(classUuid);
         if (classConfig == null || classConfig.getName() == null || classConfig.getName().isBlank()) {
-            return "Classe inconnue";
+            return "UNKNOWN";
         }
 
         return classConfig.getName();

@@ -22,21 +22,25 @@ import fr.welltale.characteristic.Characteristics;
 import fr.welltale.clazz.Class;
 import fr.welltale.clazz.ClassRepository;
 import fr.welltale.constant.Constant;
+import fr.welltale.hud.PlayerHudBuilder;
 import fr.welltale.level.PlayerLevelComponent;
 import fr.welltale.player.PlayerRepository;
 import fr.welltale.player.charactercache.CachedCharacter;
 import fr.welltale.player.charactercache.CharacterCacheRepository;
+import fr.welltale.player.page.CharacterSelectPage;
+import fr.welltale.rank.RankRepository;
 import fr.welltale.util.Teleport;
 import fr.welltale.util.Title;
 import org.jspecify.annotations.NonNull;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
 public class ClassSelectPage extends InteractiveCustomUIPage<ClassSelectPage.ClassSelectPageEventData> {
     public enum ClassSelectPageButtonPressedId {
-        DISCONNECT, PLAY
+        RETURN, PLAY
     }
 
     private UUID classSelectedUuid;
@@ -44,6 +48,7 @@ public class ClassSelectPage extends InteractiveCustomUIPage<ClassSelectPage.Cla
     private final ClassRepository classRepository;
     private final PlayerRepository playerRepository;
     private final CharacterCacheRepository characterCacheRepository;
+    private final RankRepository rankRepository;
     private final Universe universe;
     private final HytaleLogger logger;
 
@@ -73,7 +78,9 @@ public class ClassSelectPage extends InteractiveCustomUIPage<ClassSelectPage.Cla
     public ClassSelectPage(
             @NonNull PlayerRef playerRef,
             @NonNull ClassRepository classRepository,
-            @NonNull PlayerRepository playerRepository, CharacterCacheRepository characterCacheRepository,
+            @NonNull PlayerRepository playerRepository,
+            @NonNull CharacterCacheRepository characterCacheRepository,
+            @NonNull RankRepository rankRepository,
             @NonNull Universe universe,
             @NonNull HytaleLogger logger
     ) {
@@ -85,6 +92,7 @@ public class ClassSelectPage extends InteractiveCustomUIPage<ClassSelectPage.Cla
         this.classRepository = classRepository;
         this.playerRepository = playerRepository;
         this.characterCacheRepository = characterCacheRepository;
+        this.rankRepository = rankRepository;
         this.universe = universe;
         this.logger = logger;
     }
@@ -122,7 +130,7 @@ public class ClassSelectPage extends InteractiveCustomUIPage<ClassSelectPage.Cla
             event.addEventBinding(CustomUIEventBindingType.Activating, "#Class" + y + "Button", EventData.of("ClassSelected", classes.get(i).getUuid().toString()));
         }
         event.addEventBinding(CustomUIEventBindingType.Activating, "#PlayButton", EventData.of("ButtonPressed", ClassSelectPageButtonPressedId.PLAY.name()));
-        event.addEventBinding(CustomUIEventBindingType.Activating, "#DisconnectButton", EventData.of("ButtonPressed", ClassSelectPageButtonPressedId.DISCONNECT.name()));
+        event.addEventBinding(CustomUIEventBindingType.Activating, "#ReturnButton", EventData.of("ButtonPressed", ClassSelectPageButtonPressedId.RETURN.name()));
     }
 
     @Override
@@ -145,8 +153,8 @@ public class ClassSelectPage extends InteractiveCustomUIPage<ClassSelectPage.Cla
             return;
         }
 
-        if (Objects.equals(data.buttonPressedId, ClassSelectPageButtonPressedId.DISCONNECT.name())) {
-            handleDisconnect(player);
+        if (Objects.equals(data.buttonPressedId, ClassSelectPageButtonPressedId.RETURN.name())) {
+            handleReturn(ref, store, player);
             return;
         }
 
@@ -170,8 +178,20 @@ public class ClassSelectPage extends InteractiveCustomUIPage<ClassSelectPage.Cla
         this.sendUpdate();
     }
 
-    private void handleDisconnect(@NonNull Player player) {
-        player.remove();
+    private void handleReturn(
+            @NonNull Ref<EntityStore> ref,
+            @Nonnull Store<EntityStore> store,
+            @Nonnull Player player
+    ) {
+        player.getPageManager().openCustomPage(ref, store, new CharacterSelectPage(
+                playerRef,
+                this.playerRepository,
+                this.characterCacheRepository,
+                this.rankRepository,
+                this.classRepository,
+                this.universe,
+                this.logger
+                ));
     }
 
     private void handlePlay(
@@ -251,6 +271,8 @@ public class ClassSelectPage extends InteractiveCustomUIPage<ClassSelectPage.Cla
             player.remove();
             return;
         }
+
+        player.getHudManager().setCustomHud(playerRef, new PlayerHudBuilder(playerRef));
 
         Teleport.teleportPlayerToSpawn(this.logger, this.universe, playerData.getUuid(), ref, store, Constant.World.CelesteIslandWorld.WORLD_NAME, Constant.Particle.PLAYER_SPAWN_SPAWN);
         player.getPageManager().setPage(ref, store, Page.None);

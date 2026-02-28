@@ -41,6 +41,7 @@ public class Player {
         private Characteristics.EditableCharacteristics editableCharacteristics;
         private int characteristicPoints;
         private UUID guildUuid;
+        //TODO ADD CHARACTER STORAGE
     }
 }
 

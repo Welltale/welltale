@@ -203,6 +203,7 @@ public class CharacteristicsPage extends InteractiveCustomUIPage<Characteristics
         long xpToNextLevel;
         float progressToNextLevel;
 
+        //TODO FIX XP NOT DISPLAY IN CHARACTIRISTICS PAGE
         totalXp = Math.max(0L, cachedCharacter.getExperience());
         level = XPTable.getLevelForXP(totalXp);
         currentLevelXp = XPTable.getXPInCurrentLevel(totalXp);

@@ -6,6 +6,7 @@ import com.hypixel.hytale.logger.HytaleLogger;
 import com.hypixel.hytale.protocol.SoundCategory;
 import com.hypixel.hytale.protocol.packets.interface_.NotificationStyle;
 import com.hypixel.hytale.server.core.Message;
+import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.modules.entitystats.EntityStatMap;
 import com.hypixel.hytale.server.core.modules.entitystats.EntityStatValue;
 import com.hypixel.hytale.server.core.modules.entitystats.asset.EntityStatType;
@@ -15,10 +16,10 @@ import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import com.hypixel.hytale.server.core.util.NotificationUtil;
 import fr.welltale.characteristic.Characteristics;
 import fr.welltale.constant.Constant;
+import fr.welltale.hud.PlayerHudBuilder;
 import fr.welltale.level.PlayerLevelComponent;
 import fr.welltale.level.event.GiveXPEvent;
 import fr.welltale.level.event.LevelUpEvent;
-import fr.welltale.player.hud.PlayerHud;
 import lombok.RequiredArgsConstructor;
 
 import javax.annotation.Nonnull;
@@ -43,6 +44,13 @@ public class GiveXPHandler implements Consumer<GiveXPEvent> {
         if (playerRef == null) {
             this.logger.atSevere()
                     .log("[LEVEL] GiveXPHandler Accept Failed: PlayerUUIDComponent is null");
+            return;
+        }
+
+        Player player = store.getComponent(event.playerRef(), Player.getComponentType());
+        if (player == null) {
+            this.logger.atSevere()
+                    .log("[LEVEL] GiveXPHandler Accept Failed: Player is null");
             return;
         }
 
@@ -74,7 +82,7 @@ public class GiveXPHandler implements Consumer<GiveXPEvent> {
         );
 
         if (!leveledUp) {
-            PlayerHud.updatePlayerHud(event.playerRef(), store);
+            player.getHudManager().setCustomHud(playerRef, new PlayerHudBuilder(playerRef));
             return;
         }
 

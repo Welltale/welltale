@@ -4,16 +4,17 @@ import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.logger.HytaleLogger;
 import com.hypixel.hytale.math.vector.Vector3d;
 import com.hypixel.hytale.protocol.SoundCategory;
+import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.ParticleUtil;
 import com.hypixel.hytale.server.core.universe.world.SoundUtil;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import fr.welltale.characteristic.Characteristics;
 import fr.welltale.constant.Constant;
+import fr.welltale.hud.PlayerHudBuilder;
 import fr.welltale.level.event.LevelUpEvent;
 import fr.welltale.player.charactercache.CachedCharacter;
 import fr.welltale.player.charactercache.CharacterCacheRepository;
-import fr.welltale.player.hud.PlayerHud;
 import fr.welltale.util.Title;
 import lombok.AllArgsConstructor;
 
@@ -31,6 +32,9 @@ public class LevelUpHandler implements Consumer<LevelUpEvent> {
         Store<EntityStore> store = event.playerRef().getStore();
         PlayerRef playerRef = store.getComponent(event.playerRef(), PlayerRef.getComponentType());
         if (playerRef == null) return;
+
+        Player player = store.getComponent(event.playerRef(), Player.getComponentType());
+        if (player == null) return;
 
         CachedCharacter cachedCharacter = this.characterCacheRepository.getCharacterCache(playerRef.getUuid());
         if (cachedCharacter == null) {
@@ -71,6 +75,6 @@ public class LevelUpHandler implements Consumer<LevelUpEvent> {
                 store
         );
 
-        PlayerHud.updatePlayerHud(event.playerRef(), store);
+        player.getHudManager().setCustomHud(playerRef, new PlayerHudBuilder(playerRef));
     }
 }

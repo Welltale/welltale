@@ -29,6 +29,7 @@ import org.jspecify.annotations.NonNull;
 
 import java.util.*;
 
+//TODO REFACTOR CODE
 public class InventoryPage extends InteractiveCustomUIPage<InventoryPage.CustomInventoryEventData> {
     private static final int STORAGE_SLOT_COUNT = 36;
     private static final int HOTBAR_SLOT_COUNT = 9;
@@ -266,13 +267,13 @@ public class InventoryPage extends InteractiveCustomUIPage<InventoryPage.CustomI
             return;
         }
 
-        if (ACTION_DRAG_HOVER.equals(data.action)) {
-            boolean changed = handleDragHover(data);
-            if (changed) {
-                safeSendUpdate(ref, store);
-            }
-            return;
-        }
+//        if (ACTION_DRAG_HOVER.equals(data.action)) {
+//            boolean changed = handleDragHover(data);
+//            if (changed) {
+//                safeSendUpdate(ref, store);
+//            }
+//            return;
+//        }
 
         if (ACTION_OPEN_CHARACTERISTICS.equals(data.action)) {
             this.closed = true;
@@ -432,21 +433,21 @@ public class InventoryPage extends InteractiveCustomUIPage<InventoryPage.CustomI
         );
     }
 
-    private boolean handleDragHover(@NonNull CustomInventoryEventData data) {
-        int hovered = firstValid(
-                extractIntFromRawPayload(lastRawEventPayload, "SlotIndex"),
-                resolveIndex(data)
-        );
-
-        if (hovered < 0 || data.area == null) {
-            return false;
-        }
-
-        this.pendingHoverArea = data.area;
-        this.pendingHoverSlot = hovered;
-        this.pendingHoverAt = System.currentTimeMillis();
-        return false;
-    }
+//    private boolean handleDragHover(@NonNull CustomInventoryEventData data) {
+//        int hovered = firstValid(
+//                extractIntFromRawPayload(lastRawEventPayload, "SlotIndex"),
+//                resolveIndex(data)
+//        );
+//
+//        if (hovered < 0 || data.area == null) {
+//            return false;
+//        }
+//
+//        this.pendingHoverArea = data.area;
+//        this.pendingHoverSlot = hovered;
+//        this.pendingHoverAt = System.currentTimeMillis();
+//        return false;
+//    }
 
     private boolean tryApplyTransfer(@NonNull Ref<EntityStore> ref,
                                    @NonNull Store<EntityStore> store,
@@ -490,7 +491,7 @@ public class InventoryPage extends InteractiveCustomUIPage<InventoryPage.CustomI
             Inventory inventory = player.getInventory();
             int fromSlotId = toInventorySectionSlot(fromArea, fromSlot);
             int toSlotId = toInventorySectionSlot(toArea, toSlot);
-            if (fromSectionId == Integer.MIN_VALUE || toSectionId == Integer.MIN_VALUE || fromSlotId < 0 || toSlotId < 0) {
+            if (fromSlotId < 0 || toSlotId < 0) {
                 return false;
             }
 
@@ -1001,7 +1002,7 @@ public class InventoryPage extends InteractiveCustomUIPage<InventoryPage.CustomI
             char c = rawIndex.charAt(i);
             if (Character.isDigit(c)) {
                 digits.append(c);
-            } else if (digits.length() > 0) {
+            } else if (!digits.isEmpty()) {
                 break;
             }
         }
@@ -1118,7 +1119,7 @@ public class InventoryPage extends InteractiveCustomUIPage<InventoryPage.CustomI
         }
 
         String itemId = itemStack.getItemId();
-        if (itemId == null || itemId.isBlank()) {
+        if (itemId.isBlank()) {
             return createActivatableSlot(null);
         }
 

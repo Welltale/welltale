@@ -138,8 +138,8 @@ Group #MainContainer {
 
         $C.@SmallSpacer {}
 
-        TextButton #DisconnectButton {
-          Text: "DÉCONNEXION";
+        TextButton #ReturnButton {
+          Text: "RETOUR";
           Style: (...$C.@CancelButtonStyle);
           Anchor: (Height: 40, Width: 160);
         }

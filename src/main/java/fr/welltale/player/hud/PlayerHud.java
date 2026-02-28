@@ -12,8 +12,6 @@ import com.hypixel.hytale.server.core.ui.builder.UICommandBuilder;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import fr.welltale.characteristic.Characteristics;
-import fr.welltale.hud.PlayerHudBuilder;
-import fr.welltale.level.PlayerLevelComponent;
 import org.jspecify.annotations.NonNull;
 
 public class PlayerHud {
@@ -42,22 +40,6 @@ public class PlayerHud {
         }
 
         removeDefaultHudComponents(store, ref);
-    }
-
-    public static void updatePlayerHud(
-            @NonNull Ref<EntityStore> ref,
-            @NonNull Store<EntityStore> store
-    ) {
-        Player player = store.getComponent(ref, Player.getComponentType());
-        if (player == null) return;
-
-        PlayerRef playerRef = store.getComponent(ref, PlayerRef.getComponentType());
-        if (playerRef == null) return;
-
-        PlayerLevelComponent playerLevelComponent = store.getComponent(ref, PlayerLevelComponent.getComponentType());
-        if (playerLevelComponent == null) return;
-
-        player.getHudManager().setCustomHud(playerRef, new PlayerHudBuilder(playerRef));
     }
 
     private static void removeDefaultHudComponents(
