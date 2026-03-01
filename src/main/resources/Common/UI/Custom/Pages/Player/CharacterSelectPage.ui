@@ -47,13 +47,12 @@ Group #MainContainer {
     Group {
       Anchor: (Height: 22);
       LayoutMode: Left;
-      Background: #10161f(1.00);
-      Padding: (Left: 8, Right: 8);
+      //      Background: #10161f(1.00);
       FlexWeight: 1;
 
       Label {
         Text: "Choix du personnage";
-        Style: (FontSize: 11, TextColor: #b89a66, Alignment: End, VerticalAlignment: Center);
+        Style: (FontSize: 15, TextColor: #b89a66, Alignment: Center, VerticalAlignment: Center);
       }
     }
   }

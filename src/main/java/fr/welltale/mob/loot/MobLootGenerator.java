@@ -34,17 +34,17 @@ public final class MobLootGenerator {
         for (Mob.Drop entry : entries) {
             if (entry == null) continue;
 
-            String itemId = normalizeItemId(entry.getItemId());
+            String itemId = normalizeItemId(entry.itemId());
             if (itemId == null) continue;
 
             float dropChancePercent = Math.min(
                     MAX_DROP_CHANCE_PERCENT,
-                    Math.max(MIN_DROP_CHANCE_PERCENT, entry.getDropChance() * dropChanceMultiplier)
+                    Math.max(MIN_DROP_CHANCE_PERCENT, entry.dropChance() * dropChanceMultiplier)
             );
             if (random.nextFloat() * 100.0f >= dropChancePercent) continue;
 
-            int minQty = Math.max(1, entry.getMinQuantity());
-            int maxQty = Math.max(minQty, entry.getMaxQuantity());
+            int minQty = Math.max(1, entry.minQuantity());
+            int maxQty = Math.max(minQty, entry.maxQuantity());
             int quantity = random.nextInt(minQty, maxQty + 1);
             out.add(new ItemStack(itemId, quantity));
         }

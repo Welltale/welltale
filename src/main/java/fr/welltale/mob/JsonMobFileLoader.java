@@ -34,7 +34,8 @@ public class JsonMobFileLoader {
                             0,
                             new ArrayList<>(List.of(
                                     new Mob.Drop("Weapon_Sword_Beginner", 1, 2, 90.0f)
-                            ))
+                            )),
+                            10
                     )
             };
             mapper.writeValue(jsonDataFile, exampleMobs);

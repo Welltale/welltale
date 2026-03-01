@@ -20,6 +20,7 @@ import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import fr.welltale.characteristic.Characteristics;
 import fr.welltale.characteristic.system.StaminaCostReductionSystem;
 import fr.welltale.constant.Constant;
+import fr.welltale.hud.PlayerHudBuilder;
 import fr.welltale.inventory.InventoryService;
 import fr.welltale.inventory.page.InventoryPage;
 import fr.welltale.level.PlayerLevelComponent;
@@ -152,7 +153,7 @@ public class CharacteristicsPage extends InteractiveCustomUIPage<Characteristics
         }
 
         if (ACTION_ADD_CHARACTERISTIC.equals(data.action) && data.area != null) {
-            spendCharacteristicPoint(ref, store, data.area);
+            spendCharacteristicPoint(ref, store, data.area, player);
             safeSendUpdate(ref, store);
             return;
         }
@@ -261,7 +262,12 @@ public class CharacteristicsPage extends InteractiveCustomUIPage<Characteristics
         return String.format(Locale.ROOT, "%.1f%%", value);
     }
 
-    private void spendCharacteristicPoint(@NonNull Ref<EntityStore> ref, @NonNull Store<EntityStore> store, @NonNull String characteristicType) {
+    private void spendCharacteristicPoint(
+            @NonNull Ref<EntityStore> ref,
+            @NonNull Store<EntityStore> store,
+            @NonNull String characteristicType,
+            @NonNull Player player
+            ) {
         if (!ref.isValid()) {
             this.logger.atSevere().log("[CHARACTERISTIC] CharacteristicsPage SpendCharacteristicPoint Failed: Ref is invalid");
             return;
@@ -304,6 +310,7 @@ public class CharacteristicsPage extends InteractiveCustomUIPage<Characteristics
 
         try {
             this.characterCacheRepository.updateCharacter(cachedCharacter);
+            player.getHudManager().setCustomHud(playerRef, new PlayerHudBuilder(playerRef));
         } catch (Exception e) {
             this.logger.atSevere().log("[CHARACTERISTIC] CharacteristicsPage SpendCharacteristicPoint: " + e.getMessage());
         }

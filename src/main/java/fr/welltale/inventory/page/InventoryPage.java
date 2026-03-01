@@ -771,7 +771,7 @@ public class InventoryPage extends InteractiveCustomUIPage<InventoryPage.CustomI
         cmd.set("#LootGrid.Slots", buildLootSlots(loot));
 
         cmd.set("#LootCountLabel.Text", loot.size() + "/" + InventoryService.LOOT_SLOT_CAPACITY);
-        cmd.set("#GoldFooterAmount.Text", String.valueOf(cachedCharacter.getGems()));
+        cmd.set("#GemsFooterAmount.Text", String.valueOf(cachedCharacter.getGems()));
     }
 
     private ItemStack getInventoryItem(Inventory inventory, int index) {

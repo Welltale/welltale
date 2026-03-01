@@ -206,14 +206,14 @@ Group #MainContainer {
               Anchor: (Height: 20, Top: 5);
               LayoutMode: Center;
 
-              Label #GoldFooterAmount {
+              Label #GemsFooterAmount {
                 Text: "0";
                 Style: (FontSize: 12, TextColor: #57CD4BFF, Alignment: Center);
               }
 
               $C.@SmallSpacer {}
 
-              Label #GoldFooterLabel {
+              Label #GemsFooterLabel {
                 Text: "Gemmes";
                 Style: (FontSize: 12, TextColor: #96a9be, Alignment: Center);
               }

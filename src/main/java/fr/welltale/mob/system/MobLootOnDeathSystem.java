@@ -30,6 +30,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class MobLootOnDeathSystem extends DeathSystems.OnDeathSystem {
     private final InventoryService inventoryService;
@@ -88,6 +89,12 @@ public class MobLootOnDeathSystem extends DeathSystems.OnDeathSystem {
             CachedCharacter cachedCharacter = this.characterCacheRepository.getCharacterCache(killerPlayerRef.getUuid());
             if (cachedCharacter == null) return;
 
+            long gemsMaxDrop = mobConfig.getGemsMaxDrop();
+            if (gemsMaxDrop > 0) {
+                long gemsDropped = ThreadLocalRandom.current().nextLong(Mob.MIN_MOB_GEMS_DROP, gemsMaxDrop);
+                cachedCharacter.setGems(cachedCharacter.getGems() + gemsDropped);
+            }
+
             this.inventoryService.ensureCharacterInventory(
                     killerPlayerRef.getUuid(),
                     cachedCharacter.getCharacterUuid(),
@@ -100,6 +107,7 @@ public class MobLootOnDeathSystem extends DeathSystems.OnDeathSystem {
                     cachedCharacter.getCharacterUuid(),
                     loot
             );
+
             if (!addResult.isFull()) return;
 
             NotificationUtil.sendNotification(
