@@ -23,6 +23,7 @@ import fr.welltale.clazz.ClassRepository;
 import fr.welltale.clazz.page.ClassSelectPage;
 import fr.welltale.constant.Constant;
 import fr.welltale.hud.PlayerHudBuilder;
+import fr.welltale.inventory.CharacterVanillaInventorySnapshot;
 import fr.welltale.level.PlayerLevelComponent;
 import fr.welltale.level.XPTable;
 import fr.welltale.player.PlayerRepository;
@@ -172,6 +173,17 @@ public class CharacterSelectPage extends InteractiveCustomUIPage<CharacterSelect
         }
 
         fr.welltale.player.Player.Character selectedCharacter = characters.get(slotIndex);
+        if (selectedCharacter.getCharacterUuid() == null) {
+            selectedCharacter.setCharacterUuid(UUID.randomUUID());
+            try {
+                this.playerRepository.updatePlayer(playerData);
+            } catch (Exception e) {
+                this.logger.atSevere().log("[PLAYER] CharacterSelectPage HandleSlotSelection Failed: Unable to repair CharacterUuid");
+                player.remove();
+                return;
+            }
+        }
+
         if (selectedCharacter.getClassUuid() == null) {
             openClassSelectPage(ref, store, player);
             return;
@@ -203,18 +215,37 @@ public class CharacterSelectPage extends InteractiveCustomUIPage<CharacterSelect
                 logger
         );
 
+        CharacterVanillaInventorySnapshot snapshot = CharacterVanillaInventorySnapshot.fromStored(
+                selectedCharacter.getHotbar(),
+                selectedCharacter.getStorage(),
+                selectedCharacter.getArmor()
+        );
+        snapshot.apply(player.getInventory());
+
         player.getHudManager().setCustomHud(playerRef, new PlayerHudBuilder(playerRef));
 
+        CachedCharacter newCache = new CachedCharacter(
+                playerUuid,
+                playerData.getGems(),
+                selectedCharacter.getCharacterUuid(),
+                selectedCharacter.getClassUuid(),
+                selectedCharacter.getEditableCharacteristics(),
+                selectedCharacter.getCharacteristicPoints(),
+                selectedCharacter.getGuildUuid(),
+                selectedCharacter.getHotbar(),
+                selectedCharacter.getStorage(),
+                selectedCharacter.getArmor(),
+                selectedCharacter.getLoot(),
+                selectedCharacter.getEquipment()
+        );
+
         try {
-            this.characterCacheRepository.addCharacterCache(new CachedCharacter(
-                    playerUuid,
-                    playerData.getGems(),
-                    selectedCharacter.getCharacterUuid(),
-                    selectedCharacter.getClassUuid(),
-                    selectedCharacter.getEditableCharacteristics(),
-                    selectedCharacter.getCharacteristicPoints(),
-                    selectedCharacter.getGuildUuid()
-            ));
+            CachedCharacter currentCache = this.characterCacheRepository.getCharacterCache(playerUuid);
+            if (currentCache == null) {
+                this.characterCacheRepository.addCharacterCache(newCache);
+            } else {
+                this.characterCacheRepository.updateCharacter(newCache);
+            }
         } catch (Exception e) {
             this.logger.atSevere()
                     .log("[PLAYER] PlayerReadyEvent OnPlayerReady Failed: " + e.getMessage());

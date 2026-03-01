@@ -46,7 +46,7 @@ Group #MainContainer {
       Padding: (Left: 10, Right: 10);
 
       Group #LeftColumn {
-        Anchor: (Height: 455, Top: 0);
+        Anchor: (Height: 390, Top: 0);
         FlexWeight: 1;
         LayoutMode: Top;
         Padding: (Full: 8);
@@ -144,7 +144,7 @@ Group #MainContainer {
       $C.@HytaleVerticalSeparator {}
 
       Group #RightColumn {
-        Anchor: (Height: 455, Top: 0);
+        Anchor: (Height: 480, Top: 0);
         FlexWeight: 1;
         LayoutMode: Top;
         Padding: (Full: 8);
@@ -156,7 +156,8 @@ Group #MainContainer {
         Group { Anchor: (Height: 24); LayoutMode: Left; Label { Text: "REG"; Anchor: (Width: 42); Style: (FontName: "Secondary", FontSize: 13, RenderBold: true, TextColor: #58e7a3, Alignment: Start, VerticalAlignment: Center); } Label { Text: "Regeneration vie"; Anchor: (Width: 170); Style: (FontSize: 13, TextColor: #d3dde6, Alignment: Start, VerticalAlignment: Center); } Label { Text: "PV/s via Intelligence"; Anchor: (Width: 176); Style: (FontSize: 12, TextColor: #8e9bad, Alignment: Start, VerticalAlignment: Center); } Group { FlexWeight: 1; } Label #LifeRegenStatValueLabel { Text: "0%"; Anchor: (Width: 78); Style: (FontName: "Secondary", FontSize: 15, RenderBold: true, TextColor: #58e7a3, Alignment: End, VerticalAlignment: Center); } }
         Group { Anchor: (Height: 24); LayoutMode: Left; Label { Text: "DRP"; Anchor: (Width: 42); Style: (FontName: "Secondary", FontSize: 13, RenderBold: true, TextColor: #ffc553, Alignment: Start, VerticalAlignment: Center); } Label { Text: "Chance de butin"; Anchor: (Width: 170); Style: (FontSize: 13, TextColor: #d3dde6, Alignment: Start, VerticalAlignment: Center); } Label { Text: "Bonus via Chance"; Anchor: (Width: 176); Style: (FontSize: 12, TextColor: #8e9bad, Alignment: Start, VerticalAlignment: Center); } Group { FlexWeight: 1; } Label #DropChanceStatValueLabel { Text: "0%"; Anchor: (Width: 78); Style: (FontName: "Secondary", FontSize: 15, RenderBold: true, TextColor: #ffc553, Alignment: End, VerticalAlignment: Center); } }
         Group { Anchor: (Height: 24); LayoutMode: Left; Label { Text: "VIT"; Anchor: (Width: 42); Style: (FontName: "Secondary", FontSize: 13, RenderBold: true, TextColor: #53baff, Alignment: Start, VerticalAlignment: Center); } Label { Text: "Vitesse de deplacement"; Anchor: (Width: 170); Style: (FontSize: 13, TextColor: #d3dde6, Alignment: Start, VerticalAlignment: Center); } Label { Text: "Bonus via Agilité"; Anchor: (Width: 176); Style: (FontSize: 12, TextColor: #8e9bad, Alignment: Start, VerticalAlignment: Center); } Group { FlexWeight: 1; } Label #MoveSpeedStatValueLabel { Text: "0%"; Anchor: (Width: 78); Style: (FontName: "Secondary", FontSize: 15, RenderBold: true, TextColor: #53baff, Alignment: End, VerticalAlignment: Center); } }
-        Group { Anchor: (Height: 24); LayoutMode: Left; Label { Text: "STA"; Anchor: (Width: 42); Style: (FontName: "Secondary", FontSize: 13, RenderBold: true, TextColor: #ffcf58, Alignment: Start, VerticalAlignment: Center); } Label { Text: "Endurance"; Anchor: (Width: 170); Style: (FontSize: 13, TextColor: #d3dde6, Alignment: Start, VerticalAlignment: Center); } Label { Text: "Actions disponibles"; Anchor: (Width: 176); Style: (FontSize: 12, TextColor: #8e9bad, Alignment: Start, VerticalAlignment: Center); } Group { FlexWeight: 1; } Label #StaminaStatValueLabel { Text: "0"; Anchor: (Width: 78); Style: (FontName: "Secondary", FontSize: 15, RenderBold: true, TextColor: #ffcf58, Alignment: End, VerticalAlignment: Center); } }
+        Group { Anchor: (Height: 24); LayoutMode: Left; Label { Text: "STA"; Anchor: (Width: 42); Style: (FontName: "Secondary", FontSize: 13, RenderBold: true, TextColor: #ffcf58, Alignment: Start, VerticalAlignment: Center); } Label { Text: "Endurance"; Anchor: (Width: 170); Style: (FontSize: 13, TextColor: #d3dde6, Alignment: Start, VerticalAlignment: Center); } Label { Text: "Stamina max"; Anchor: (Width: 176); Style: (FontSize: 12, TextColor: #8e9bad, Alignment: Start, VerticalAlignment: Center); } Group { FlexWeight: 1; } Label #StaminaStatValueLabel { Text: "0"; Anchor: (Width: 78); Style: (FontName: "Secondary", FontSize: 15, RenderBold: true, TextColor: #ffcf58, Alignment: End, VerticalAlignment: Center); } }
+        Group { Anchor: (Height: 24); LayoutMode: Left; Label { Text: "CON"; Anchor: (Width: 42); Style: (FontName: "Secondary", FontSize: 13, RenderBold: true, TextColor: #f2a85a, Alignment: Start, VerticalAlignment: Center); } Label { Text: "Conso stamina"; Anchor: (Width: 170); Style: (FontSize: 13, TextColor: #d3dde6, Alignment: Start, VerticalAlignment: Center); } Label { Text: "Bonus via Force"; Anchor: (Width: 176); Style: (FontSize: 12, TextColor: #8e9bad, Alignment: Start, VerticalAlignment: Center); } Group { FlexWeight: 1; } Label #StaminaConsumptionReductionStatValueLabel { Text: "0%"; Anchor: (Width: 78); Style: (FontName: "Secondary", FontSize: 15, RenderBold: true, TextColor: #f2a85a, Alignment: End, VerticalAlignment: Center); } }
 
         $C.@SmallSpacer {}
         $C.@HytaleSectionSeparator {}

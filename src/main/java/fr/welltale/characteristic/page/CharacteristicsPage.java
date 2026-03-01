@@ -18,6 +18,7 @@ import com.hypixel.hytale.server.core.ui.builder.UIEventBuilder;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import fr.welltale.characteristic.Characteristics;
+import fr.welltale.characteristic.system.StaminaCostReductionSystem;
 import fr.welltale.constant.Constant;
 import fr.welltale.inventory.InventoryService;
 import fr.welltale.inventory.page.InventoryPage;
@@ -203,7 +204,7 @@ public class CharacteristicsPage extends InteractiveCustomUIPage<Characteristics
                 return;
             }
             fr.welltale.player.Player.Character currentCharacter = playerData.getCharacters().stream()
-                    .filter(c -> c.getCharacterUuid().equals(cachedCharacter.getPlayerUuid()))
+                    .filter(c -> c.getCharacterUuid().equals(cachedCharacter.getCharacterUuid()))
                     .findFirst()
                     .orElse(null);
             if (currentCharacter == null) {
@@ -243,6 +244,10 @@ public class CharacteristicsPage extends InteractiveCustomUIPage<Characteristics
         cmd.set("#DropChanceStatValueLabel.Text", formatPercent(additionalCharacteristics.getDropChance()));
         cmd.set("#MoveSpeedStatValueLabel.Text", formatPercent(additionalCharacteristics.getMoveSpeed()));
         cmd.set("#StaminaStatValueLabel.Text", String.valueOf(additionalCharacteristics.getStamina()));
+        float strengthStaminaReductionPct = StaminaCostReductionSystem.getReductionPctFromStrength(
+                additionalCharacteristics.getStrength()
+        ) * 100f;
+        cmd.set("#StaminaConsumptionReductionStatValueLabel.Text", formatPercent(strengthStaminaReductionPct));
         cmd.set("#CriticalDamageStatValueLabel.Text", String.valueOf(additionalCharacteristics.getCriticalDamage()));
         cmd.set("#CriticalPctStatValueLabel.Text", formatPercent(additionalCharacteristics.getCriticalPct()));
         cmd.set("#CriticalResistanceStatValueLabel.Text", String.valueOf(additionalCharacteristics.getCriticalResistance()));

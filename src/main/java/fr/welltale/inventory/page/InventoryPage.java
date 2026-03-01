@@ -23,14 +23,18 @@ import com.hypixel.hytale.server.core.ui.builder.UIEventBuilder;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import fr.welltale.characteristic.page.CharacteristicsPage;
+import fr.welltale.inventory.CharacterVanillaInventorySnapshot;
 import fr.welltale.inventory.InventoryService;
+import fr.welltale.inventory.StoredItemStack;
 import fr.welltale.player.PlayerRepository;
+import fr.welltale.player.charactercache.CachedCharacter;
 import fr.welltale.player.charactercache.CharacterCacheRepository;
 import org.jspecify.annotations.NonNull;
 
 import java.util.*;
 
-//TODO REFACTOR CODE
+import static fr.welltale.inventory.page.InventoryAreaRules.*;
+
 public class InventoryPage extends InteractiveCustomUIPage<InventoryPage.CustomInventoryEventData> {
     private static final int STORAGE_SLOT_COUNT = 36;
     private static final int HOTBAR_SLOT_COUNT = 9;
@@ -44,80 +48,12 @@ public class InventoryPage extends InteractiveCustomUIPage<InventoryPage.CustomI
     private static final String ACTION_DRAG_HOVER = "DRAG_HOVER";
     private static final String ACTION_OPEN_CHARACTERISTICS = "OPEN_CHARACTERISTICS";
 
-    private static final String AREA_HOTBAR = "HOTBAR";
-    private static final String AREA_STORAGE = "STORAGE";
-    private static final String AREA_LOOT = "LOOT";
-    private static final String AREA_EQUIPMENT_HEAD = "EQUIP_HEAD";
-    private static final String AREA_EQUIPMENT_WEAPON = "EQUIP_WEAPON";
-    private static final String AREA_EQUIPMENT_AMULET = "EQUIP_AMULET";
-    private static final String AREA_EQUIPMENT_GAUNTLETS = "EQUIP_GAUNTLETS";
-    private static final String AREA_EQUIPMENT_RING_1 = "EQUIP_RING_1";
-    private static final String AREA_EQUIPMENT_RING_2 = "EQUIP_RING_2";
-    private static final String AREA_EQUIPMENT_CHEST = "EQUIP_CHEST";
-    private static final String AREA_EQUIPMENT_PANTS = "EQUIP_PANTS";
-    private static final String AREA_EQUIPMENT_BELT = "EQUIP_BELT";
-    private static final String AREA_EQUIPMENT_PET = "EQUIP_PET";
-    private static final String AREA_EQUIPMENT_BOOTS = "EQUIP_BOOTS";
-    private static final String AREA_EQUIPMENT_TROPHY_1 = "EQUIP_TROPHY_1";
-    private static final String AREA_EQUIPMENT_TROPHY_2 = "EQUIP_TROPHY_2";
-    private static final String AREA_EQUIPMENT_TROPHY_3 = "EQUIP_TROPHY_3";
-    private static final String AREA_EQUIPMENT_TROPHY_4 = "EQUIP_TROPHY_4";
-    private static final String AREA_EQUIPMENT_TROPHY_5 = "EQUIP_TROPHY_5";
-    private static final String AREA_EQUIPMENT_TROPHY_6 = "EQUIP_TROPHY_6";
-
-    private static final int ARMOR_SLOT_HEAD = 0;
-    private static final int ARMOR_SLOT_CHEST = 1;
-    private static final int ARMOR_SLOT_GAUNTLETS = 2;
-    private static final int ARMOR_SLOT_PANTS = 3;
 
     private final InventoryService inventoryService;
     private final CharacterCacheRepository characterCacheRepository;
     private final PlayerRepository playerRepository;
     private final HytaleLogger logger;
     private final PlayerRef playerRef;
-    private static final String[] EQUIPMENT_AREAS = {
-            AREA_EQUIPMENT_HEAD,
-            AREA_EQUIPMENT_WEAPON,
-            AREA_EQUIPMENT_AMULET,
-            AREA_EQUIPMENT_GAUNTLETS,
-            AREA_EQUIPMENT_RING_1,
-            AREA_EQUIPMENT_RING_2,
-            AREA_EQUIPMENT_CHEST,
-            AREA_EQUIPMENT_PANTS,
-            AREA_EQUIPMENT_BELT,
-            AREA_EQUIPMENT_PET,
-            AREA_EQUIPMENT_BOOTS,
-            AREA_EQUIPMENT_TROPHY_1,
-            AREA_EQUIPMENT_TROPHY_2,
-            AREA_EQUIPMENT_TROPHY_3,
-            AREA_EQUIPMENT_TROPHY_4,
-            AREA_EQUIPMENT_TROPHY_5,
-            AREA_EQUIPMENT_TROPHY_6
-    };
-
-    private static final Map<String, Integer> EQUIPMENT_SLOT_BY_AREA = buildEquipmentSlotByArea();
-    private static final Set<String> EQUIPMENT_AREA_SET = EQUIPMENT_SLOT_BY_AREA.keySet();
-
-    private static final String[][] EQUIPMENT_GRID_BINDINGS = {
-            {"#EquipHeadGrid", AREA_EQUIPMENT_HEAD},
-            {"#EquipWeaponGrid", AREA_EQUIPMENT_WEAPON},
-            {"#EquipAmuletGrid", AREA_EQUIPMENT_AMULET},
-            {"#EquipGauntletsGrid", AREA_EQUIPMENT_GAUNTLETS},
-            {"#EquipRing1Grid", AREA_EQUIPMENT_RING_1},
-            {"#EquipRing2Grid", AREA_EQUIPMENT_RING_2},
-            {"#EquipChestGrid", AREA_EQUIPMENT_CHEST},
-            {"#EquipPantsGrid", AREA_EQUIPMENT_PANTS},
-            {"#EquipBeltGrid", AREA_EQUIPMENT_BELT},
-            {"#EquipPetGrid", AREA_EQUIPMENT_PET},
-            {"#EquipBootsGrid", AREA_EQUIPMENT_BOOTS},
-            {"#EquipTrophy1Grid", AREA_EQUIPMENT_TROPHY_1},
-            {"#EquipTrophy2Grid", AREA_EQUIPMENT_TROPHY_2},
-            {"#EquipTrophy3Grid", AREA_EQUIPMENT_TROPHY_3},
-            {"#EquipTrophy4Grid", AREA_EQUIPMENT_TROPHY_4},
-            {"#EquipTrophy5Grid", AREA_EQUIPMENT_TROPHY_5},
-            {"#EquipTrophy6Grid", AREA_EQUIPMENT_TROPHY_6}
-    };
-
     private boolean closed;
     private String lastRawEventPayload;
     private String pendingDragArea;
@@ -249,43 +185,39 @@ public class InventoryPage extends InteractiveCustomUIPage<InventoryPage.CustomI
         Player player = store.getComponent(ref, Player.getComponentType());
         if (player == null) return;
 
-        if (ACTION_CLOSE.equals(data.action)) {
-            this.closed = true;
-            player.getPageManager().setPage(ref, store, Page.None);
+        if (data.action == null) {
+            safeSendUpdate(ref, store);
             return;
         }
 
-        if (ACTION_COLLECT_ALL.equals(data.action)) {
-            collectAllLoot(ref, store, player);
-            return;
-        }
-
-        if (ACTION_TRANSFER_DROP.equals(data.action)
-                || ACTION_TRANSFER_DRAG_COMPLETED.equals(data.action)
-                || ACTION_TRANSFER_RELEASE.equals(data.action)) {
-            boolean changed = handleTransfer(ref, store, data);
-            if (changed) {
-                safeSendUpdate(ref, store);
+        switch (data.action) {
+            case ACTION_CLOSE -> closePage(ref, store, player);
+            case ACTION_COLLECT_ALL -> collectAllLoot(ref, store, player);
+            case ACTION_TRANSFER_DROP, ACTION_TRANSFER_DRAG_COMPLETED, ACTION_TRANSFER_RELEASE -> {
+                boolean changed = handleTransfer(ref, store, data);
+                if (changed) {
+                    persistActiveCharacterInventory(ref, store);
+                    safeSendUpdate(ref, store);
+                }
             }
-            return;
+            case ACTION_DRAG_HOVER -> handleDragHover(data);
+            case ACTION_OPEN_CHARACTERISTICS -> openCharacteristicsPage(ref, store, player);
+            default -> safeSendUpdate(ref, store);
         }
+    }
 
-        if (ACTION_DRAG_HOVER.equals(data.action)) {
-            handleDragHover(data);
-            return;
-        }
+    private void closePage(@NonNull Ref<EntityStore> ref, @NonNull Store<EntityStore> store, @NonNull Player player) {
+        this.closed = true;
+        player.getPageManager().setPage(ref, store, Page.None);
+    }
 
-        if (ACTION_OPEN_CHARACTERISTICS.equals(data.action)) {
-            this.closed = true;
-            player.getPageManager().openCustomPage(
-                    ref,
-                    store,
-                    new CharacteristicsPage(this.playerRef, this.inventoryService, this.characterCacheRepository, this.playerRepository, this.logger)
-            );
-            return;
-        }
-
-        safeSendUpdate(ref, store);
+    private void openCharacteristicsPage(@NonNull Ref<EntityStore> ref, @NonNull Store<EntityStore> store, @NonNull Player player) {
+        this.closed = true;
+        player.getPageManager().openCustomPage(
+                ref,
+                store,
+                new CharacteristicsPage(this.playerRef, this.inventoryService, this.characterCacheRepository, this.playerRepository, this.logger)
+        );
     }
 
     private void collectAllLoot(@NonNull Ref<EntityStore> ref, @NonNull Store<EntityStore> store, @NonNull Player player) {
@@ -296,7 +228,7 @@ public class InventoryPage extends InteractiveCustomUIPage<InventoryPage.CustomI
         }
 
         UUID playerUuid = uuidComponent.getUuid();
-        ArrayList<ItemStack> loot = inventoryService.getLootSnapshot(playerUuid);
+        ArrayList<ItemStack> loot = getLootSnapshot(playerUuid);
         if (loot.isEmpty()) {
             safeSendUpdate(ref, store);
             return;
@@ -313,7 +245,8 @@ public class InventoryPage extends InteractiveCustomUIPage<InventoryPage.CustomI
             }
         }
 
-        inventoryService.replaceLoot(playerUuid, remaining);
+        replaceLoot(playerUuid, remaining);
+        persistActiveCharacterInventory(ref, store);
         safeSendUpdate(ref, store);
     }
 
@@ -347,8 +280,8 @@ public class InventoryPage extends InteractiveCustomUIPage<InventoryPage.CustomI
     private boolean handleTransfer(@NonNull Ref<EntityStore> ref,
                                    @NonNull Store<EntityStore> store,
                                    @NonNull CustomInventoryEventData data) {
-        int sourceSlot = resolveSourceSlot(data);
-        int targetSlot = resolveTargetSlot(data);
+        int sourceSlot = InventoryEventResolver.resolveSourceSlot(data, lastRawEventPayload);
+        int targetSlot = InventoryEventResolver.resolveTargetSlot(data, lastRawEventPayload);
         String sourceItemId = data.itemStackId;
 
         if (data.area == null) {
@@ -369,7 +302,8 @@ public class InventoryPage extends InteractiveCustomUIPage<InventoryPage.CustomI
 
         long now = System.currentTimeMillis();
         if (pendingDragArea != null && pendingDragSlot >= 0 && now - pendingDragAt <= 1500L) {
-            int pendingTargetSlot = targetSlot >= 0 ? targetSlot : firstValid(resolveIndex(data), sourceSlot);
+            int fallbackIndex = InventoryEventResolver.resolveIndex(data);
+            int pendingTargetSlot = targetSlot >= 0 ? targetSlot : (fallbackIndex >= 0 ? fallbackIndex : sourceSlot);
             if (pendingTargetSlot >= 0 && !(pendingDragArea.equals(data.area) && pendingDragSlot == pendingTargetSlot)) {
                 boolean applied = tryApplyTransfer(ref, store, pendingDragArea, pendingDragSlot, data.area, pendingTargetSlot);
                 if (!applied) {
@@ -400,44 +334,8 @@ public class InventoryPage extends InteractiveCustomUIPage<InventoryPage.CustomI
         return false;
     }
 
-    private int resolveSourceSlot(@NonNull CustomInventoryEventData data) {
-        return firstValid(
-                parseIndex(data.sourceSlotId),
-                parseIndex(data.fromSlotId),
-                parseIndex(data.sourceItemGridIndex),
-                parseIndex(data.fromItemGridIndex),
-                extractIntFromRawPayload(lastRawEventPayload, "SourceSlotId"),
-                extractIntFromRawPayload(lastRawEventPayload, "FromSlotId"),
-                extractIntFromRawPayload(lastRawEventPayload, "SourceItemGridIndex"),
-                extractIntFromRawPayload(lastRawEventPayload, "FromItemGridIndex"),
-                extractIntFromRawPayload(lastRawEventPayload, "SlotIndex"),
-                parseIndex(data.slotIndex),
-                parseIndex(data.index)
-        );
-    }
-
-    private int resolveTargetSlot(@NonNull CustomInventoryEventData data) {
-        return firstValid(
-                parseIndex(data.toSlotId),
-                parseIndex(data.targetSlotId),
-                parseIndex(data.destinationSlotId),
-                parseIndex(data.toItemGridIndex),
-                parseIndex(data.inventorySlotIndex),
-                extractIntFromRawPayload(lastRawEventPayload, "ToSlotId"),
-                extractIntFromRawPayload(lastRawEventPayload, "TargetSlotId"),
-                extractIntFromRawPayload(lastRawEventPayload, "DestinationSlotId"),
-                extractIntFromRawPayload(lastRawEventPayload, "ToItemGridIndex"),
-                extractIntFromRawPayload(lastRawEventPayload, "SlotIndex"),
-                parseIndex(data.slotIndex),
-                parseIndex(data.index)
-        );
-    }
-
     private void handleDragHover(@NonNull CustomInventoryEventData data) {
-        int hovered = firstValid(
-                extractIntFromRawPayload(lastRawEventPayload, "SlotIndex"),
-                resolveIndex(data)
-        );
+        int hovered = InventoryEventResolver.resolveHoveredSlot(data, lastRawEventPayload);
 
         if (hovered < 0 || data.area == null) {
             return;
@@ -566,7 +464,7 @@ public class InventoryPage extends InteractiveCustomUIPage<InventoryPage.CustomI
         UUIDComponent uuidComponent = store.getComponent(ref, UUIDComponent.getComponentType());
         if (uuidComponent == null) return false;
 
-        ArrayList<ItemStack> loot = new ArrayList<>(inventoryService.getLootSnapshot(uuidComponent.getUuid()));
+        ArrayList<ItemStack> loot = new ArrayList<>(getLootSnapshot(uuidComponent.getUuid()));
         if (lootSlot < 0 || lootSlot >= loot.size()) return false;
 
         ItemStack source = loot.get(lootSlot);
@@ -583,7 +481,7 @@ public class InventoryPage extends InteractiveCustomUIPage<InventoryPage.CustomI
 
         loot.set(lootSlot, null);
         compactLoot(loot);
-        inventoryService.replaceLoot(uuidComponent.getUuid(), loot);
+        replaceLoot(uuidComponent.getUuid(), loot);
         return true;
     }
 
@@ -663,167 +561,27 @@ public class InventoryPage extends InteractiveCustomUIPage<InventoryPage.CustomI
     }
 
     private int toInventorySectionId(String area) {
-        if (AREA_HOTBAR.equals(area)) {
-            return Inventory.HOTBAR_SECTION_ID;
-        }
-        if (AREA_STORAGE.equals(area)) {
-            return Inventory.STORAGE_SECTION_ID;
-        }
-        if (AREA_EQUIPMENT_WEAPON.equals(area)) {
-            return Inventory.HOTBAR_SECTION_ID;
-        }
-        if (AREA_EQUIPMENT_HEAD.equals(area)
-                || AREA_EQUIPMENT_CHEST.equals(area)
-                || AREA_EQUIPMENT_GAUNTLETS.equals(area)
-                || AREA_EQUIPMENT_PANTS.equals(area)) {
-            return Inventory.ARMOR_SECTION_ID;
-        }
-        return Integer.MIN_VALUE;
+        return InventoryAreaRules.toInventorySectionId(area);
     }
 
     private int toInventorySectionSlot(String area, int slot) {
-        if (AREA_HOTBAR.equals(area) || AREA_STORAGE.equals(area)) {
-            return slot;
-        }
-        if (AREA_EQUIPMENT_WEAPON.equals(area)) {
-            return 0;
-        }
-        if (AREA_EQUIPMENT_HEAD.equals(area)) {
-            return ARMOR_SLOT_HEAD;
-        }
-        if (AREA_EQUIPMENT_CHEST.equals(area)) {
-            return ARMOR_SLOT_CHEST;
-        }
-        if (AREA_EQUIPMENT_GAUNTLETS.equals(area)) {
-            return ARMOR_SLOT_GAUNTLETS;
-        }
-        if (AREA_EQUIPMENT_PANTS.equals(area)) {
-            return ARMOR_SLOT_PANTS;
-        }
-        return -1;
+        return InventoryAreaRules.toInventorySectionSlot(area, slot);
     }
 
     private boolean isLinkedEquipmentArea(String area) {
-        return AREA_EQUIPMENT_WEAPON.equals(area)
-                || AREA_EQUIPMENT_HEAD.equals(area)
-                || AREA_EQUIPMENT_CHEST.equals(area)
-                || AREA_EQUIPMENT_GAUNTLETS.equals(area)
-                || AREA_EQUIPMENT_PANTS.equals(area);
+        return InventoryAreaRules.isLinkedEquipmentArea(area);
     }
 
     private boolean isEquipmentArea(String area) {
-        return area != null && EQUIPMENT_AREA_SET.contains(area);
+        return InventoryAreaRules.isEquipmentArea(area);
     }
 
     private int toEquipmentSlotIndex(String area) {
-        if (area == null) return -1;
-        Integer index = EQUIPMENT_SLOT_BY_AREA.get(area);
-        return index == null ? -1 : index;
-    }
-
-    private static Map<String, Integer> buildEquipmentSlotByArea() {
-        Map<String, Integer> byArea = new HashMap<>(EQUIPMENT_AREAS.length);
-        for (int i = 0; i < EQUIPMENT_AREAS.length; i++) {
-            byArea.put(EQUIPMENT_AREAS[i], i);
-        }
-        return byArea;
+        return InventoryAreaRules.toEquipmentSlotIndex(area);
     }
 
     private boolean canEquip(String area, ItemStack stack) {
-        if (ItemStack.isEmpty(stack)) {
-            return true;
-        }
-
-        String itemId = stack.getItemId();
-        String id = itemId.toLowerCase();
-        return switch (area) {
-            case AREA_EQUIPMENT_HEAD -> containsAny(id, "head");
-            case AREA_EQUIPMENT_WEAPON -> containsAny(id, "weapon");
-            case AREA_EQUIPMENT_AMULET -> containsAny(id, "amulet");
-            case AREA_EQUIPMENT_GAUNTLETS -> containsAny(id, "hands");
-            case AREA_EQUIPMENT_RING_1, AREA_EQUIPMENT_RING_2 -> containsAny(id, "ring");
-            case AREA_EQUIPMENT_CHEST -> containsAny(id, "chest");
-            case AREA_EQUIPMENT_PANTS -> containsAny(id, "legs");
-            case AREA_EQUIPMENT_BELT -> containsAny(id, "belt");
-            case AREA_EQUIPMENT_PET -> containsAny(id, "companion");
-            case AREA_EQUIPMENT_BOOTS -> containsAny(id, "boots");
-            case AREA_EQUIPMENT_TROPHY_1,
-                 AREA_EQUIPMENT_TROPHY_2,
-                 AREA_EQUIPMENT_TROPHY_3,
-                 AREA_EQUIPMENT_TROPHY_4,
-                 AREA_EQUIPMENT_TROPHY_5,
-                 AREA_EQUIPMENT_TROPHY_6 -> true;
-            default -> false;
-        };
-    }
-
-    private boolean containsAny(String value, String... needles) {
-        for (String needle : needles) {
-            if (value.contains(needle)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private int extractIntFromRawPayload(String rawPayload, String key) {
-        if (rawPayload == null || rawPayload.isBlank() || key == null || key.isBlank()) {
-            return -1;
-        }
-
-        String token = "\"" + key + "\"";
-        int keyIndex = rawPayload.indexOf(token);
-        if (keyIndex < 0) {
-            return -1;
-        }
-
-        int colonIndex = rawPayload.indexOf(':', keyIndex + token.length());
-        if (colonIndex < 0) {
-            return -1;
-        }
-
-        int valueIndex = colonIndex + 1;
-        while (valueIndex < rawPayload.length() && Character.isWhitespace(rawPayload.charAt(valueIndex))) {
-            valueIndex++;
-        }
-
-        if (valueIndex >= rawPayload.length()) {
-            return -1;
-        }
-
-        if (rawPayload.charAt(valueIndex) == '"') {
-            valueIndex++;
-        }
-
-        int sign = 1;
-        if (valueIndex < rawPayload.length() && rawPayload.charAt(valueIndex) == '-') {
-            sign = -1;
-            valueIndex++;
-        }
-
-        int end = valueIndex;
-        while (end < rawPayload.length() && Character.isDigit(rawPayload.charAt(end))) {
-            end++;
-        }
-
-        if (end <= valueIndex) {
-            return -1;
-        }
-
-        try {
-            return Integer.parseInt(rawPayload.substring(valueIndex, end)) * sign;
-        } catch (Exception ignored) {
-            return -1;
-        }
-    }
-
-    private int firstValid(int... candidates) {
-        for (int candidate : candidates) {
-            if (candidate >= 0) {
-                return candidate;
-            }
-        }
-        return -1;
+        return InventoryAreaRules.canEquip(area, stack);
     }
 
     private ItemStack getStackFromArea(@NonNull Ref<EntityStore> ref, @NonNull Store<EntityStore> store, String area, int index) {
@@ -850,7 +608,7 @@ public class InventoryPage extends InteractiveCustomUIPage<InventoryPage.CustomI
             UUIDComponent uuidComponent = store.getComponent(ref, UUIDComponent.getComponentType());
             if (uuidComponent == null) return null;
 
-            ArrayList<ItemStack> loot = inventoryService.getLootSnapshot(uuidComponent.getUuid());
+            ArrayList<ItemStack> loot = getLootSnapshot(uuidComponent.getUuid());
             return index >= 0 && index < loot.size() ? loot.get(index) : null;
         }
 
@@ -858,7 +616,7 @@ public class InventoryPage extends InteractiveCustomUIPage<InventoryPage.CustomI
             UUIDComponent uuidComponent = store.getComponent(ref, UUIDComponent.getComponentType());
             if (uuidComponent == null) return null;
             int equipmentIndex = toEquipmentSlotIndex(area);
-            return inventoryService.getEquipmentSlot(uuidComponent.getUuid(), equipmentIndex);
+            return getEquipmentSlot(uuidComponent.getUuid(), equipmentIndex);
         }
 
         return null;
@@ -895,13 +653,13 @@ public class InventoryPage extends InteractiveCustomUIPage<InventoryPage.CustomI
             UUIDComponent uuidComponent = store.getComponent(ref, UUIDComponent.getComponentType());
             if (uuidComponent == null) return null;
 
-            ArrayList<ItemStack> loot = new ArrayList<>(inventoryService.getLootSnapshot(uuidComponent.getUuid()));
+            ArrayList<ItemStack> loot = new ArrayList<>(getLootSnapshot(uuidComponent.getUuid()));
             if (index < 0 || index >= loot.size()) return null;
 
             ItemStack stack = loot.get(index);
             loot.set(index, null);
             compactLoot(loot);
-            inventoryService.replaceLoot(uuidComponent.getUuid(), loot);
+            replaceLoot(uuidComponent.getUuid(), loot);
             return stack;
         }
 
@@ -912,8 +670,8 @@ public class InventoryPage extends InteractiveCustomUIPage<InventoryPage.CustomI
             int equipmentIndex = toEquipmentSlotIndex(area);
             if (equipmentIndex < 0) return null;
 
-            ItemStack stack = inventoryService.getEquipmentSlot(uuidComponent.getUuid(), equipmentIndex);
-            inventoryService.setEquipmentSlot(uuidComponent.getUuid(), equipmentIndex, null);
+            ItemStack stack = getEquipmentSlot(uuidComponent.getUuid(), equipmentIndex);
+            setEquipmentSlot(uuidComponent.getUuid(), equipmentIndex, null);
             return stack;
         }
 
@@ -951,14 +709,14 @@ public class InventoryPage extends InteractiveCustomUIPage<InventoryPage.CustomI
             UUIDComponent uuidComponent = store.getComponent(ref, UUIDComponent.getComponentType());
             if (uuidComponent == null) return false;
 
-            ArrayList<ItemStack> loot = new ArrayList<>(inventoryService.getLootSnapshot(uuidComponent.getUuid()));
+            ArrayList<ItemStack> loot = new ArrayList<>(getLootSnapshot(uuidComponent.getUuid()));
             while (loot.size() <= index) {
                 loot.add(null);
             }
 
             loot.set(index, stack);
             compactLoot(loot);
-            inventoryService.replaceLoot(uuidComponent.getUuid(), loot);
+            replaceLoot(uuidComponent.getUuid(), loot);
             return true;
         }
 
@@ -973,7 +731,7 @@ public class InventoryPage extends InteractiveCustomUIPage<InventoryPage.CustomI
                 return false;
             }
 
-            inventoryService.setEquipmentSlot(uuidComponent.getUuid(), equipmentIndex, stack);
+            setEquipmentSlot(uuidComponent.getUuid(), equipmentIndex, stack);
             return true;
         }
 
@@ -986,49 +744,6 @@ public class InventoryPage extends InteractiveCustomUIPage<InventoryPage.CustomI
                 loot.remove(i);
             }
         }
-    }
-
-    private int parseIndex(String rawIndex) {
-        if (rawIndex == null || rawIndex.isBlank()) return -1;
-
-        try {
-            return Integer.parseInt(rawIndex.trim());
-        } catch (Exception ignored) {
-        }
-
-        StringBuilder digits = new StringBuilder();
-        for (int i = 0; i < rawIndex.length(); i++) {
-            char c = rawIndex.charAt(i);
-            if (Character.isDigit(c)) {
-                digits.append(c);
-            } else if (!digits.isEmpty()) {
-                break;
-            }
-        }
-
-        if (digits.isEmpty()) return -1;
-
-        try {
-            return Integer.parseInt(digits.toString());
-        } catch (Exception ignored) {
-            return -1;
-        }
-    }
-
-    private int resolveIndex(@NonNull CustomInventoryEventData data) {
-        int resolved = parseIndex(data.index);
-        if (resolved >= 0) return resolved;
-
-        resolved = parseIndex(data.slotIndex);
-        if (resolved >= 0) return resolved;
-
-        resolved = parseIndex(data.toSlotId);
-        if (resolved >= 0) return resolved;
-
-        resolved = parseIndex(data.fromSlotId);
-        if (resolved >= 0) return resolved;
-
-        return parseIndex(data.inventorySlotIndex);
     }
 
     private void applyState(
@@ -1046,7 +761,7 @@ public class InventoryPage extends InteractiveCustomUIPage<InventoryPage.CustomI
         if (cachedCharacter == null) return;
 
         Inventory inventory = player.getInventory();
-        ArrayList<ItemStack> loot = inventoryService.getLootSnapshot(uuidComponent.getUuid());
+        ArrayList<ItemStack> loot = getLootSnapshot(uuidComponent.getUuid());
 
         for (String[] binding : EQUIPMENT_GRID_BINDINGS) {
             cmd.set(binding[0] + ".Slots", oneSlotFromArea(ref, store, binding[1]));
@@ -1074,20 +789,11 @@ public class InventoryPage extends InteractiveCustomUIPage<InventoryPage.CustomI
     }
 
     private boolean isInventoryArea(String area) {
-        return AREA_HOTBAR.equals(area) || AREA_STORAGE.equals(area);
+        return InventoryAreaRules.isInventoryArea(area);
     }
 
     private int toInventoryIndex(String area, int rawIndex) {
-        if (rawIndex < 0) return -1;
-        if (AREA_HOTBAR.equals(area)) {
-            return rawIndex;
-        }
-
-        if (AREA_STORAGE.equals(area)) {
-            return HOTBAR_SLOT_COUNT + rawIndex;
-        }
-
-        return -1;
+        return InventoryAreaRules.toInventoryIndex(area, rawIndex);
     }
 
     private ItemGridSlot[] buildLootSlots(@NonNull ArrayList<ItemStack> loot) {
@@ -1139,6 +845,77 @@ public class InventoryPage extends InteractiveCustomUIPage<InventoryPage.CustomI
         ItemGridSlot slot = itemStack == null ? new ItemGridSlot() : new ItemGridSlot(itemStack);
         slot.setActivatable(true);
         return slot;
+    }
+
+    private UUID resolveCharacterUuid(UUID playerUuid) {
+        if (playerUuid == null) return null;
+
+        CachedCharacter cachedCharacter = this.characterCacheRepository.getCharacterCache(playerUuid);
+        return cachedCharacter == null ? null : cachedCharacter.getCharacterUuid();
+    }
+
+    private void ensureCharacterInventory(UUID playerUuid) {
+        if (playerUuid == null) return;
+
+        CachedCharacter cachedCharacter = this.characterCacheRepository.getCharacterCache(playerUuid);
+        if (cachedCharacter == null || cachedCharacter.getCharacterUuid() == null) return;
+
+        this.inventoryService.ensureCharacterInventory(
+                playerUuid,
+                cachedCharacter.getCharacterUuid(),
+                cachedCharacter.getLoot(),
+                cachedCharacter.getEquipment()
+        );
+    }
+
+    private ArrayList<ItemStack> getLootSnapshot(UUID playerUuid) {
+        ensureCharacterInventory(playerUuid);
+        return this.inventoryService.getLootSnapshot(playerUuid, resolveCharacterUuid(playerUuid));
+    }
+
+    private void replaceLoot(UUID playerUuid, List<ItemStack> loot) {
+        ensureCharacterInventory(playerUuid);
+        this.inventoryService.replaceLoot(playerUuid, resolveCharacterUuid(playerUuid), loot);
+    }
+
+    private ItemStack getEquipmentSlot(UUID playerUuid, int slotIndex) {
+        ensureCharacterInventory(playerUuid);
+        return this.inventoryService.getEquipmentSlot(playerUuid, resolveCharacterUuid(playerUuid), slotIndex);
+    }
+
+    private void setEquipmentSlot(UUID playerUuid, int slotIndex, ItemStack stack) {
+        ensureCharacterInventory(playerUuid);
+        this.inventoryService.setEquipmentSlot(playerUuid, resolveCharacterUuid(playerUuid), slotIndex, stack);
+    }
+
+    private ArrayList<ItemStack> getEquipmentSnapshot(UUID playerUuid) {
+        ensureCharacterInventory(playerUuid);
+        return this.inventoryService.getEquipmentSnapshot(playerUuid, resolveCharacterUuid(playerUuid));
+    }
+
+    private void persistActiveCharacterInventory(@NonNull Ref<EntityStore> ref, @NonNull Store<EntityStore> store) {
+        UUIDComponent uuidComponent = store.getComponent(ref, UUIDComponent.getComponentType());
+        if (uuidComponent == null) return;
+
+        UUID playerUuid = uuidComponent.getUuid();
+        CachedCharacter cachedCharacter = this.characterCacheRepository.getCharacterCache(playerUuid);
+        if (cachedCharacter == null || cachedCharacter.getCharacterUuid() == null) return;
+
+        Player runtimePlayer = store.getComponent(ref, Player.getComponentType());
+        if (runtimePlayer == null) return;
+
+        CharacterVanillaInventorySnapshot snapshot = CharacterVanillaInventorySnapshot.capture(runtimePlayer.getInventory());
+        cachedCharacter.setHotbar(snapshot.getStoredHotbar());
+        cachedCharacter.setStorage(snapshot.getStoredStorage());
+        cachedCharacter.setArmor(snapshot.getStoredArmor());
+        cachedCharacter.setLoot(StoredItemStack.fromItemStackList(getLootSnapshot(playerUuid), InventoryService.LOOT_SLOT_CAPACITY));
+        cachedCharacter.setEquipment(StoredItemStack.fromItemStackList(getEquipmentSnapshot(playerUuid), InventoryService.EQUIPMENT_SLOT_COUNT));
+
+        try {
+            this.characterCacheRepository.updateCharacter(cachedCharacter);
+        } catch (Exception e) {
+            this.logger.atSevere().log("[INVENTORY] InventoryPage PersistActiveCharacterInventory Failed: " + e.getMessage());
+        }
     }
 
 }

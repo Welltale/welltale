@@ -23,6 +23,7 @@ import fr.welltale.clazz.Class;
 import fr.welltale.clazz.ClassRepository;
 import fr.welltale.constant.Constant;
 import fr.welltale.hud.PlayerHudBuilder;
+import fr.welltale.inventory.CharacterVanillaInventorySnapshot;
 import fr.welltale.level.PlayerLevelComponent;
 import fr.welltale.player.PlayerRepository;
 import fr.welltale.player.charactercache.CachedCharacter;
@@ -243,6 +244,11 @@ public class ClassSelectPage extends InteractiveCustomUIPage<ClassSelectPage.Cla
                 0,
                 new Characteristics.EditableCharacteristics(),
                 0,
+                null,
+                null,
+                null,
+                null,
+                null,
                 null
         );
         playerData.getCharacters().add(newCharacter);
@@ -255,16 +261,35 @@ public class ClassSelectPage extends InteractiveCustomUIPage<ClassSelectPage.Cla
             return;
         }
 
+        CachedCharacter newCache = new CachedCharacter(
+                playerUuid.getUuid(),
+                playerData.getGems(),
+                newCharacter.getCharacterUuid(),
+                newCharacter.getClassUuid(),
+                newCharacter.getEditableCharacteristics(),
+                newCharacter.getCharacteristicPoints(),
+                newCharacter.getGuildUuid(),
+                newCharacter.getHotbar(),
+                newCharacter.getStorage(),
+                newCharacter.getArmor(),
+                newCharacter.getLoot(),
+                newCharacter.getEquipment()
+        );
+
+        CharacterVanillaInventorySnapshot snapshot = CharacterVanillaInventorySnapshot.fromStored(
+                newCache.getHotbar(),
+                newCache.getStorage(),
+                newCache.getArmor()
+        );
+        snapshot.apply(player.getInventory());
+
         try {
-            this.characterCacheRepository.addCharacterCache(new CachedCharacter(
-                    playerUuid.getUuid(),
-                    playerData.getGems(),
-                    newCharacter.getCharacterUuid(),
-                    newCharacter.getClassUuid(),
-                    newCharacter.getEditableCharacteristics(),
-                    newCharacter.getCharacteristicPoints(),
-                    newCharacter.getGuildUuid()
-            ));
+            CachedCharacter currentCache = this.characterCacheRepository.getCharacterCache(playerUuid.getUuid());
+            if (currentCache == null) {
+                this.characterCacheRepository.addCharacterCache(newCache);
+            } else {
+                this.characterCacheRepository.updateCharacter(newCache);
+            }
         } catch (Exception e) {
             this.logger.atSevere().log("[CLASS] ClassSelectPage HandlePlayer Failed: " + e.getMessage());
             player.remove();

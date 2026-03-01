@@ -274,7 +274,6 @@ public class Characteristics {
                 staticModifierWisdom
         );
 
-        // TODO: Implement Strength passive bonus.
         StaticModifier staticModifierStrength = new StaticModifier(
                 Modifier.ModifierTarget.MAX,
                 StaticModifier.CalculationType.ADDITIVE,

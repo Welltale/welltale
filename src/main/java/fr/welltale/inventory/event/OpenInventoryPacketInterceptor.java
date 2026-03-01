@@ -22,6 +22,9 @@ import fr.welltale.player.PlayerRepository;
 import fr.welltale.player.charactercache.CharacterCacheRepository;
 
 import javax.annotation.Nonnull;
+import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
 public class OpenInventoryPacketInterceptor {
@@ -29,6 +32,7 @@ public class OpenInventoryPacketInterceptor {
     private final CharacterCacheRepository characterCacheRepository;
     private final PlayerRepository playerRepository;
     private final HytaleLogger logger;
+    private final Set<UUID> installedPlayers = ConcurrentHashMap.newKeySet();
 
     public OpenInventoryPacketInterceptor(
             @Nonnull InventoryService inventoryService,
@@ -55,9 +59,16 @@ public class OpenInventoryPacketInterceptor {
             this.logger.atSevere().log("[INVENTORY] PlayerReadyInventoryPacketInterceptor OnPlayerReady Failed: Unexpected packet handler type");
             return;
         }
+        if (!this.installedPlayers.add(playerRef.getUuid())) return;
 
         packetHandler.registerHandler(ClientOpenWindow.PACKET_ID, p -> this.handleClientOpenWindow((ClientOpenWindow) p, playerRef));
         packetHandler.registerHandler(CloseWindow.PACKET_ID, p -> this.handleCloseWindow((CloseWindow) p, playerRef));
+    }
+
+    public void clearInstalledPlayer(UUID playerUuid) {
+        if (playerUuid == null) return;
+
+        this.installedPlayers.remove(playerUuid);
     }
 
     private void handleClientOpenWindow(ClientOpenWindow packet, PlayerRef playerRef) {

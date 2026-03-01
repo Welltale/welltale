@@ -12,11 +12,13 @@ import fr.welltale.characteristic.system.DamageSystem;
 import fr.welltale.characteristic.system.DropChanceSystem;
 import fr.welltale.characteristic.system.LifeRegenSystem;
 import fr.welltale.characteristic.system.MoveSpeedSystem;
+import fr.welltale.characteristic.system.StaminaCostReductionSystem;
 import fr.welltale.clazz.Class;
 import fr.welltale.clazz.JsonClassFileLoader;
 import fr.welltale.clazz.JsonClassRepository;
 import fr.welltale.inventory.InventoryService;
 import fr.welltale.inventory.event.OpenInventoryPacketInterceptor;
+import fr.welltale.inventory.system.PlayerLeaveSystem;
 import fr.welltale.level.PlayerLevelComponent;
 import fr.welltale.level.event.GiveXPEvent;
 import fr.welltale.level.event.LevelUpEvent;
@@ -88,13 +90,13 @@ public class Welltale extends JavaPlugin {
             ArrayList<Player> jsonPlayerData = jsonPlayerFileLoader.getJsonData(jsonPlayerFile);
             JsonPlayerRepository playerRepository = new JsonPlayerRepository(jsonPlayerData, jsonPlayerFile, logger);
             MemoryCharacterCache characterCache = new MemoryCharacterCache();
+            InventoryService inventoryService = new InventoryService();
 
             //Remove this if you don't use JsonPlayerRepository
             this.playerRepository = playerRepository;
             PlayerSaveDataScheduler playerSaveDataScheduler = new PlayerSaveDataScheduler(playerRepository);
 
-            //TODO ENABLE IT
-            //this.getTaskRegistry().registerTask(playerSaveDataScheduler.run());
+            this.getTaskRegistry().registerTask(playerSaveDataScheduler.run());
 
             this.getEventRegistry().registerGlobal(
                     PlayerConnectEvent.class,
@@ -122,6 +124,8 @@ public class Welltale extends JavaPlugin {
             this.getEntityStoreRegistry().registerSystem(moveSpeedSystem);
             LifeRegenSystem lifeRegenSystem = new LifeRegenSystem();
             this.getEntityStoreRegistry().registerSystem(lifeRegenSystem);
+            StaminaCostReductionSystem staminaCostReductionSystem = new StaminaCostReductionSystem();
+            this.getEntityStoreRegistry().registerSystem(staminaCostReductionSystem);
             DropChanceSystem dropChanceSystem = new DropChanceSystem();
             this.getEntityStoreRegistry().registerSystem(dropChanceSystem);
             //Characteristic
@@ -155,15 +159,23 @@ public class Welltale extends JavaPlugin {
             this.getEventRegistry().register(GiveXPEvent.class, new GiveXPHandler(logger));
             this.getEventRegistry().register(LevelUpEvent.class, new LevelUpHandler(characterCache, logger));
             this.getEntityStoreRegistry().registerSystem(new OnDeathSystem(logger));
-            this.getEntityStoreRegistry().registerSystem(new PlayerJoinSystem(playerRepository, characterCache, logger));
+            this.getEntityStoreRegistry().registerSystem(new PlayerJoinSystem(playerRepository, characterCache, inventoryService, logger));
             logger.atInfo().log("Level loaded!");
             //Level
 
             //Inventory
-            InventoryService inventoryService = new InventoryService();
+            OpenInventoryPacketInterceptor openInventoryPacketInterceptor = new OpenInventoryPacketInterceptor(
+                    inventoryService,
+                    characterCache,
+                    playerRepository,
+                    logger
+            );
             this.getEventRegistry().registerGlobal(
                     PlayerReadyEvent.class,
-                    new OpenInventoryPacketInterceptor(inventoryService, characterCache, playerRepository, logger)::onPlayerReady
+                    openInventoryPacketInterceptor::onPlayerReady
+            );
+            this.getEntityStoreRegistry().registerSystem(
+                    new PlayerLeaveSystem(openInventoryPacketInterceptor, staminaCostReductionSystem)
             );
             //Inventory
 
@@ -177,7 +189,7 @@ public class Welltale extends JavaPlugin {
             this.getEntityStoreRegistry().registerSystem(new MobNameplateAssignSystem(jsonMobRepository));
             this.getEntityStoreRegistry().registerSystem(new MobStatsAssignSystem(jsonMobRepository));
             this.getEntityStoreRegistry().registerSystem(new fr.welltale.mob.system.DamageSystem(jsonMobRepository));
-            this.getEntityStoreRegistry().registerSystem(new MobLootOnDeathSystem(inventoryService, jsonMobRepository, logger));
+            this.getEntityStoreRegistry().registerSystem(new MobLootOnDeathSystem(inventoryService, characterCache, jsonMobRepository, logger));
 
             var mobLevelType = this.getEntityStoreRegistry().registerComponent(
                     MobStatsComponent.class,
@@ -200,10 +212,9 @@ public class Welltale extends JavaPlugin {
     @Override
     protected void shutdown() {
         //Remove this if you don't use JsonPlayerRepository
-        //TODO ENABLE IT
-        //if (this.playerRepository != null) {
-        //    this.playerRepository.saveData();
-        //}
+        if (this.playerRepository != null) {
+            this.playerRepository.saveData();
+        }
 
         this.getLogger().atInfo().log("Welltale Mod shutting down!");
     }

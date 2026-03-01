@@ -6,6 +6,9 @@ import com.hypixel.hytale.component.system.RefSystem;
 import com.hypixel.hytale.logger.HytaleLogger;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
+import fr.welltale.inventory.CharacterVanillaInventorySnapshot;
+import fr.welltale.inventory.InventoryService;
+import fr.welltale.inventory.StoredItemStack;
 import fr.welltale.level.PlayerLevelComponent;
 import fr.welltale.player.Player;
 import fr.welltale.player.PlayerRepository;
@@ -19,6 +22,7 @@ import org.jspecify.annotations.Nullable;
 public class PlayerJoinSystem extends RefSystem<EntityStore> {
     private final PlayerRepository playerRepository;
     private final CharacterCacheRepository characterCacheRepository;
+    private final InventoryService inventoryService;
     private final HytaleLogger logger;
 
     @Override
@@ -63,10 +67,21 @@ public class PlayerJoinSystem extends RefSystem<EntityStore> {
         CachedCharacter cachedCharacter = this.characterCacheRepository.getCharacterCache(playerRef.getUuid());
         if (cachedCharacter == null) return;
 
-        Player.Character currentCharacter = playerData.getCharacters().stream()
-                .filter(c -> c.getCharacterUuid().equals(cachedCharacter.getCharacterUuid()))
-                .findFirst()
-                .orElse(null);
+        com.hypixel.hytale.server.core.entity.entities.Player player = store.getComponent(
+                ref,
+                com.hypixel.hytale.server.core.entity.entities.Player.getComponentType()
+        );
+        if (player == null) return;
+
+        Player.Character currentCharacter = null;
+        for (int i = playerData.getCharacters().size() - 1; i >= 0; i--) {
+            if (!playerData.getCharacters().get(i).getCharacterUuid().equals(cachedCharacter.getCharacterUuid())) {
+                continue;
+            }
+
+            currentCharacter = playerData.getCharacters().get(i);
+            break;
+        }
 
         if (currentCharacter == null) {
             this.logger.atSevere()
@@ -75,6 +90,29 @@ public class PlayerJoinSystem extends RefSystem<EntityStore> {
         }
 
         currentCharacter.setExperience(playerLevelComponent.getTotalExperience());
+        CharacterVanillaInventorySnapshot snapshot = CharacterVanillaInventorySnapshot.capture(player.getInventory());
+        currentCharacter.setHotbar(snapshot.getStoredHotbar());
+        currentCharacter.setStorage(snapshot.getStoredStorage());
+        currentCharacter.setArmor(snapshot.getStoredArmor());
+        cachedCharacter.setHotbar(snapshot.getStoredHotbar());
+        cachedCharacter.setStorage(snapshot.getStoredStorage());
+        cachedCharacter.setArmor(snapshot.getStoredArmor());
+
+        this.inventoryService.ensureCharacterInventory(
+                playerRef.getUuid(),
+                cachedCharacter.getCharacterUuid(),
+                cachedCharacter.getLoot(),
+                cachedCharacter.getEquipment()
+        );
+        currentCharacter.setLoot(StoredItemStack.fromItemStackList(
+                this.inventoryService.getLootSnapshot(playerRef.getUuid(), cachedCharacter.getCharacterUuid()),
+                InventoryService.LOOT_SLOT_CAPACITY
+        ));
+        currentCharacter.setEquipment(StoredItemStack.fromItemStackList(
+                this.inventoryService.getEquipmentSnapshot(playerRef.getUuid(), cachedCharacter.getCharacterUuid()),
+                InventoryService.EQUIPMENT_SLOT_COUNT
+        ));
+
         try {
             this.playerRepository.updatePlayer(playerData);
             this.characterCacheRepository.removeCharacter(playerRef.getUuid());

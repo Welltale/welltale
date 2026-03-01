@@ -52,7 +52,7 @@ Each game system follows a consistent pattern:
   - Critical hit system with damage and resistance calculations
 - Passive stat systems inspired by Dofus:
   - **MoveSpeedSystem**: Agility increases movement speed (0.1% per point)
-  - **Strength**: no passive bonus currently (TODO)
+  - **StaminaCostReductionSystem**: Strength reduces stamina consumption (0.1% per point, capped at 70%)
   - **LifeRegenSystem**: Intelligence increases health regeneration (0.1% per point as % bonus to base regen)
   - **DropChanceSystem**: Chance increases drop rate (0.1% per point)
   - **Wisdom**: Increases XP gain (0.1% per point) - handled in GiveXPHandler
@@ -84,9 +84,17 @@ Each game system follows a consistent pattern:
 **Player System** (`fr.welltale.player`)
 - Player data stored in JSON at `./mods/welltale/players.json`
 - Multi-character flow: character slot selection + active runtime character cache
+- Character UUID is required for per-character scoping; if missing on legacy data, regenerate and persist when character is selected
 - Characteristics points system for stat allocation
 - Event systems for player actions (blocks, items, chat)
 - HUD updates are event-driven from gameplay handlers/pages (no per-tick HUD update system)
+
+**Inventory System** (`fr.welltale.inventory`)
+- Inventory is character-scoped (player UUID + character UUID)
+- Vanilla inventory sections persisted per character: `hotbar`, `storage`, `armor`
+- Custom inventory sections persisted per character: `loot`, `equipment`
+- Persist only lightweight stored item data (`StoredItemStack` with `itemId` + `quantity`) in JSON
+- Do not persist Hytale runtime `ItemStack` directly in player JSON (can serialize huge object graphs and cyclic references)
 
 ## File Structure
 
@@ -143,6 +151,19 @@ All game data (players, ranks, classes, mobs) is stored as JSON files in `./mods
 
 **Important**: File loaders auto-create these files with example data if missing.
 
+### Player JSON Item Format
+
+- Character inventory/item fields in `players.json` must use lightweight objects:
+  - `{ "itemId": "...", "quantity": <int> }`
+- Keep unknown/engine-only item fields out of persisted player data.
+
+### Player/Character Invariants
+
+- `Player.characters` is a slot list (target size: 6 slots, indices `0..5`).
+- Active runtime character is uniquely keyed by player UUID in `CharacterCacheRepository`.
+- `characterUuid` is mandatory for character-scoped systems (inventory, class, progression).
+- If legacy character data has no `characterUuid`, regenerate and persist before gameplay continues.
+
 ## ECS Integration
 
 The mod heavily uses Hytale's Entity Component System:
@@ -156,6 +177,13 @@ The mod heavily uses Hytale's Entity Component System:
 - Event handlers registered via `getEventRegistry().registerGlobal()` or `register()`
 - Custom events: `GiveXPEvent`, `LevelUpEvent`
 - Hytale events: `PlayerConnectEvent`, `PlayerReadyEvent`, `PlayerChatEvent`
+- Packet interceptor registration should be idempotent per player (guard duplicate handler installs).
+
+### Runtime Lifecycle Rules
+
+- On character enter gameplay, hydrate runtime cache from selected character slot and apply stats/inventory snapshot.
+- On entity remove/leave, sync runtime state back to persisted character data (XP + inventory + custom inventory sections).
+- Always clear per-player runtime guards/caches on leave (packet interceptor install guards, stamina tracking maps, etc.).
 
 ## UI Development
 
@@ -195,6 +223,26 @@ The mod heavily uses Hytale's Entity Component System:
 - Damage calculation inspired by Dofus mechanics with elemental resistances capped at 50%
 - Active character state is cached in memory via `CharacterCacheRepository` and synced back on player entity removal
 - Repository read methods generally return immutable snapshots (`List.copyOf(...)`) to avoid accidental external mutations
+- Clean per-player runtime caches/maps on leave/disconnect (example: stamina tracking maps, interceptor install guards)
+
+## Known Limitations (Current)
+
+- `ClassSelectPage` currently creates new characters by append (`add(...)`) rather than strict slot replacement.
+- `InventoryPage` is intentionally large/monolithic for now and planned for later refactor.
+- Most repositories/caches still use linear lookups; migrate hot paths to indexed maps for high concurrency targets.
+
+## Performance Targets
+
+- Current practical target: ~100 concurrent players with stable gameplay loops.
+- Launch target: ~500 concurrent players after load testing/profiling and data-path indexing improvements.
+- Before large-scale launch, validate join/leave churn, loot flow, UI updates, and persistence under stress.
+
+## Manual Smoke Checklist
+
+- Character flow: create/select character, relog, and verify class/stats/XP/inventory restoration.
+- Inventory flow: transfer, drag/drop, collect-all, equipment slots, and loot-cap behavior.
+- Combat flow: spell stamina usage, cooldown behavior, and damage/nameplate consistency.
+- Runtime cleanup: repeated join/leave cycles without duplicate packet handlers or stale per-player caches.
 
 ## Code Style
 

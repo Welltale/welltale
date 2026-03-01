@@ -20,6 +20,8 @@ import fr.welltale.inventory.InventoryService;
 import fr.welltale.mob.Mob;
 import fr.welltale.mob.MobRepository;
 import fr.welltale.mob.loot.MobLootGenerator;
+import fr.welltale.player.charactercache.CachedCharacter;
+import fr.welltale.player.charactercache.CharacterCacheRepository;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
@@ -31,6 +33,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class MobLootOnDeathSystem extends DeathSystems.OnDeathSystem {
     private final InventoryService inventoryService;
+    private final CharacterCacheRepository characterCacheRepository;
     private final MobRepository mobRepository;
     private final HytaleLogger logger;
     private final Map<String, Mob> mobByNormalizedAssetCache = new ConcurrentHashMap<>();
@@ -38,10 +41,12 @@ public class MobLootOnDeathSystem extends DeathSystems.OnDeathSystem {
 
     public MobLootOnDeathSystem(
             InventoryService inventoryService,
+            CharacterCacheRepository characterCacheRepository,
             MobRepository mobRepository,
             HytaleLogger logger
     ) {
         this.inventoryService = inventoryService;
+        this.characterCacheRepository = characterCacheRepository;
         this.mobRepository = mobRepository;
         this.logger = logger;
     }
@@ -80,7 +85,21 @@ public class MobLootOnDeathSystem extends DeathSystems.OnDeathSystem {
             if (loot.isEmpty()) return;
 
             //TODO GIVE LOOT TO PLAYERS GROUP
-            InventoryService.AddLootResult addResult = inventoryService.addLoot(killerPlayerRef.getUuid(), loot);
+            CachedCharacter cachedCharacter = this.characterCacheRepository.getCharacterCache(killerPlayerRef.getUuid());
+            if (cachedCharacter == null) return;
+
+            this.inventoryService.ensureCharacterInventory(
+                    killerPlayerRef.getUuid(),
+                    cachedCharacter.getCharacterUuid(),
+                    cachedCharacter.getLoot(),
+                    cachedCharacter.getEquipment()
+            );
+
+            InventoryService.AddLootResult addResult = inventoryService.addLoot(
+                    killerPlayerRef.getUuid(),
+                    cachedCharacter.getCharacterUuid(),
+                    loot
+            );
             if (!addResult.isFull()) return;
 
             NotificationUtil.sendNotification(

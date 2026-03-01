@@ -10,7 +10,6 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor // <- Required for Jackson
 @Getter
-//TODO ADD LOGIC TO CREATE MULTIPLE CLASS
 public class Class {
     private UUID uuid;
     private String name;
