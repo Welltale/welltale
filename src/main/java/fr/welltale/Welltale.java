@@ -16,7 +16,7 @@ import fr.welltale.clazz.Class;
 import fr.welltale.clazz.JsonClassFileLoader;
 import fr.welltale.clazz.JsonClassRepository;
 import fr.welltale.inventory.InventoryService;
-import fr.welltale.inventory.event.PlayerReadyInventoryPacketInterceptor;
+import fr.welltale.inventory.event.OpenInventoryPacketInterceptor;
 import fr.welltale.level.PlayerLevelComponent;
 import fr.welltale.level.event.GiveXPEvent;
 import fr.welltale.level.event.LevelUpEvent;
@@ -163,7 +163,7 @@ public class Welltale extends JavaPlugin {
             InventoryService inventoryService = new InventoryService();
             this.getEventRegistry().registerGlobal(
                     PlayerReadyEvent.class,
-                    new PlayerReadyInventoryPacketInterceptor(inventoryService, characterCache, playerRepository, logger)::onPlayerReady
+                    new OpenInventoryPacketInterceptor(inventoryService, characterCache, playerRepository, logger)::onPlayerReady
             );
             //Inventory
 

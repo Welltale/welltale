@@ -24,13 +24,13 @@ import fr.welltale.player.charactercache.CharacterCacheRepository;
 import javax.annotation.Nonnull;
 import java.util.function.Supplier;
 
-public class PlayerReadyInventoryPacketInterceptor {
+public class OpenInventoryPacketInterceptor {
     private final InventoryService inventoryService;
     private final CharacterCacheRepository characterCacheRepository;
     private final PlayerRepository playerRepository;
     private final HytaleLogger logger;
 
-    public PlayerReadyInventoryPacketInterceptor(
+    public OpenInventoryPacketInterceptor(
             @Nonnull InventoryService inventoryService,
             @Nonnull CharacterCacheRepository characterCacheRepository,
             @Nonnull PlayerRepository playerRepository,
