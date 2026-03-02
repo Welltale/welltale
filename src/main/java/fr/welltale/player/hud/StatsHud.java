@@ -4,6 +4,7 @@ import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.protocol.packets.interface_.HudComponent;
 import com.hypixel.hytale.server.core.entity.entities.Player;
+import com.hypixel.hytale.server.core.entity.entities.player.hud.CustomUIHud;
 import com.hypixel.hytale.server.core.entity.entities.player.hud.HudManager;
 import com.hypixel.hytale.server.core.modules.entitystats.EntityStatMap;
 import com.hypixel.hytale.server.core.modules.entitystats.EntityStatValue;
@@ -14,8 +15,8 @@ import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import fr.welltale.characteristic.Characteristics;
 import org.jspecify.annotations.NonNull;
 
-public class PlayerHud {
-    public static void buildPlayerHud(
+public class StatsHud {
+    public static void buildStatsHud(
             @NonNull UICommandBuilder uiCommandBuilder,
             @NonNull Store<EntityStore> store,
             @NonNull Ref<EntityStore> ref
@@ -25,21 +26,42 @@ public class PlayerHud {
 
         EntityStatValue playerHealthStatValue = playerStatMap.get(EntityStatType.getAssetMap().getIndex(Characteristics.STATIC_MODIFIER_HEALTH_KEY));
         EntityStatValue playerStaminaStatValue = playerStatMap.get(EntityStatType.getAssetMap().getIndex(Characteristics.STATIC_MODIFIER_STAMINA_KEY));
-        if (playerHealthStatValue == null && playerStaminaStatValue == null) return;
+        if (playerHealthStatValue == null || playerStaminaStatValue == null) return;
 
         uiCommandBuilder.append("Hud/Player/Stats.ui");
 
-        if (playerHealthStatValue != null) {
-            long currentHealthValue = (long) (playerHealthStatValue.get() > 0 ? playerHealthStatValue.get() : 0);
-            uiCommandBuilder.set("#HealthLabel.Text", currentHealthValue + " / " + (long) playerHealthStatValue.getMax());
-        }
+        long currentHealthValue = (long) (playerHealthStatValue.get() > 0 ? playerHealthStatValue.get() : 0);
+        uiCommandBuilder.set("#HealthLabel.Text", currentHealthValue + " / " + (long) playerHealthStatValue.getMax());
 
-        if (playerStaminaStatValue != null) {
-            long currentManaValue = (long) (playerStaminaStatValue.get() > 0 ? playerStaminaStatValue.get() : 0);
-            uiCommandBuilder.set("#StaminaLabel.Text", currentManaValue + " / " + (long) playerStaminaStatValue.getMax());
-        }
+        long currentManaValue = (long) (playerStaminaStatValue.get() > 0 ? playerStaminaStatValue.get() : 0);
+        uiCommandBuilder.set("#StaminaLabel.Text", currentManaValue + " / " + (long) playerStaminaStatValue.getMax());
 
         removeDefaultHudComponents(store, ref);
+    }
+
+    public static void updateStatsHud(
+            @NonNull Player player,
+            @NonNull Store<EntityStore> store,
+            @NonNull Ref<EntityStore> ref
+    ) {
+        CustomUIHud playerHud = player.getHudManager().getCustomHud();
+        if (playerHud == null) return;
+
+        EntityStatMap playerStatMap = store.getComponent(ref, EntityStatMap.getComponentType());
+        if (playerStatMap == null) return;
+
+        EntityStatValue playerHealthStatValue = playerStatMap.get(EntityStatType.getAssetMap().getIndex(Characteristics.STATIC_MODIFIER_HEALTH_KEY));
+        EntityStatValue playerStaminaStatValue = playerStatMap.get(EntityStatType.getAssetMap().getIndex(Characteristics.STATIC_MODIFIER_STAMINA_KEY));
+        if (playerHealthStatValue == null || playerStaminaStatValue == null) return;
+
+        UICommandBuilder uiCommandBuilder = new UICommandBuilder();
+        long currentHealthValue = (long) (playerHealthStatValue.get() > 0 ? playerHealthStatValue.get() : 0);
+        uiCommandBuilder.set("#HealthLabel.Text", currentHealthValue + " / " + (long) playerHealthStatValue.getMax());
+
+        long currentManaValue = (long) (playerStaminaStatValue.get() > 0 ? playerStaminaStatValue.get() : 0);
+        uiCommandBuilder.set("#StaminaLabel.Text", currentManaValue + " / " + (long) playerStaminaStatValue.getMax());
+
+        playerHud.update(false, uiCommandBuilder);
     }
 
     private static void removeDefaultHudComponents(

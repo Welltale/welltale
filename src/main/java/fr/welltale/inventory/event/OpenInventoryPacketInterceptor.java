@@ -20,8 +20,8 @@ import fr.welltale.inventory.InventoryService;
 import fr.welltale.inventory.page.InventoryPage;
 import fr.welltale.player.PlayerRepository;
 import fr.welltale.player.charactercache.CharacterCacheRepository;
+import lombok.NonNull;
 
-import javax.annotation.Nonnull;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -35,10 +35,10 @@ public class OpenInventoryPacketInterceptor {
     private final Set<UUID> installedPlayers = ConcurrentHashMap.newKeySet();
 
     public OpenInventoryPacketInterceptor(
-            @Nonnull InventoryService inventoryService,
-            @Nonnull CharacterCacheRepository characterCacheRepository,
-            @Nonnull PlayerRepository playerRepository,
-            @Nonnull HytaleLogger logger
+            @NonNull InventoryService inventoryService,
+            @NonNull CharacterCacheRepository characterCacheRepository,
+            @NonNull PlayerRepository playerRepository,
+            @NonNull HytaleLogger logger
     ) {
         this.inventoryService = inventoryService;
         this.characterCacheRepository = characterCacheRepository;

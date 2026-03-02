@@ -1,6 +1,9 @@
 package fr.welltale.player.system;
 
-import com.hypixel.hytale.component.*;
+import com.hypixel.hytale.component.ArchetypeChunk;
+import com.hypixel.hytale.component.CommandBuffer;
+import com.hypixel.hytale.component.Ref;
+import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.component.query.Query;
 import com.hypixel.hytale.component.system.EntityEventSystem;
 import com.hypixel.hytale.logger.HytaleLogger;
@@ -13,7 +16,6 @@ import fr.welltale.rank.Rank;
 import fr.welltale.rank.RankRepository;
 import fr.welltale.util.Permission;
 import org.jspecify.annotations.NonNull;
-import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 
@@ -84,7 +86,7 @@ public class BreakBlockEventSystem extends EntityEventSystem<EntityStore, com.hy
     }
 
     @Override
-    public @Nullable Query<EntityStore> getQuery() {
-        return Archetype.of(PlayerRef.getComponentType());
+    public @NonNull Query<EntityStore> getQuery() {
+        return Query.and(PlayerRef.getComponentType());
     }
 }

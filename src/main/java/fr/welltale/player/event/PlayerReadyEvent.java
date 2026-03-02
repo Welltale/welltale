@@ -15,8 +15,7 @@ import fr.welltale.player.page.CharacterSelectPage;
 import fr.welltale.rank.RankRepository;
 import fr.welltale.util.Teleport;
 import lombok.AllArgsConstructor;
-
-import javax.annotation.Nonnull;
+import lombok.NonNull;
 
 @AllArgsConstructor
 public class PlayerReadyEvent {
@@ -27,7 +26,7 @@ public class PlayerReadyEvent {
     private final HytaleLogger logger;
     private final Universe universe;
 
-    public void onPlayerReady(@Nonnull com.hypixel.hytale.server.core.event.events.player.PlayerReadyEvent event) {
+    public void onPlayerReady(@NonNull com.hypixel.hytale.server.core.event.events.player.PlayerReadyEvent event) {
         Player player = event.getPlayer();
         Ref<EntityStore> ref = player.getReference();
         if (ref == null) {

@@ -7,4 +7,8 @@ public class RegionInfoHud {
     public static void buildRegionInfoHud(@NonNull UICommandBuilder uiCommandBuilder) {
         uiCommandBuilder.append("Hud/Player/RegionInfo.ui");
     }
+
+    public static void updateRegionInfoHud() {
+        buildRegionInfoHud(new UICommandBuilder());
+    }
 }

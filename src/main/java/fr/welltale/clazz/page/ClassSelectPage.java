@@ -22,7 +22,7 @@ import fr.welltale.characteristic.Characteristics;
 import fr.welltale.clazz.Class;
 import fr.welltale.clazz.ClassRepository;
 import fr.welltale.constant.Constant;
-import fr.welltale.hud.PlayerHudBuilder;
+import fr.welltale.hud.HudBuilder;
 import fr.welltale.inventory.CharacterVanillaInventorySnapshot;
 import fr.welltale.level.PlayerLevelComponent;
 import fr.welltale.player.PlayerRepository;
@@ -34,7 +34,6 @@ import fr.welltale.util.Teleport;
 import fr.welltale.util.Title;
 import org.jspecify.annotations.NonNull;
 
-import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -181,8 +180,8 @@ public class ClassSelectPage extends InteractiveCustomUIPage<ClassSelectPage.Cla
 
     private void handleReturn(
             @NonNull Ref<EntityStore> ref,
-            @Nonnull Store<EntityStore> store,
-            @Nonnull Player player
+            @NonNull Store<EntityStore> store,
+            @NonNull Player player
     ) {
         player.getPageManager().openCustomPage(ref, store, new CharacterSelectPage(
                 playerRef,
@@ -296,7 +295,7 @@ public class ClassSelectPage extends InteractiveCustomUIPage<ClassSelectPage.Cla
             return;
         }
 
-        player.getHudManager().setCustomHud(playerRef, new PlayerHudBuilder(playerRef));
+        player.getHudManager().setCustomHud(playerRef, new HudBuilder(playerRef));
 
         Teleport.teleportPlayerToSpawn(this.logger, this.universe, playerData.getUuid(), ref, store, Constant.World.CelesteIslandWorld.WORLD_NAME, Constant.Particle.PLAYER_SPAWN_SPAWN);
         player.getPageManager().setPage(ref, store, Page.None);

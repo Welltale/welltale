@@ -13,8 +13,8 @@ import com.hypixel.hytale.server.core.modules.entitystats.asset.EntityStatType;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import fr.welltale.characteristic.Characteristics;
+import lombok.NonNull;
 
-import javax.annotation.Nonnull;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -24,27 +24,23 @@ public class StaminaCostReductionSystem extends EntityTickingSystem<EntityStore>
     private static final float REDUCTION_PER_STRENGTH_POINT = 0.001f;
     private static final float MAX_REDUCTION = 0.7f;
 
-    @Nonnull
-    private static final Query<EntityStore> QUERY = Query.and(PlayerRef.getComponentType());
-
     private final Map<UUID, Float> lastStaminaByPlayer = new ConcurrentHashMap<>();
 
     private int strengthStatIndex = -1;
     private int staminaStatIndex = -1;
 
-    @Nonnull
     @Override
-    public Query<EntityStore> getQuery() {
-        return QUERY;
+    public @NonNull Query<EntityStore> getQuery() {
+        return Query.and(PlayerRef.getComponentType());
     }
 
     @Override
     public void tick(
             float dt,
             int index,
-            @Nonnull ArchetypeChunk<EntityStore> archetypeChunk,
-            @Nonnull Store<EntityStore> store,
-            @Nonnull CommandBuffer<EntityStore> commandBuffer
+            @NonNull ArchetypeChunk<EntityStore> archetypeChunk,
+            @NonNull Store<EntityStore> store,
+            @NonNull CommandBuffer<EntityStore> commandBuffer
     ) {
         Ref<EntityStore> ref = archetypeChunk.getReferenceTo(index);
         if (!ref.isValid()) return;

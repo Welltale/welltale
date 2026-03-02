@@ -1,6 +1,6 @@
 package fr.welltale.util;
 
-import javax.annotation.Nonnull;
+import lombok.NonNull;
 
 public class Color {
     public static final java.awt.Color BLACK = new java.awt.Color(0, 0, 0);
@@ -21,7 +21,7 @@ public class Color {
     public static final java.awt.Color WHITE = new java.awt.Color(255, 255, 255);
     public static final java.awt.Color WELLTALE = new java.awt.Color(87, 205, 75);
 
-    public static java.awt.Color getColor(@Nonnull String color) {
+    public static java.awt.Color getColor(@NonNull String color) {
         return switch (color.toUpperCase()) {
             case "BLACK" -> BLACK;
             case "DARK_BLUE" -> DARK_BLUE;

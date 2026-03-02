@@ -20,7 +20,6 @@ import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import fr.welltale.characteristic.Characteristics;
 import fr.welltale.characteristic.system.StaminaCostReductionSystem;
 import fr.welltale.constant.Constant;
-import fr.welltale.hud.PlayerHudBuilder;
 import fr.welltale.inventory.InventoryService;
 import fr.welltale.inventory.page.InventoryPage;
 import fr.welltale.level.PlayerLevelComponent;
@@ -249,6 +248,12 @@ public class CharacteristicsPage extends InteractiveCustomUIPage<Characteristics
                 additionalCharacteristics.getStrength()
         ) * 100f;
         cmd.set("#StaminaConsumptionReductionStatValueLabel.Text", formatPercent(strengthStaminaReductionPct));
+        cmd.set("#GlobalHealthStatValueLabel.Text", String.valueOf(additionalCharacteristics.getHealth()));
+        cmd.set("#GlobalWisdomStatValueLabel.Text", String.valueOf(additionalCharacteristics.getWisdom()));
+        cmd.set("#GlobalStrengthStatValueLabel.Text", String.valueOf(additionalCharacteristics.getStrength()));
+        cmd.set("#GlobalIntelligenceStatValueLabel.Text", String.valueOf(additionalCharacteristics.getIntelligence()));
+        cmd.set("#GlobalChanceStatValueLabel.Text", String.valueOf(additionalCharacteristics.getChance()));
+        cmd.set("#GlobalAgilityStatValueLabel.Text", String.valueOf(additionalCharacteristics.getAgility()));
         cmd.set("#CriticalDamageStatValueLabel.Text", String.valueOf(additionalCharacteristics.getCriticalDamage()));
         cmd.set("#CriticalPctStatValueLabel.Text", formatPercent(additionalCharacteristics.getCriticalPct()));
         cmd.set("#CriticalResistanceStatValueLabel.Text", String.valueOf(additionalCharacteristics.getCriticalResistance()));
@@ -310,7 +315,6 @@ public class CharacteristicsPage extends InteractiveCustomUIPage<Characteristics
 
         try {
             this.characterCacheRepository.updateCharacter(cachedCharacter);
-            player.getHudManager().setCustomHud(playerRef, new PlayerHudBuilder(playerRef));
         } catch (Exception e) {
             this.logger.atSevere().log("[CHARACTERISTIC] CharacteristicsPage SpendCharacteristicPoint: " + e.getMessage());
         }

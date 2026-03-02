@@ -15,8 +15,6 @@ import fr.welltale.player.Player;
 import fr.welltale.player.PlayerRepository;
 import org.jspecify.annotations.NonNull;
 
-import javax.annotation.Nonnull;
-
 public class CastSpellInteraction extends SimpleInteraction {
     private static SpellManager staticSpellManager;
     private static PlayerRepository staticPlayerRepository;
@@ -27,9 +25,9 @@ public class CastSpellInteraction extends SimpleInteraction {
             BuilderCodec.builder(CastSpellInteraction.class, CastSpellInteraction::new, SimpleInteraction.CODEC).build();
 
     public void initStatics(
-            @Nonnull SpellManager spellManager,
+            @NonNull SpellManager spellManager,
             @NonNull PlayerRepository playerRepository,
-            @Nonnull HytaleLogger logger
+            @NonNull HytaleLogger logger
     ) {
         staticSpellManager = spellManager;
         staticPlayerRepository = playerRepository;

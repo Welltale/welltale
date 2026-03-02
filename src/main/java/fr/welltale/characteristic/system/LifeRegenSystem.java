@@ -13,8 +13,7 @@ import com.hypixel.hytale.server.core.modules.entitystats.asset.EntityStatType;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import fr.welltale.characteristic.Characteristics;
-
-import javax.annotation.Nonnull;
+import lombok.NonNull;
 
 /**
  * System that implements natural health regeneration inspired by Dofus.
@@ -28,11 +27,6 @@ import javax.annotation.Nonnull;
  * to simulate natural regeneration, without increasing any permanent stats.
  */
 public class LifeRegenSystem extends EntityTickingSystem<EntityStore> {
-    @Nonnull
-    private static final Query<EntityStore> QUERY = Query.and(
-            PlayerRef.getComponentType()
-    );
-
     // Cached stat indices
     private int intelligenceStatIndex = -1;
     private int lifeRegenStatIndex = -1;
@@ -48,19 +42,18 @@ public class LifeRegenSystem extends EntityTickingSystem<EntityStore> {
     public LifeRegenSystem() {
     }
 
-    @Nonnull
     @Override
-    public Query<EntityStore> getQuery() {
-        return QUERY;
+    public @NonNull Query<EntityStore> getQuery() {
+        return Query.and(PlayerRef.getComponentType());
     }
 
     @Override
     public void tick(
             float dt,
             int index,
-            @Nonnull ArchetypeChunk<EntityStore> archetypeChunk,
-            @Nonnull Store<EntityStore> store,
-            @Nonnull CommandBuffer<EntityStore> commandBuffer
+            @NonNull ArchetypeChunk<EntityStore> archetypeChunk,
+            @NonNull Store<EntityStore> store,
+            @NonNull CommandBuffer<EntityStore> commandBuffer
     ) {
         Ref<EntityStore> ref = archetypeChunk.getReferenceTo(index);
         if (!ref.isValid()) return;
@@ -102,7 +95,7 @@ public class LifeRegenSystem extends EntityTickingSystem<EntityStore> {
      * @param dt Delta time in seconds
      * @return Regeneration amount for this tick
      */
-    private float calculateRegenPerTick(@Nonnull EntityStatMap entityStatMap, float dt) {
+    private float calculateRegenPerTick(@NonNull EntityStatMap entityStatMap, float dt) {
         EntityStatValue intelligenceStatValue = entityStatMap.get(intelligenceStatIndex);
         EntityStatValue lifeRegenStatValue = entityStatMap.get(lifeRegenStatIndex);
 
@@ -125,37 +118,5 @@ public class LifeRegenSystem extends EntityTickingSystem<EntityStore> {
 
         // Apply delta time
         return totalRegen * dt;
-    }
-
-    /**
-     * Gets the total regeneration rate per second for a player.
-     * This includes base regeneration + Intelligence % bonus.
-     *
-     * @param ref The entity reference
-     * @param store The entity store
-     * @return Regeneration rate in HP per second
-     */
-    public static float getRegenRate(@Nonnull Ref<EntityStore> ref, @Nonnull Store<EntityStore> store) {
-        EntityStatMap entityStatMap = store.getComponent(ref, EntityStatMap.getComponentType());
-        if (entityStatMap == null) {
-            return BASE_REGEN_PER_SECOND;
-        }
-
-        int intelligenceStatIndex = EntityStatType.getAssetMap().getIndex(Characteristics.STATIC_MODIFIER_INTELLIGENCE_KEY);
-        int lifeRegenStatIndex = EntityStatType.getAssetMap().getIndex(Characteristics.STATIC_MODIFIER_LIFE_REGEN_PCT_KEY);
-        EntityStatValue intelligenceStatValue = entityStatMap.get(intelligenceStatIndex);
-        EntityStatValue lifeRegenStatValue = entityStatMap.get(lifeRegenStatIndex);
-
-        float totalRegen = BASE_REGEN_PER_SECOND;
-        if (intelligenceStatValue != null) {
-            float intelligenceBonus = intelligenceStatValue.getMax() * INTELLIGENCE_BONUS_PER_POINT;
-            totalRegen *= (1.0f + intelligenceBonus);
-        }
-
-        if (lifeRegenStatValue != null) {
-            totalRegen *= (1.0f + (lifeRegenStatValue.getMax() / 100.0f));
-        }
-
-        return totalRegen;
     }
 }

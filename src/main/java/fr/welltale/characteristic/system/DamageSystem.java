@@ -59,7 +59,7 @@ public class DamageSystem extends EntityEventSystem<EntityStore, Damage> {
     }
 
     @Override
-    public Query<EntityStore> getQuery() {
+    public @NonNull Query<EntityStore> getQuery() {
         return Query.any();
     }
 

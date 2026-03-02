@@ -14,19 +14,13 @@ import com.hypixel.hytale.server.core.modules.entitystats.modifier.StaticModifie
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import fr.welltale.characteristic.Characteristics;
-
-import javax.annotation.Nonnull;
+import lombok.NonNull;
 
 /**
  * System that applies the Chance characteristic to player drop chance.
  * This runs every tick to ensure the DropChance stat is updated based on current Chance stat.
  */
 public class DropChanceSystem extends EntityTickingSystem<EntityStore> {
-    @Nonnull
-    private static final Query<EntityStore> QUERY = Query.and(
-            PlayerRef.getComponentType()
-    );
-
     // Cached stat indices
     private int chanceStatIndex = -1;
     private int dropChanceStatIndex = -1;
@@ -40,19 +34,18 @@ public class DropChanceSystem extends EntityTickingSystem<EntityStore> {
     public DropChanceSystem() {
     }
 
-    @Nonnull
     @Override
-    public Query<EntityStore> getQuery() {
-        return QUERY;
+    public @NonNull Query<EntityStore> getQuery() {
+        return Query.and(PlayerRef.getComponentType());
     }
 
     @Override
     public void tick(
             float dt,
             int index,
-            @Nonnull ArchetypeChunk<EntityStore> archetypeChunk,
-            @Nonnull Store<EntityStore> store,
-            @Nonnull CommandBuffer<EntityStore> commandBuffer
+            @NonNull ArchetypeChunk<EntityStore> archetypeChunk,
+            @NonNull Store<EntityStore> store,
+            @NonNull CommandBuffer<EntityStore> commandBuffer
     ) {
         Ref<EntityStore> ref = archetypeChunk.getReferenceTo(index);
         if (!ref.isValid()) return;
@@ -103,7 +96,7 @@ public class DropChanceSystem extends EntityTickingSystem<EntityStore> {
      * @param store The entity store
      * @return The drop chance multiplier (e.g., 1.5 = 50% increased drop rate)
      */
-    public static float getDropChanceMultiplier(@Nonnull Ref<EntityStore> ref, @Nonnull Store<EntityStore> store) {
+    public static float getDropChanceMultiplier(@NonNull Ref<EntityStore> ref, @NonNull Store<EntityStore> store) {
         EntityStatMap entityStatMap = store.getComponent(ref, EntityStatMap.getComponentType());
         if (entityStatMap == null) {
             return 1.0f;

@@ -13,8 +13,6 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 
-import javax.annotation.Nonnull;
-
 public class Characteristics {
     public static final int LEVEL_UP_CHARACTERISTICS_POINTS = 3;
     public static final float MAX_ELEMENTAL_RESISTANCE = 50f;
@@ -134,9 +132,9 @@ public class Characteristics {
         private float airResistance;
     }
 
-    @Nonnull
+    @NonNull
     public static AdditionalCharacteristics getAdditionalCharacteristicsFromPlayer(
-            @Nonnull Ref<EntityStore> ref,
+            @NonNull Ref<EntityStore> ref,
             @NonNull Store<EntityStore> store
     ) {
         if (!ref.isValid()) {
@@ -239,9 +237,9 @@ public class Characteristics {
     }
 
     public static void setCharacteristicsToPlayer(
-            @Nonnull Ref<EntityStore> ref,
+            @NonNull Ref<EntityStore> ref,
             @NonNull Store<EntityStore> store,
-            @Nonnull EditableCharacteristics playerEditableCharacteristics
+            @NonNull EditableCharacteristics playerEditableCharacteristics
     ) {
         if (!ref.isValid()) {
             return;

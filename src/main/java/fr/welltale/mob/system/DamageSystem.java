@@ -16,7 +16,6 @@ import fr.welltale.mob.MobRepository;
 import fr.welltale.mob.MobStatsComponent;
 import fr.welltale.util.Nameplate;
 import org.jspecify.annotations.NonNull;
-import org.jspecify.annotations.Nullable;
 
 public class DamageSystem extends EntityEventSystem<EntityStore, Damage> {
     private final MobRepository mobRepository;
@@ -59,7 +58,7 @@ public class DamageSystem extends EntityEventSystem<EntityStore, Damage> {
     }
 
     @Override
-    public @Nullable Query<EntityStore> getQuery() {
+    public @NonNull Query<EntityStore> getQuery() {
         var mobStatsType = MobStatsComponent.getComponentType();
         if (mobStatsType == null) return Query.and(Query.not(PlayerRef.getComponentType()));
 

@@ -7,8 +7,7 @@ import com.hypixel.hytale.protocol.InteractionType;
 import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.universe.Universe;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
-
-import javax.annotation.Nonnull;
+import lombok.NonNull;
 
 public interface Spell {
     InteractionType getInteractionType();
@@ -22,10 +21,10 @@ public interface Spell {
     float getCooldown();
 
     void run(
-            @Nonnull Player caster,
-            @Nonnull Ref<EntityStore> casterRef,
-            @Nonnull Store<EntityStore> casterStore,
-            @Nonnull Universe universe,
-            @Nonnull CommandBuffer<EntityStore> cmdBuffer
+            @NonNull Player caster,
+            @NonNull Ref<EntityStore> casterRef,
+            @NonNull Store<EntityStore> casterStore,
+            @NonNull Universe universe,
+            @NonNull CommandBuffer<EntityStore> cmdBuffer
     );
 }

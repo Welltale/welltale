@@ -14,19 +14,13 @@ import com.hypixel.hytale.server.core.modules.entitystats.asset.EntityStatType;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import fr.welltale.characteristic.Characteristics;
-
-import javax.annotation.Nonnull;
+import lombok.NonNull;
 
 /**
  * System that applies the MoveSpeed characteristic to player movement settings.
  * This runs every tick to ensure movement speed is updated based on current characteristics.
  */
 public class MoveSpeedSystem extends EntityTickingSystem<EntityStore> {
-    @Nonnull
-    private static final Query<EntityStore> QUERY = Query.and(
-            PlayerRef.getComponentType()
-    );
-
     // Cached stat indices
     private int moveSpeedStatIndex = -1;
     private int agilityStatIndex = -1;
@@ -37,19 +31,18 @@ public class MoveSpeedSystem extends EntityTickingSystem<EntityStore> {
     public MoveSpeedSystem() {
     }
 
-    @Nonnull
     @Override
-    public Query<EntityStore> getQuery() {
-        return QUERY;
+    public @NonNull Query<EntityStore> getQuery() {
+        return Query.and(PlayerRef.getComponentType());
     }
 
     @Override
     public void tick(
             float dt,
             int index,
-            @Nonnull ArchetypeChunk<EntityStore> archetypeChunk,
-            @Nonnull Store<EntityStore> store,
-            @Nonnull CommandBuffer<EntityStore> commandBuffer
+            @NonNull ArchetypeChunk<EntityStore> archetypeChunk,
+            @NonNull Store<EntityStore> store,
+            @NonNull CommandBuffer<EntityStore> commandBuffer
     ) {
         Ref<EntityStore> ref = archetypeChunk.getReferenceTo(index);
         if (!ref.isValid()) return;
@@ -130,7 +123,7 @@ public class MoveSpeedSystem extends EntityTickingSystem<EntityStore> {
         }
     }
 
-    private static float getSpeedMultiplier(@Nonnull EntityStatValue moveSpeedStatValue, @Nonnull EntityStatValue agilityStatValue) {
+    private static float getSpeedMultiplier(@NonNull EntityStatValue moveSpeedStatValue, @NonNull EntityStatValue agilityStatValue) {
         float moveSpeedValue = moveSpeedStatValue.getMax();
         float agilityValue = agilityStatValue.getMax();
 

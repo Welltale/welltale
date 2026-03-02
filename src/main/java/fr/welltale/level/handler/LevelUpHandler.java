@@ -11,7 +11,7 @@ import com.hypixel.hytale.server.core.universe.world.SoundUtil;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import fr.welltale.characteristic.Characteristics;
 import fr.welltale.constant.Constant;
-import fr.welltale.hud.PlayerHudBuilder;
+import fr.welltale.hud.HudBuilder;
 import fr.welltale.level.event.LevelUpEvent;
 import fr.welltale.player.charactercache.CachedCharacter;
 import fr.welltale.player.charactercache.CharacterCacheRepository;
@@ -75,6 +75,6 @@ public class LevelUpHandler implements Consumer<LevelUpEvent> {
                 store
         );
 
-        player.getHudManager().setCustomHud(playerRef, new PlayerHudBuilder(playerRef));
+        HudBuilder.update(HudBuilder.UPDATE_TYPE.LEVEL, player, store, event.playerRef());
     }
 }

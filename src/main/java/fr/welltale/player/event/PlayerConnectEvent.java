@@ -6,8 +6,8 @@ import com.hypixel.hytale.server.core.universe.Universe;
 import fr.welltale.player.Player;
 import fr.welltale.player.PlayerRepository;
 import lombok.AllArgsConstructor;
+import lombok.NonNull;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 
 @AllArgsConstructor
@@ -16,7 +16,7 @@ public class PlayerConnectEvent {
     private final HytaleLogger logger;
     private final Universe universe;
 
-    public void onPlayerConnect(@Nonnull com.hypixel.hytale.server.core.event.events.player.PlayerConnectEvent event) {
+    public void onPlayerConnect(@NonNull com.hypixel.hytale.server.core.event.events.player.PlayerConnectEvent event) {
         PlayerRef playerRef = event.getPlayerRef();
         if (playerRef == null) {
             this.logger.atSevere()
@@ -33,7 +33,7 @@ public class PlayerConnectEvent {
         }
     }
 
-    private void addNewPlayerToDatabase(@Nonnull PlayerRef playerRef) throws Exception {
+    private void addNewPlayerToDatabase(@NonNull PlayerRef playerRef) throws Exception {
         Player playerData = this.playerRepository.getPlayer(playerRef.getUuid());
         if (playerData != null) {
             return;

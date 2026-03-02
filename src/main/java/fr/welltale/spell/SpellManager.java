@@ -19,8 +19,8 @@ import fr.welltale.player.charactercache.CharacterCacheRepository;
 import fr.welltale.spell.spells.Jump;
 import fr.welltale.spell.spells.Supershot;
 import fr.welltale.util.Color;
+import lombok.NonNull;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -37,10 +37,10 @@ public class SpellManager {
     private final CharacterCacheRepository characterCacheRepository;
 
     public SpellManager(
-            @Nonnull HytaleLogger logger,
-            @Nonnull Universe universe,
-            @Nonnull ClassRepository classRepository,
-            @Nonnull CharacterCacheRepository characterCacheRepository
+            @NonNull HytaleLogger logger,
+            @NonNull Universe universe,
+            @NonNull ClassRepository classRepository,
+            @NonNull CharacterCacheRepository characterCacheRepository
     ) {
         this.logger = logger;
         this.universe = universe;
@@ -57,10 +57,10 @@ public class SpellManager {
     }
 
     public void cast(
-            @Nonnull Player caster,
-            @Nonnull fr.welltale.player.Player casterData,
-            @Nonnull InteractionType type,
-            @Nonnull CommandBuffer<EntityStore> cmdBuffer
+            @NonNull Player caster,
+            @NonNull fr.welltale.player.Player casterData,
+            @NonNull InteractionType type,
+            @NonNull CommandBuffer<EntityStore> cmdBuffer
     ) {
         CachedCharacter cachedCharacter = this.characterCacheRepository.getCharacterCache(casterData.getUuid());
         if (cachedCharacter == null) {
@@ -107,11 +107,11 @@ public class SpellManager {
     }
 
     private boolean canCast(
-            @Nonnull Player caster,
-            @Nonnull fr.welltale.player.Player casterData,
-            @Nonnull Class casterClass,
-            @Nonnull Spell spell,
-            @Nonnull EntityStatMap casterStatMap
+            @NonNull Player caster,
+            @NonNull fr.welltale.player.Player casterData,
+            @NonNull Class casterClass,
+            @NonNull Spell spell,
+            @NonNull EntityStatMap casterStatMap
     ) {
         if (!casterClass.getSpellSlugs().contains(spell.getSlug())) return false;
 
@@ -137,7 +137,7 @@ public class SpellManager {
         return true;
     }
 
-    private void consumeStamina(@Nonnull EntityStatMap casterStatMap, float staminaCost) {
+    private void consumeStamina(@NonNull EntityStatMap casterStatMap, float staminaCost) {
         EntityStatValue casterCurrentStamina = casterStatMap.get(DefaultEntityStatTypes.getStamina());
         if (casterCurrentStamina == null) {
             this.logger.atSevere()
@@ -148,7 +148,7 @@ public class SpellManager {
         casterStatMap.setStatValue(DefaultEntityStatTypes.getStamina(), casterCurrentStamina.get() - staminaCost);
     }
 
-    private void startCooldown(@Nonnull UUID casterId, @Nonnull String spellSlug, float spellCooldown) {
+    private void startCooldown(@NonNull UUID casterId, @NonNull String spellSlug, float spellCooldown) {
         String key = casterId + "_" + spellSlug;
         playerCooldowns.put(key, spellCooldown);
     }
@@ -166,7 +166,7 @@ public class SpellManager {
         }
     }
 
-    private @Nullable Spell getSpell(@Nonnull Class clazz, @Nonnull InteractionType interactionType) {
+    private @Nullable Spell getSpell(@NonNull Class clazz, @NonNull InteractionType interactionType) {
         for (Spell spell : spellRegistry) {
             if (!clazz.getSpellSlugs().contains(spell.getSlug())) continue;
 

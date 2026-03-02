@@ -13,18 +13,17 @@ import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import fr.welltale.constant.Constant;
 import lombok.NonNull;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.UUID;
 
 public class Teleport {
     public static void teleportPlayerToSpawn(
-            @Nonnull HytaleLogger logger,
-            @Nonnull Universe universe,
-            @Nonnull UUID playerUuid,
-            @Nonnull Ref<EntityStore> ref,
+            @NonNull HytaleLogger logger,
+            @NonNull Universe universe,
+            @NonNull UUID playerUuid,
+            @NonNull Ref<EntityStore> ref,
             @NonNull Store<EntityStore> store,
-            @Nonnull String worldName,
+            @NonNull String worldName,
             @Nullable String particle
     ) {
         if (!ref.isValid()) {

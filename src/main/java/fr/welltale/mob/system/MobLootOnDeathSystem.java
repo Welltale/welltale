@@ -23,7 +23,6 @@ import fr.welltale.mob.loot.MobLootGenerator;
 import fr.welltale.player.charactercache.CachedCharacter;
 import fr.welltale.player.charactercache.CharacterCacheRepository;
 import org.jspecify.annotations.NonNull;
-import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 import java.util.Locale;
@@ -123,8 +122,8 @@ public class MobLootOnDeathSystem extends DeathSystems.OnDeathSystem {
     }
 
     @Override
-    public @Nullable Query<EntityStore> getQuery() {
-        return Query.any();
+    public @NonNull Query<EntityStore> getQuery() {
+        return Query.not(PlayerRef.getComponentType());
     }
 
     private Mob resolveMobConfig(String modelAssetId) {

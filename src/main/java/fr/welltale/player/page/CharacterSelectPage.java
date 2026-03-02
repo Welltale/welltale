@@ -22,7 +22,7 @@ import fr.welltale.characteristic.Characteristics;
 import fr.welltale.clazz.ClassRepository;
 import fr.welltale.clazz.page.ClassSelectPage;
 import fr.welltale.constant.Constant;
-import fr.welltale.hud.PlayerHudBuilder;
+import fr.welltale.hud.HudBuilder;
 import fr.welltale.inventory.CharacterVanillaInventorySnapshot;
 import fr.welltale.level.PlayerLevelComponent;
 import fr.welltale.level.XPTable;
@@ -222,7 +222,7 @@ public class CharacterSelectPage extends InteractiveCustomUIPage<CharacterSelect
         );
         snapshot.apply(player.getInventory());
 
-        player.getHudManager().setCustomHud(playerRef, new PlayerHudBuilder(playerRef));
+        player.getHudManager().setCustomHud(playerRef, new HudBuilder(playerRef));
 
         CachedCharacter newCache = new CachedCharacter(
                 playerUuid,

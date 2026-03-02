@@ -16,17 +16,16 @@ import fr.welltale.mob.Mob;
 import fr.welltale.rank.Rank;
 import lombok.NonNull;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class Nameplate {
     public static void setPlayerNameplate(
-            @Nonnull Ref<EntityStore> ref,
+            @NonNull Ref<EntityStore> ref,
             @NonNull Store<EntityStore> store,
-            @Nonnull fr.welltale.player.Player playerData,
-            @Nonnull PlayerRef playerRef,
+            @NonNull fr.welltale.player.Player playerData,
+            @NonNull PlayerRef playerRef,
             @Nullable Rank playerRank,
-            @Nonnull HytaleLogger logger
+            @NonNull HytaleLogger logger
     ) {
         if (!ref.isValid()) {
             logger.atSevere()
@@ -57,10 +56,10 @@ public class Nameplate {
     }
 
     public static void setMobNameplate(
-            @Nonnull Ref<EntityStore> ref,
+            @NonNull Ref<EntityStore> ref,
             @NonNull Store<EntityStore> store,
-            @Nonnull Mob mob,
-            @Nonnull CommandBuffer<EntityStore> commandBuffer,
+            @NonNull Mob mob,
+            @NonNull CommandBuffer<EntityStore> commandBuffer,
             @Nullable Damage damage
     ) {
         EntityStatMap entityStatMap = store.getComponent(ref, EntityStatMap.getComponentType());

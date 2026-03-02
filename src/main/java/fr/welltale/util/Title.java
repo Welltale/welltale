@@ -3,14 +3,13 @@ package fr.welltale.util;
 import com.hypixel.hytale.server.core.Message;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.util.EventTitleUtil;
-
-import javax.annotation.Nonnull;
+import lombok.NonNull;
 
 public class Title {
     public static void sendTitle(
-            @Nonnull PlayerRef playerRef,
-            @Nonnull String title,
-            @Nonnull String subTitle,
+            @NonNull PlayerRef playerRef,
+            @NonNull String title,
+            @NonNull String subTitle,
             boolean isMajor
     ) {
         EventTitleUtil.showEventTitleToPlayer(
@@ -21,7 +20,7 @@ public class Title {
         );
     }
 
-    public static void sendWelcomeTitle(@Nonnull PlayerRef playerRef) {
+    public static void sendWelcomeTitle(@NonNull PlayerRef playerRef) {
         EventTitleUtil.showEventTitleToPlayer(
                 playerRef,
                 Message.raw("Bienvenue sur Welltale"),

@@ -15,8 +15,7 @@ import fr.welltale.player.PlayerRepository;
 import fr.welltale.rank.Rank;
 import fr.welltale.rank.RankRepository;
 import lombok.AllArgsConstructor;
-
-import javax.annotation.Nonnull;
+import lombok.NonNull;
 
 @AllArgsConstructor
 public class PlayerChatEvent {
@@ -58,11 +57,11 @@ public class PlayerChatEvent {
     }
 
     private void reformatMessage(
-            @Nonnull World senderWorld,
-            @Nonnull Store<EntityStore> store,
-            @Nonnull PlayerRef senderRef,
-            @Nonnull Ref<EntityStore> ref,
-            @Nonnull String content
+            @NonNull World senderWorld,
+            @NonNull Store<EntityStore> store,
+            @NonNull PlayerRef senderRef,
+            @NonNull Ref<EntityStore> ref,
+            @NonNull String content
     ) {
         if (!ref.isValid()) {
             this.logger.atSevere()

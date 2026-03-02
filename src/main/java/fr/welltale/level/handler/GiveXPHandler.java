@@ -16,13 +16,13 @@ import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import com.hypixel.hytale.server.core.util.NotificationUtil;
 import fr.welltale.characteristic.Characteristics;
 import fr.welltale.constant.Constant;
-import fr.welltale.hud.PlayerHudBuilder;
+import fr.welltale.hud.HudBuilder;
 import fr.welltale.level.PlayerLevelComponent;
 import fr.welltale.level.event.GiveXPEvent;
 import fr.welltale.level.event.LevelUpEvent;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
-import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 
 @RequiredArgsConstructor
@@ -82,7 +82,7 @@ public class GiveXPHandler implements Consumer<GiveXPEvent> {
         );
 
         if (!leveledUp) {
-            player.getHudManager().setCustomHud(playerRef, new PlayerHudBuilder(playerRef));
+            HudBuilder.update(HudBuilder.UPDATE_TYPE.LEVEL, player, store, event.playerRef());
             return;
         }
 
@@ -97,7 +97,7 @@ public class GiveXPHandler implements Consumer<GiveXPEvent> {
      * @param store The entity store
      * @return Wisdom XP bonus as a multiplier (e.g., 0.1 = 10% bonus)
      */
-    private float getWisdomXPBonus(@Nonnull Ref<EntityStore> ref, @Nonnull Store<EntityStore> store) {
+    private float getWisdomXPBonus(@NonNull Ref<EntityStore> ref, @NonNull Store<EntityStore> store) {
         EntityStatMap entityStatMap = store.getComponent(ref, EntityStatMap.getComponentType());
         if (entityStatMap == null) {
             return 0.0f;

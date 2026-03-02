@@ -8,7 +8,6 @@ import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import fr.welltale.characteristic.system.StaminaCostReductionSystem;
 import fr.welltale.inventory.event.OpenInventoryPacketInterceptor;
 import org.jspecify.annotations.NonNull;
-import org.jspecify.annotations.Nullable;
 
 public class PlayerLeaveSystem extends RefSystem<EntityStore> {
     private final OpenInventoryPacketInterceptor openInventoryPacketInterceptor;
@@ -47,7 +46,7 @@ public class PlayerLeaveSystem extends RefSystem<EntityStore> {
     }
 
     @Override
-    public @Nullable Query<EntityStore> getQuery() {
-        return Archetype.of(PlayerRef.getComponentType());
+    public @NonNull Query<EntityStore> getQuery() {
+        return Query.and(PlayerRef.getComponentType());
     }
 }

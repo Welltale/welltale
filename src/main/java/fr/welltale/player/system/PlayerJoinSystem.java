@@ -16,7 +16,6 @@ import fr.welltale.player.charactercache.CachedCharacter;
 import fr.welltale.player.charactercache.CharacterCacheRepository;
 import lombok.AllArgsConstructor;
 import org.jspecify.annotations.NonNull;
-import org.jspecify.annotations.Nullable;
 
 @AllArgsConstructor
 public class PlayerJoinSystem extends RefSystem<EntityStore> {
@@ -123,7 +122,7 @@ public class PlayerJoinSystem extends RefSystem<EntityStore> {
     }
 
     @Override
-    public @Nullable Query<EntityStore> getQuery() {
-        return Archetype.of(PlayerRef.getComponentType());
+    public @NonNull Query<EntityStore> getQuery() {
+        return Query.and(PlayerRef.getComponentType());
     }
 }

@@ -10,7 +10,6 @@ import fr.welltale.mob.Mob;
 import fr.welltale.mob.MobRepository;
 import fr.welltale.mob.MobStatsComponent;
 import org.jspecify.annotations.NonNull;
-import org.jspecify.annotations.Nullable;
 
 public class MobStatsAssignSystem extends RefSystem<EntityStore> {
     private final MobRepository mobRepository;
@@ -68,7 +67,7 @@ public class MobStatsAssignSystem extends RefSystem<EntityStore> {
     ) {}
 
     @Override
-    public @Nullable Query<EntityStore> getQuery() {
+    public @NonNull Query<EntityStore> getQuery() {
         return Query.not(PlayerRef.getComponentType());
     }
 }

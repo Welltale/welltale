@@ -8,14 +8,11 @@ import com.hypixel.hytale.server.core.modules.interaction.interaction.config.Int
 import com.hypixel.hytale.server.core.plugin.JavaPlugin;
 import com.hypixel.hytale.server.core.plugin.JavaPluginInit;
 import com.hypixel.hytale.server.core.universe.Universe;
-import fr.welltale.characteristic.system.DamageSystem;
-import fr.welltale.characteristic.system.DropChanceSystem;
-import fr.welltale.characteristic.system.LifeRegenSystem;
-import fr.welltale.characteristic.system.MoveSpeedSystem;
-import fr.welltale.characteristic.system.StaminaCostReductionSystem;
+import fr.welltale.characteristic.system.*;
 import fr.welltale.clazz.Class;
 import fr.welltale.clazz.JsonClassFileLoader;
 import fr.welltale.clazz.JsonClassRepository;
+import fr.welltale.hud.system.UpdateStatsHudSystem;
 import fr.welltale.inventory.InventoryService;
 import fr.welltale.inventory.event.OpenInventoryPacketInterceptor;
 import fr.welltale.inventory.system.PlayerLeaveSystem;
@@ -199,6 +196,12 @@ public class Welltale extends JavaPlugin {
             MobStatsComponent.setComponentType(mobLevelType);
             logger.atInfo().log(jsonMobData.size() + " mob(s) loaded!");
             //Mob
+
+            //Hud
+            logger.atInfo().log("Loading huds...");
+            this.getEntityStoreRegistry().registerSystem(new UpdateStatsHudSystem());
+            logger.atInfo().log("Huds loaded!");
+            //Hud
         } catch (Exception e) {
             logger.atSevere().log("Failed to load Welltale Mod: " + e.getMessage());
         }
