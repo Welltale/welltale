@@ -16,6 +16,9 @@ import fr.welltale.hud.system.UpdateStatsHudSystem;
 import fr.welltale.inventory.InventoryService;
 import fr.welltale.inventory.event.OpenInventoryPacketInterceptor;
 import fr.welltale.inventory.system.PlayerLeaveSystem;
+import fr.welltale.item.system.RolledItemStatSystem;
+import fr.welltale.item.virtual.RolledItemPacketAdapter;
+import fr.welltale.item.virtual.RolledVirtualItemRegistry;
 import fr.welltale.level.PlayerLevelComponent;
 import fr.welltale.level.event.GiveXPEvent;
 import fr.welltale.level.event.LevelUpEvent;
@@ -50,6 +53,7 @@ import java.util.ArrayList;
 public class Welltale extends JavaPlugin {
     //Remove this if you don't use JsonPlayerRepository
     private PlayerRepository playerRepository;
+    private RolledItemPacketAdapter rolledItemPacketAdapter;
 
     public Welltale(@NotNull JavaPluginInit init) {
         super(init);
@@ -125,6 +129,8 @@ public class Welltale extends JavaPlugin {
             this.getEntityStoreRegistry().registerSystem(staminaCostReductionSystem);
             DropChanceSystem dropChanceSystem = new DropChanceSystem();
             this.getEntityStoreRegistry().registerSystem(dropChanceSystem);
+            RolledItemStatSystem rolledItemStatSystem = new RolledItemStatSystem();
+            this.getEntityStoreRegistry().registerSystem(rolledItemStatSystem);
             //Characteristic
 
             //Spell
@@ -167,12 +173,17 @@ public class Welltale extends JavaPlugin {
                     playerRepository,
                     logger
             );
+
+            RolledVirtualItemRegistry rolledVirtualItemRegistry = new RolledVirtualItemRegistry();
+            this.rolledItemPacketAdapter = new RolledItemPacketAdapter(logger, rolledVirtualItemRegistry);
+            this.rolledItemPacketAdapter.register();
+
             this.getEventRegistry().registerGlobal(
                     PlayerReadyEvent.class,
                     openInventoryPacketInterceptor::onPlayerReady
             );
             this.getEntityStoreRegistry().registerSystem(
-                    new PlayerLeaveSystem(openInventoryPacketInterceptor, staminaCostReductionSystem)
+                    new PlayerLeaveSystem(openInventoryPacketInterceptor, staminaCostReductionSystem, this.rolledItemPacketAdapter, rolledItemStatSystem)
             );
             //Inventory
 
@@ -217,6 +228,10 @@ public class Welltale extends JavaPlugin {
         //Remove this if you don't use JsonPlayerRepository
         if (this.playerRepository != null) {
             this.playerRepository.saveData();
+        }
+
+        if (this.rolledItemPacketAdapter != null) {
+            this.rolledItemPacketAdapter.deregister();
         }
 
         this.getLogger().atInfo().log("Welltale Mod shutting down!");

@@ -12,10 +12,7 @@ final class InventoryEventResolver {
                 extractIntFromRawPayload(rawPayload, "SourceSlotId"),
                 extractIntFromRawPayload(rawPayload, "FromSlotId"),
                 extractIntFromRawPayload(rawPayload, "SourceItemGridIndex"),
-                extractIntFromRawPayload(rawPayload, "FromItemGridIndex"),
-                extractIntFromRawPayload(rawPayload, "SlotIndex"),
-                parseIndex(data.slotIndex),
-                parseIndex(data.index)
+                extractIntFromRawPayload(rawPayload, "FromItemGridIndex")
         );
     }
 

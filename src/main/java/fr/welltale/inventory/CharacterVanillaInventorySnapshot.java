@@ -2,7 +2,9 @@ package fr.welltale.inventory;
 
 import com.hypixel.hytale.server.core.inventory.Inventory;
 import com.hypixel.hytale.server.core.inventory.ItemStack;
+import com.hypixel.hytale.protocol.ItemWithAllMetadata;
 import lombok.Getter;
+import org.bson.BsonDocument;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -109,6 +111,29 @@ public class CharacterVanillaInventorySnapshot {
 
     private static ItemStack cloneStack(ItemStack stack) {
         if (ItemStack.isEmpty(stack)) return null;
-        return new ItemStack(stack.getItemId(), Math.max(1, stack.getQuantity()));
+
+        BsonDocument metadata = readMetadata(stack);
+        ItemStack clone = new ItemStack(
+                stack.getItemId(),
+                Math.max(1, stack.getQuantity()),
+                stack.getDurability(),
+                stack.getMaxDurability(),
+                metadata == null || metadata.isEmpty() ? null : metadata
+        );
+        clone.setOverrideDroppedItemAnimation(stack.getOverrideDroppedItemAnimation());
+        return clone;
+    }
+
+    private static BsonDocument readMetadata(ItemStack stack) {
+        if (ItemStack.isEmpty(stack)) return null;
+
+        ItemWithAllMetadata packet = stack.toPacket();
+        if (packet == null || packet.metadata == null || packet.metadata.isBlank()) return null;
+
+        try {
+            return BsonDocument.parse(packet.metadata);
+        } catch (Exception ignored) {
+            return null;
+        }
     }
 }

@@ -83,6 +83,7 @@ public class Characteristics {
         private static final int LIFE_REGEN = EntityStatType.getAssetMap().getIndex(STATIC_MODIFIER_LIFE_REGEN_PCT_KEY);
         private static final int DROP_CHANCE = EntityStatType.getAssetMap().getIndex(STATIC_MODIFIER_DROP_CHANCE_KEY);
         private static final int MOVE_SPEED = EntityStatType.getAssetMap().getIndex(STATIC_MODIFIER_MOVE_SPEED_KEY);
+        private static final int STAMINA = EntityStatType.getAssetMap().getIndex(STATIC_MODIFIER_STAMINA_KEY);
         private static final int CRITICAL_DAMAGE = EntityStatType.getAssetMap().getIndex(STATIC_MODIFIER_CRITICAL_DAMAGE_KEY);
         private static final int CRITICAL_PCT = EntityStatType.getAssetMap().getIndex(STATIC_MODIFIER_CRITICAL_PCT_KEY);
         private static final int CRITICAL_RESISTANCE = EntityStatType.getAssetMap().getIndex(STATIC_MODIFIER_CRITICAL_RESISTANCE_KEY);
@@ -185,15 +186,15 @@ public class Characteristics {
 
         EntityStatValue dropChanceStatValue = playerStatMap.get(StatIndices.DROP_CHANCE);
         if (dropChanceStatValue != null) {
-            additionalCharacteristics.dropChance = (int) dropChanceStatValue.getMax();
+            additionalCharacteristics.dropChance = dropChanceStatValue.getMax();
         }
 
         EntityStatValue moveSpeedStatValue = playerStatMap.get(StatIndices.MOVE_SPEED);
         if (moveSpeedStatValue != null) {
-            additionalCharacteristics.moveSpeed = (int) moveSpeedStatValue.getMax();
+            additionalCharacteristics.moveSpeed = moveSpeedStatValue.getMax();
         }
 
-        EntityStatValue staminaStatValue = playerStatMap.get(EntityStatType.getAssetMap().getIndex(STATIC_MODIFIER_STAMINA_KEY));
+        EntityStatValue staminaStatValue = playerStatMap.get(StatIndices.STAMINA);
         if (staminaStatValue != null) {
             additionalCharacteristics.stamina = (int) staminaStatValue.getMax();
         }
@@ -215,22 +216,22 @@ public class Characteristics {
 
         EntityStatValue earthResistanceStatValue = playerStatMap.get(StatIndices.EARTH_RESISTANCE);
         if (earthResistanceStatValue != null) {
-            additionalCharacteristics.earthResistance = (int) earthResistanceStatValue.getMax();
+            additionalCharacteristics.earthResistance = earthResistanceStatValue.getMax();
         }
 
         EntityStatValue fireResistanceStatValue = playerStatMap.get(StatIndices.FIRE_RESISTANCE);
         if (fireResistanceStatValue != null) {
-            additionalCharacteristics.fireResistance = (int) fireResistanceStatValue.getMax();
+            additionalCharacteristics.fireResistance = fireResistanceStatValue.getMax();
         }
 
         EntityStatValue waterResistanceStatValue = playerStatMap.get(StatIndices.WATER_RESISTANCE);
         if (waterResistanceStatValue != null) {
-            additionalCharacteristics.waterResistance = (int) waterResistanceStatValue.getMax();
+            additionalCharacteristics.waterResistance = waterResistanceStatValue.getMax();
         }
 
         EntityStatValue airResistanceStatValue = playerStatMap.get(StatIndices.AIR_RESISTANCE);
         if (airResistanceStatValue != null) {
-            additionalCharacteristics.airResistance = (int) airResistanceStatValue.getMax();
+            additionalCharacteristics.airResistance = airResistanceStatValue.getMax();
         }
 
         return additionalCharacteristics;

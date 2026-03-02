@@ -40,9 +40,9 @@ public class UpdateStatsHudSystem extends EntityTickingSystem<EntityStore> {
         EntityStatValue staminaStatValue = playerStatsMap.get(EntityStatType.getAssetMap().getIndex(Characteristics.STATIC_MODIFIER_STAMINA_KEY));
         if (staminaStatValue == null) return;
 
-        if (healthStatValue.get() == healthStatValue.getMax() && staminaStatValue.get() == staminaStatValue.getMax()) {
-            return;
-        }
+//        if (healthStatValue.get() == healthStatValue.getMax() && staminaStatValue.get() == staminaStatValue.getMax()) {
+//            return;
+//        }
 
         HudBuilder.update(HudBuilder.UPDATE_TYPE.STATS, player, store, ref);
     }

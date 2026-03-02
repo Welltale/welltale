@@ -2,10 +2,12 @@ package fr.welltale.inventory;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.hypixel.hytale.server.core.inventory.ItemStack;
-import lombok.AllArgsConstructor;
+import fr.welltale.item.ItemStatRoller;
+import fr.welltale.item.virtual.RolledVirtualItemRegistry;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.bson.BsonDocument;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,24 +15,52 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class StoredItemStack {
     private String itemId;
     private int quantity;
+    private String rollData;
+
+    public StoredItemStack(String itemId, int quantity, String rollData) {
+        this.itemId = itemId;
+        this.quantity = quantity;
+        this.rollData = rollData;
+    }
 
     public static StoredItemStack fromItemStack(ItemStack stack) {
         if (ItemStack.isEmpty(stack)) return null;
 
-        String itemId = stack.getItemId();
+        String itemId = toBaseItemId(stack.getItemId());
         if (itemId.isBlank()) return null;
 
-        return new StoredItemStack(itemId, Math.max(1, stack.getQuantity()));
+        BsonDocument rollData = ItemStatRoller.getRollData(stack);
+        String rollDataJson = rollData == null || rollData.isEmpty() ? null : rollData.toJson();
+
+        return new StoredItemStack(itemId, Math.max(1, stack.getQuantity()), rollDataJson);
     }
 
     public ItemStack toItemStack() {
-        if (itemId == null || itemId.isBlank()) return null;
-        return new ItemStack(itemId, Math.max(1, quantity));
+        String baseItemId = toBaseItemId(itemId);
+        if (baseItemId.isBlank()) return null;
+
+        ItemStack baseStack = new ItemStack(baseItemId, Math.max(1, quantity));
+        if (rollData == null || rollData.isBlank()) return baseStack;
+
+        try {
+            BsonDocument metadata = new BsonDocument();
+            metadata.put(ItemStatRoller.ROLL_METADATA_KEY, BsonDocument.parse(rollData));
+            return baseStack.withMetadata(metadata);
+        } catch (Exception ignored) {
+            return baseStack;
+        }
+    }
+
+    private static String toBaseItemId(String rawItemId) {
+        if (rawItemId == null || rawItemId.isBlank()) return "";
+
+        int separatorIndex = rawItemId.indexOf(RolledVirtualItemRegistry.VIRTUAL_SEPARATOR);
+        if (separatorIndex <= 0) return rawItemId;
+        return rawItemId.substring(0, separatorIndex);
     }
 
     public static List<StoredItemStack> fromItemStackList(List<ItemStack> source, int fixedSize) {

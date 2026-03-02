@@ -12,10 +12,11 @@ import com.hypixel.hytale.protocol.packets.interface_.Page;
 import com.hypixel.hytale.server.core.entity.UUIDComponent;
 import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.entity.entities.player.pages.InteractiveCustomUIPage;
+import com.hypixel.hytale.server.core.asset.type.item.config.Item;
 import com.hypixel.hytale.server.core.inventory.Inventory;
 import com.hypixel.hytale.server.core.inventory.ItemStack;
+import com.hypixel.hytale.server.core.inventory.container.ItemContainer;
 import com.hypixel.hytale.server.core.inventory.transaction.ItemStackTransaction;
-import com.hypixel.hytale.server.core.modules.item.ItemModule;
 import com.hypixel.hytale.server.core.ui.ItemGridSlot;
 import com.hypixel.hytale.server.core.ui.builder.EventData;
 import com.hypixel.hytale.server.core.ui.builder.UICommandBuilder;
@@ -26,6 +27,8 @@ import fr.welltale.characteristic.page.CharacteristicsPage;
 import fr.welltale.inventory.CharacterVanillaInventorySnapshot;
 import fr.welltale.inventory.InventoryService;
 import fr.welltale.inventory.StoredItemStack;
+import fr.welltale.item.ItemStatRoller;
+import fr.welltale.item.virtual.RolledVirtualItemRegistry;
 import fr.welltale.player.PlayerRepository;
 import fr.welltale.player.charactercache.CachedCharacter;
 import fr.welltale.player.charactercache.CharacterCacheRepository;
@@ -34,6 +37,8 @@ import org.jspecify.annotations.NonNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 
 import static fr.welltale.inventory.page.InventoryAreaRules.*;
 
@@ -416,7 +421,13 @@ public class InventoryPage extends InteractiveCustomUIPage<InventoryPage.CustomI
                     (short) toSlotId
             );
             if (!moveTransaction.succeeded()) {
-                return false;
+                if (!(isInventoryArea(fromArea) && isInventoryArea(toArea))) {
+                    return false;
+                }
+
+                if (!swapContainerSlots(fromContainer, (short) fromSlotId, toContainer, (short) toSlotId)) {
+                    return false;
+                }
             }
 
             resetDragState();
@@ -451,6 +462,25 @@ public class InventoryPage extends InteractiveCustomUIPage<InventoryPage.CustomI
 
         resetDragState();
         return true;
+    }
+
+    private boolean swapContainerSlots(@NonNull ItemContainer fromContainer, short fromSlot, @NonNull ItemContainer toContainer, short toSlot) {
+        try {
+            ItemStack fromStack = fromContainer.getItemStack(fromSlot);
+            ItemStack toStack = toContainer.getItemStack(toSlot);
+            if (ItemStack.isEmpty(fromStack) || ItemStack.isEmpty(toStack)) return false;
+
+            var setFrom = fromContainer.setItemStackForSlot(fromSlot, toStack, true);
+            if (!setFrom.succeeded()) return false;
+
+            var setTo = toContainer.setItemStackForSlot(toSlot, fromStack, true);
+            if (setTo.succeeded()) return true;
+
+            fromContainer.setItemStackForSlot(fromSlot, fromStack, true);
+            return false;
+        } catch (Exception ignored) {
+            return false;
+        }
     }
 
     private boolean transferLootToInventory(
@@ -558,8 +588,53 @@ public class InventoryPage extends InteractiveCustomUIPage<InventoryPage.CustomI
         if (area == null || slot < 0 || itemId == null || itemId.isBlank()) {
             return false;
         }
+
         ItemStack stack = getStackFromArea(ref, store, area, slot);
-        return !ItemStack.isEmpty(stack) && itemId.equals(stack.getItemId());
+        if (ItemStack.isEmpty(stack)) return false;
+
+        String stackItemId = stack.getItemId();
+        if (itemId.equals(stackItemId)) return true;
+
+        String expectedBaseItemId = toBaseItemId(itemId);
+        String stackBaseItemId = toBaseItemId(stackItemId);
+        if (!expectedBaseItemId.equals(stackBaseItemId)) return false;
+
+        if (!itemId.contains(RolledVirtualItemRegistry.VIRTUAL_SEPARATOR)) return true;
+
+        String virtualFromStack = toVirtualId(stack);
+        return itemId.equals(virtualFromStack);
+    }
+
+    private String toVirtualId(@NonNull ItemStack stack) {
+        String baseItemId = stack.getItemId();
+        if (baseItemId.isBlank()) return null;
+
+        var rollData = ItemStatRoller.getRollData(stack);
+        if (rollData == null || rollData.isEmpty()) return null;
+
+        return baseItemId + RolledVirtualItemRegistry.VIRTUAL_SEPARATOR + shortHash(rollData.toJson());
+    }
+
+    private String shortHash(@NonNull String input) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("MD5");
+            byte[] raw = digest.digest(input.getBytes(StandardCharsets.UTF_8));
+            StringBuilder builder = new StringBuilder(8);
+            for (int i = 0; i < 4; i++) {
+                builder.append(String.format("%02x", raw[i]));
+            }
+            return builder.toString();
+        } catch (Exception e) {
+            return Integer.toHexString(input.hashCode());
+        }
+    }
+
+    private String toBaseItemId(String itemId) {
+        if (itemId == null || itemId.isBlank()) return "";
+
+        int separatorIndex = itemId.indexOf(RolledVirtualItemRegistry.VIRTUAL_SEPARATOR);
+        if (separatorIndex <= 0) return itemId;
+        return itemId.substring(0, separatorIndex);
     }
 
     private int toInventorySectionId(String area) {
@@ -830,7 +905,7 @@ public class InventoryPage extends InteractiveCustomUIPage<InventoryPage.CustomI
             return createActivatableSlot(null);
         }
 
-        if (!ItemModule.exists(itemId)) {
+        if (Item.getAssetMap().getAsset(toBaseItemId(itemId)) == null) {
             this.logger.atSevere().log("[INVENTORY] InventoryPage CreateSafeLootSlot Failed: Unknown item id hidden from UI to avoid client crash:" + itemId);
             return createActivatableSlot(null);
         }

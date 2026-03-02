@@ -1,7 +1,8 @@
 package fr.welltale.mob.loot;
 
+import com.hypixel.hytale.server.core.asset.type.item.config.Item;
 import com.hypixel.hytale.server.core.inventory.ItemStack;
-import com.hypixel.hytale.server.core.modules.item.ItemModule;
+import fr.welltale.item.ItemStatRoller;
 import fr.welltale.mob.Mob;
 
 import java.util.ArrayList;
@@ -46,7 +47,8 @@ public final class MobLootGenerator {
             int minQty = Math.max(1, entry.minQuantity());
             int maxQty = Math.max(minQty, entry.maxQuantity());
             int quantity = random.nextInt(minQty, maxQty + 1);
-            out.add(new ItemStack(itemId, quantity));
+            ItemStack rolledStack = ItemStatRoller.rollStats(new ItemStack(itemId, quantity));
+            out.add(rolledStack);
         }
 
         return out;
@@ -58,7 +60,7 @@ public final class MobLootGenerator {
         String trimmed = rawItemId.trim();
         if (trimmed.isBlank()) return null;
 
-        if (!ITEM_ID_VALIDATION_CACHE.computeIfAbsent(trimmed, ItemModule::exists)) return null;
+        if (!ITEM_ID_VALIDATION_CACHE.computeIfAbsent(trimmed, id -> Item.getAssetMap().getAsset(id) != null)) return null;
         return trimmed;
     }
 }

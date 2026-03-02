@@ -1,7 +1,11 @@
 package fr.welltale.inventory;
 
+import com.hypixel.hytale.server.core.asset.type.item.config.Item;
 import com.hypixel.hytale.server.core.inventory.ItemStack;
-import com.hypixel.hytale.server.core.modules.item.ItemModule;
+import com.hypixel.hytale.protocol.ItemWithAllMetadata;
+import fr.welltale.item.virtual.RolledVirtualItemRegistry;
+import lombok.NonNull;
+import org.bson.BsonDocument;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +34,7 @@ public class InventoryService {
         }
     }
 
-    private InventoryOwnerKey ownerKey(UUID playerUuid, UUID characterUuid) {
+    private InventoryOwnerKey ownerKey(@NonNull UUID playerUuid, @NonNull UUID characterUuid) {
         return new InventoryOwnerKey(playerUuid, characterUuid);
     }
 
@@ -66,7 +70,7 @@ public class InventoryService {
                     continue;
                 }
 
-                next.add(new ItemStack(itemId, Math.max(1, stack.getQuantity())));
+                next.add(cloneStack(itemId, stack));
                 counts[0]++;
                 remainingSlots--;
             }
@@ -91,11 +95,6 @@ public class InventoryService {
         if (playerUuid == null || characterUuid == null) return;
 
         ArrayList<ItemStack> sanitizedLoot = sanitizeAndTrimLoot(loot);
-        if (sanitizedLoot.isEmpty()) {
-            pendingLootByCharacter.remove(ownerKey(playerUuid, characterUuid));
-            return;
-        }
-
         pendingLootByCharacter.put(ownerKey(playerUuid, characterUuid), sanitizedLoot);
     }
 
@@ -110,7 +109,7 @@ public class InventoryService {
         }
 
         ItemStack stack = equipment.get(slotIndex);
-        return ItemStack.isEmpty(stack) ? null : new ItemStack(stack.getItemId(), Math.max(1, stack.getQuantity()));
+        return ItemStack.isEmpty(stack) ? null : cloneStack(stack.getItemId(), stack);
     }
 
     public void setEquipmentSlot(UUID playerUuid, UUID characterUuid, int slotIndex, ItemStack stack) {
@@ -131,7 +130,7 @@ public class InventoryService {
                 if (itemId == null || itemId.isBlank()) {
                     next.set(slotIndex, null);
                 } else {
-                    next.set(slotIndex, new ItemStack(itemId, Math.max(1, stack.getQuantity())));
+                    next.set(slotIndex, cloneStack(itemId, stack));
                 }
             }
 
@@ -155,7 +154,7 @@ public class InventoryService {
 
         ArrayList<ItemStack> snapshot = new ArrayList<>(equipment.size());
         for (ItemStack stack : equipment) {
-            snapshot.add(ItemStack.isEmpty(stack) ? null : new ItemStack(stack.getItemId(), Math.max(1, stack.getQuantity())));
+            snapshot.add(ItemStack.isEmpty(stack) ? null : cloneStack(stack.getItemId(), stack));
         }
         return snapshot;
     }
@@ -178,7 +177,7 @@ public class InventoryService {
             String itemId = normalizeItemId(stack.getItemId());
             if (itemId == null) continue;
 
-            sanitized.add(new ItemStack(itemId, Math.max(1, stack.getQuantity())));
+            sanitized.add(cloneStack(itemId, stack));
         }
 
         return sanitized;
@@ -196,7 +195,7 @@ public class InventoryService {
             }
 
             String itemId = sanitizeEquipmentItemId(stack.getItemId());
-            sanitized.add(itemId == null ? null : new ItemStack(itemId, Math.max(1, stack.getQuantity())));
+            sanitized.add(itemId == null ? null : cloneStack(itemId, stack));
         }
 
         return sanitized;
@@ -205,10 +204,44 @@ public class InventoryService {
     private String normalizeItemId(String rawItemId) {
         if (rawItemId == null) return null;
 
-        String trimmed = rawItemId.trim();
+        String trimmed = toBaseItemId(rawItemId.trim());
         if (trimmed.isBlank()) return null;
-        if (!itemIdValidationCache.computeIfAbsent(trimmed, ItemModule::exists)) return null;
+        if (!itemIdValidationCache.computeIfAbsent(trimmed, id -> Item.getAssetMap().getAsset(id) != null)) return null;
 
         return trimmed;
+    }
+
+    private String toBaseItemId(String itemId) {
+        if (itemId == null || itemId.isBlank()) return "";
+
+        int separatorIndex = itemId.indexOf(RolledVirtualItemRegistry.VIRTUAL_SEPARATOR);
+        if (separatorIndex <= 0) return itemId;
+        return itemId.substring(0, separatorIndex);
+    }
+
+    private ItemStack cloneStack(@NonNull String itemId, @NonNull ItemStack source) {
+        if (itemId.isBlank()) return null;
+
+        BsonDocument metadata = readMetadata(source);
+        ItemStack clone = new ItemStack(
+                itemId,
+                Math.max(1, source.getQuantity()),
+                source.getDurability(),
+                source.getMaxDurability(),
+                metadata == null || metadata.isEmpty() ? null : metadata
+        );
+        clone.setOverrideDroppedItemAnimation(source.getOverrideDroppedItemAnimation());
+        return clone;
+    }
+
+    private BsonDocument readMetadata(@NonNull ItemStack stack) {
+        ItemWithAllMetadata packet = stack.toPacket();
+        if (packet == null || packet.metadata == null || packet.metadata.isBlank()) return null;
+
+        try {
+            return BsonDocument.parse(packet.metadata);
+        } catch (Exception ignored) {
+            return null;
+        }
     }
 }

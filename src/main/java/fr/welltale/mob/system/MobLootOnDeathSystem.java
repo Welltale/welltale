@@ -90,7 +90,11 @@ public class MobLootOnDeathSystem extends DeathSystems.OnDeathSystem {
 
             long gemsMaxDrop = mobConfig.getGemsMaxDrop();
             if (gemsMaxDrop > 0) {
-                long gemsDropped = ThreadLocalRandom.current().nextLong(Mob.MIN_MOB_GEMS_DROP, gemsMaxDrop);
+                long minGemsDrop = Mob.MIN_MOB_GEMS_DROP;
+                long maxGemsDrop = gemsMaxDrop;
+                long gemsDropped = maxGemsDrop <= minGemsDrop
+                        ? minGemsDrop
+                        : ThreadLocalRandom.current().nextLong(minGemsDrop, maxGemsDrop + 1L);
                 cachedCharacter.setGems(cachedCharacter.getGems() + gemsDropped);
             }
 

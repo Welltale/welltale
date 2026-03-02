@@ -7,18 +7,26 @@ import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import fr.welltale.characteristic.system.StaminaCostReductionSystem;
 import fr.welltale.inventory.event.OpenInventoryPacketInterceptor;
+import fr.welltale.item.system.RolledItemStatSystem;
+import fr.welltale.item.virtual.RolledItemPacketAdapter;
 import org.jspecify.annotations.NonNull;
 
 public class PlayerLeaveSystem extends RefSystem<EntityStore> {
     private final OpenInventoryPacketInterceptor openInventoryPacketInterceptor;
     private final StaminaCostReductionSystem staminaCostReductionSystem;
+    private final RolledItemPacketAdapter rolledItemPacketAdapter;
+    private final RolledItemStatSystem rolledItemStatSystem;
 
     public PlayerLeaveSystem(
             @NonNull OpenInventoryPacketInterceptor openInventoryPacketInterceptor,
-            @NonNull StaminaCostReductionSystem staminaCostReductionSystem
+            @NonNull StaminaCostReductionSystem staminaCostReductionSystem,
+            @NonNull RolledItemPacketAdapter rolledItemPacketAdapter,
+            @NonNull RolledItemStatSystem rolledItemStatSystem
     ) {
         this.openInventoryPacketInterceptor = openInventoryPacketInterceptor;
         this.staminaCostReductionSystem = staminaCostReductionSystem;
+        this.rolledItemPacketAdapter = rolledItemPacketAdapter;
+        this.rolledItemStatSystem = rolledItemStatSystem;
     }
 
     @Override
@@ -43,6 +51,8 @@ public class PlayerLeaveSystem extends RefSystem<EntityStore> {
 
         this.openInventoryPacketInterceptor.clearInstalledPlayer(playerRef.getUuid());
         this.staminaCostReductionSystem.clearPlayer(playerRef.getUuid());
+        this.rolledItemPacketAdapter.onPlayerLeave(playerRef.getUuid());
+        this.rolledItemStatSystem.clearPlayer(playerRef.getUuid());
     }
 
     @Override
