@@ -29,13 +29,12 @@ public final class ItemStatRoller {
         if (ItemStack.isEmpty(stack)) return stack;
 
         String itemId = stack.getItemId();
-        if (itemId == null || itemId.isBlank()) return stack;
+        if (itemId.isBlank()) return stack;
 
         Item item = Item.getAssetMap().getAsset(itemId);
         if (item == null) return stack;
 
         ItemBase itemBase = item.toPacket();
-        if (itemBase == null) return stack;
 
         BsonDocument rollRoot = new BsonDocument();
         boolean hasAnyRoll = false;
@@ -60,33 +59,17 @@ public final class ItemStatRoller {
         return stack.withMetadata(metadata);
     }
 
-    public static boolean hasRollableStats(ItemStack stack) {
-        if (ItemStack.isEmpty(stack)) return false;
-
-        String itemId = stack.getItemId();
-        if (itemId == null || itemId.isBlank()) return false;
-
-        Item item = Item.getAssetMap().getAsset(itemId);
-        if (item == null) return false;
-
-        ItemBase itemBase = item.toPacket();
-        if (itemBase == null) return false;
-
-        return hasModifiers(itemBase.weapon) || hasModifiers(itemBase.armor);
-    }
-
     public static Map<Integer, Double> getRollDeltaByStat(ItemStack stack) {
         HashMap<Integer, Double> deltaByStat = new HashMap<>();
         if (ItemStack.isEmpty(stack)) return deltaByStat;
 
         String itemId = stack.getItemId();
-        if (itemId == null || itemId.isBlank()) return deltaByStat;
+        if (itemId.isBlank()) return deltaByStat;
 
         Item item = Item.getAssetMap().getAsset(itemId);
         if (item == null) return deltaByStat;
 
         ItemBase itemBase = item.toPacket();
-        if (itemBase == null) return deltaByStat;
 
         BsonDocument rollRoot = getRollData(stack);
         if (rollRoot == null || rollRoot.isEmpty()) {
@@ -121,14 +104,6 @@ public final class ItemStatRoller {
             return null;
         }
         return metadata.getDocument(ROLL_METADATA_KEY).clone();
-    }
-
-    private static boolean hasModifiers(ItemWeapon weapon) {
-        return weapon != null && weapon.statModifiers != null && !weapon.statModifiers.isEmpty();
-    }
-
-    private static boolean hasModifiers(ItemArmor armor) {
-        return armor != null && armor.statModifiers != null && !armor.statModifiers.isEmpty();
     }
 
     private static BsonArray rollModifiers(Map<Integer, Modifier[]> modifiersByStat) {

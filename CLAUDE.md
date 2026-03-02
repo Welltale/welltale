@@ -27,6 +27,11 @@ Welltale is a Hytale mod that implements an RPG/MMO system with characteristics,
 - `./gradlew test` - Run tests (currently no tests exist)
 - `./gradlew idea` - Generate IntelliJ IDEA project files
 
+## Local References
+
+- If needed, game assets are available locally in `./hytale-assets`.
+- If needed, decompiled/inspectable Hytale API/server sources are available in `./hytale-src`.
+
 ## Architecture
 
 ### Core Entry Point
@@ -93,8 +98,14 @@ Each game system follows a consistent pattern:
 - Inventory is character-scoped (player UUID + character UUID)
 - Vanilla inventory sections persisted per character: `hotbar`, `storage`, `armor`
 - Custom inventory sections persisted per character: `loot`, `equipment`
-- Persist only lightweight stored item data (`StoredItemStack` with `itemId` + `quantity`) in JSON
+- Persist only lightweight stored item data (`StoredItemStack` with `itemId` + `quantity` + optional `rollData`) in JSON
 - Do not persist Hytale runtime `ItemStack` directly in player JSON (can serialize huge object graphs and cyclic references)
+
+**Item Roll System** (`fr.welltale.item`)
+- `ItemStatRoller` rolls per-stat modifier values and stores rolls under metadata key `wtItemRoll`
+- Runtime virtual item IDs (`<baseItemId>__wtroll_<hash>`) are used for tooltip/stat rendering without mutating source assets
+- `RolledItemPacketAdapter` rewrites outbound/inbound packet item IDs for custom pages and inventory interactions
+- `RolledItemStatSystem` applies equipped rolled deltas into `EntityStatMap` with per-player caching/signatures
 
 ## File Structure
 
@@ -124,6 +135,10 @@ src/main/java/fr/welltale/
 │   ├── page/                   # CharacterSelectPage
 │   └── system/                 # Player action systems
 ├── rank/                       # Player ranks
+├── item/                       # Item roll/runtime systems
+│   ├── ItemStatRoller.java     # Roll generation + roll metadata helpers
+│   ├── system/                 # RolledItemStatSystem
+│   └── virtual/                # Virtual item id + packet adapter
 ├── spell/                      # Spell casting
 │   ├── SpellManager.java      # Spell registry and casting logic
 │   ├── spells/                 # Individual spell implementations
@@ -154,8 +169,9 @@ All game data (players, ranks, classes, mobs) is stored as JSON files in `./mods
 ### Player JSON Item Format
 
 - Character inventory/item fields in `players.json` must use lightweight objects:
-  - `{ "itemId": "...", "quantity": <int> }`
+  - `{ "itemId": "...", "quantity": <int>, "rollData": "<json|null>" }`
 - Keep unknown/engine-only item fields out of persisted player data.
+- `rollData` should only contain rolled stat payload (`wtItemRoll`), not full engine metadata.
 
 ### Player/Character Invariants
 
@@ -184,6 +200,7 @@ The mod heavily uses Hytale's Entity Component System:
 - On character enter gameplay, hydrate runtime cache from selected character slot and apply stats/inventory snapshot.
 - On entity remove/leave, sync runtime state back to persisted character data (XP + inventory + custom inventory sections).
 - Always clear per-player runtime guards/caches on leave (packet interceptor install guards, stamina tracking maps, etc.).
+- For rolled items, also clear per-player rolled caches on leave (`RolledItemPacketAdapter`, `RolledItemStatSystem`).
 
 ## UI Development
 
@@ -224,6 +241,8 @@ The mod heavily uses Hytale's Entity Component System:
 - Active character state is cached in memory via `CharacterCacheRepository` and synced back on player entity removal
 - Repository read methods generally return immutable snapshots (`List.copyOf(...)`) to avoid accidental external mutations
 - Clean per-player runtime caches/maps on leave/disconnect (example: stamina tracking maps, interceptor install guards)
+- Rolled item virtual ID separator is `__wtroll_`; normalize virtual IDs back to base IDs for persistence/validation paths.
+- For metadata compatibility, prefer reading metadata via `ItemStack.toPacket().metadata` in new code paths.
 
 ## Known Limitations (Current)
 
@@ -251,3 +270,5 @@ The mod heavily uses Hytale's Entity Component System:
   - `if (!variable) return;`
   - `if (!variable) return false;`
 - Avoid verbose block form for trivial guards unless needed for readability or multiple statements.
+- Prefer Lombok for boilerplate on data/config classes (`@Getter`, `@Setter`, `@NoArgsConstructor`, etc.) instead of manual accessors.
+- Use `lombok.NonNull` for method parameters when null is not a valid contract; keep explicit null checks for packet/runtime inputs that can legitimately be null.

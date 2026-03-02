@@ -117,7 +117,7 @@ public class RolledItemPacketAdapter {
                     }
                 }
             } else if (packet instanceof SyncInteractionChains chains) {
-                if (chains.updates == null || chains.updates.length == 0) return;
+                if (chains.updates.length == 0) return;
 
                 for (SyncInteractionChain chain : chains.updates) {
                     changed |= rewriteChain(chain);
