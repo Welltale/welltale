@@ -152,7 +152,7 @@ public class CharacteristicsPage extends InteractiveCustomUIPage<Characteristics
         }
 
         if (ACTION_ADD_CHARACTERISTIC.equals(data.action) && data.area != null) {
-            spendCharacteristicPoint(ref, store, data.area, player);
+            spendCharacteristicPoint(ref, store, data.area);
             safeSendUpdate(ref, store);
             return;
         }
@@ -270,8 +270,7 @@ public class CharacteristicsPage extends InteractiveCustomUIPage<Characteristics
     private void spendCharacteristicPoint(
             @NonNull Ref<EntityStore> ref,
             @NonNull Store<EntityStore> store,
-            @NonNull String characteristicType,
-            @NonNull Player player
+            @NonNull String characteristicType
             ) {
         if (!ref.isValid()) {
             this.logger.atSevere().log("[CHARACTERISTIC] CharacteristicsPage SpendCharacteristicPoint Failed: Ref is invalid");
