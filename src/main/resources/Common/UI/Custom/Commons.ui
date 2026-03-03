@@ -12,12 +12,12 @@ $Sounds = "Sound.ui";
 @ColorDangerHover = #b36060(1.00);
 @ColorOverlay = #0b1117(0.78);
 
-@ColorStatVitality = #df89a2;
-@ColorStatWisdom = #b29ac7;
-@ColorStatStrength = #d2b178;
-@ColorStatIntelligence = #dfaa81;
-@ColorStatChance = #94c3d8;
-@ColorStatAgility = #94c8ac;
+@ColorStatVitality = #df789a;
+@ColorStatWisdom = #a775c7;
+@ColorStatStrength = #d59f4b;
+@ColorStatIntelligence = #ff6666;
+@ColorStatChance = #63c9ff;
+@ColorStatAgility = #6bdd89;
 
 @ColorStatLifeRegen = #58e7a3;
 @ColorStatDropChance = #ffc553;

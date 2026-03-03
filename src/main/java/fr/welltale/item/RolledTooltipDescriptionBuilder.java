@@ -25,12 +25,12 @@ public class RolledTooltipDescriptionBuilder {
     private static final String DAMAGE_CAUSE_WATER_TRANSLATION = "Eau";
     private static final String DAMAGE_CAUSE_AIR_TRANSLATION = "Air";
 
-    private static final String COLOR_STAT_VITALITY = "#df89a2";
-    private static final String COLOR_STAT_WISDOM = "#b29ac7";
-    private static final String COLOR_STAT_STRENGTH = "#d2b178";
-    private static final String COLOR_STAT_INTELLIGENCE = "#dfaa81";
-    private static final String COLOR_STAT_CHANCE = "#94c3d8";
-    private static final String COLOR_STAT_AGILITY = "#94c8ac";
+    private static final String COLOR_STAT_VITALITY = "#df789a";
+    private static final String COLOR_STAT_WISDOM = "#a775c7";
+    private static final String COLOR_STAT_STRENGTH = "#d59f4b";
+    private static final String COLOR_STAT_INTELLIGENCE = "#ff6666";
+    private static final String COLOR_STAT_CHANCE = "#63c9ff";
+    private static final String COLOR_STAT_AGILITY = "#6bdd89";
     private static final String COLOR_STAT_STAMINA = "#ffcf58";
     private static final String COLOR_STAT_CRITICAL_DAMAGE = "#ff5d5d";
     private static final String COLOR_STAT_CRITICAL_PCT = "#ffb63f";
