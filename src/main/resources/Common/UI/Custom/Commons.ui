@@ -10,12 +10,7 @@ $Sounds = "Sound.ui";
 @ColorAccentHover = #e0ba79(1.00);
 @ColorDanger = #9f4d4d(1.00);
 @ColorDangerHover = #b36060(1.00);
-
-@WelltaleColor = @ColorAccent;
-
-@SmallLabel = (FontSize: 11, TextColor: @ColorTextMuted);
-@BodyLabel = (FontSize: 13, TextColor: @ColorTextMain);
-@HeadingLabel = (FontName: "Secondary", FontSize: 16, RenderUppercase: true, RenderBold: true, LetterSpacing: 1, TextColor: @ColorAccent, Alignment: Center);
+@ColorOverlay = #0b1117(0.78);
 
 @CancelButtonStyle = TextButtonStyle(
   Default: (
@@ -69,9 +64,19 @@ $Sounds = "Sound.ui";
   Sounds: $Sounds.@ButtonsLight,
 );
 
-@HytaleContainerBackground = @ColorBackground;
-@HytaleHeaderBackground = @ColorSurface;
-@HytalePanelBackground = @ColorSurface;
+@CharacterSlotButtonStyle = ButtonStyle(
+  Default: (
+    Background: #1a232d(0.96)
+  ),
+  Hovered: (
+    Background: #263444(0.98)
+  ),
+  Pressed: (
+    Background: #121a22(0.98)
+  ),
+  Sounds: $Sounds.@ButtonsLight,
+);
+
 @HytaleSectionSeparator = Group {
   Anchor: (Height: 2, Right: 0, Left: 0, Top: 8, Bottom: 8);
   Background: @ColorBorder;
@@ -86,22 +91,8 @@ $Sounds = "Sound.ui";
   Anchor: (Width: 5, Right: 0, Left: 0, Top: 5, Bottom: 5);
 };
 
-@MediumSpacer = Group {
-  Anchor: (Width: 15, Right: 0, Left: 0, Top: 15, Bottom: 15);
-};
-
-@BigSpacer = Group {
-  Anchor: (Width: 30, Right: 0, Left: 0, Top: 30, Bottom: 30);
-};
-
 @WhiteSeparator = Group {
   LayoutMode: Left;
   Anchor: (Height: 1, Right: 0, Left: 0, Top: 10, Bottom: 10);
   Background: #e5ebf2(0.18);
-};
-
-@WelltaleSeparator = Group {
-  LayoutMode: Left;
-  Anchor: (Height: 2, Right: 0, Left: 0, Top: 10, Bottom: 10);
-  Background: @WelltaleColor;
 };

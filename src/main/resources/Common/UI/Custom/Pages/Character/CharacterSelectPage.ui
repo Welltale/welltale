@@ -1,18 +1,4 @@
 $C = "../../Commons.ui";
-$Sounds = "../../Sound.ui";
-
-@CharacterSlotButtonStyle = ButtonStyle(
-  Default: (
-    Background: #1a232d(0.96)
-  ),
-  Hovered: (
-    Background: #24303d(0.98)
-  ),
-  Pressed: (
-    Background: #121a22(0.98)
-  ),
-  Sounds: $Sounds.@ButtonsLight,
-);
 
 Group #MainContainer {
   Anchor: (Top: 0, Left: 0, Right: 0, Bottom: 0);
@@ -22,7 +8,7 @@ Group #MainContainer {
     Anchor: (Top: 24, Left: 24, Width: 520, Height: 82);
     LayoutMode: Top;
     Padding: (Top: 10, Bottom: 8, Left: 10, Right: 10);
-    Background: #172029(0.98);
+    Background: $C.@ColorBackground;
 
     Group {
       Anchor: (Height: 32);
@@ -47,12 +33,11 @@ Group #MainContainer {
     Group {
       Anchor: (Height: 22);
       LayoutMode: Left;
-      //      Background: #10161f(1.00);
       FlexWeight: 1;
 
       Label {
         Text: "Choix du personnage";
-        Style: (FontSize: 15, TextColor: #aeb9c7, Alignment: Center, VerticalAlignment: Center);
+        Style: (FontSize: 15, TextColor: $C.@ColorTextMain, Alignment: Center, VerticalAlignment: Center);
       }
     }
   }
@@ -73,7 +58,7 @@ Group #MainContainer {
       Anchor: (Height: 338);
       LayoutMode: Top;
       Padding: (Full: 14);
-      Background: #111920(0.98);
+      Background: $C.@ColorBackground;
 
       Group #CharacterRow1 {
         Anchor: (Height: 150);
@@ -82,12 +67,12 @@ Group #MainContainer {
 
         Button #CharacterSlot1Button {
           FlexWeight: 1;
-          Style: (...@CharacterSlotButtonStyle);
+          Style: (...$C.@CharacterSlotButtonStyle);
 
           Group {
             Anchor: (Top: 2, Bottom: 2, Left: 2, Right: 2);
             LayoutMode: Top;
-            Background: #131c24(1.00);
+            Background: $C.@ColorSurfaceAlt;
             Padding: (Full: 8);
 
             Group {
@@ -108,12 +93,12 @@ Group #MainContainer {
 
         Button #CharacterSlot2Button {
           FlexWeight: 1;
-          Style: (...@CharacterSlotButtonStyle);
+          Style: (...$C.@CharacterSlotButtonStyle);
 
           Group {
             Anchor: (Top: 2, Bottom: 2, Left: 2, Right: 2);
             LayoutMode: Top;
-            Background: #131c24(1.00);
+            Background: $C.@ColorSurfaceAlt;
             Padding: (Full: 8);
 
             Group {
@@ -134,12 +119,12 @@ Group #MainContainer {
 
         Button #CharacterSlot3Button {
           FlexWeight: 1;
-          Style: (...@CharacterSlotButtonStyle);
+          Style: (...$C.@CharacterSlotButtonStyle);
 
           Group {
             Anchor: (Top: 2, Bottom: 2, Left: 2, Right: 2);
             LayoutMode: Top;
-            Background: #131c24(1.00);
+            Background: $C.@ColorSurfaceAlt;
             Padding: (Full: 8);
 
             Group {
@@ -166,12 +151,12 @@ Group #MainContainer {
 
         Button #CharacterSlot4Button {
           FlexWeight: 1;
-          Style: (...@CharacterSlotButtonStyle);
+          Style: (...$C.@CharacterSlotButtonStyle);
 
           Group {
             Anchor: (Top: 2, Bottom: 2, Left: 2, Right: 2);
             LayoutMode: Top;
-            Background: #131c24(1.00);
+            Background: $C.@ColorSurfaceAlt;
             Padding: (Full: 8);
 
             Group {
@@ -192,12 +177,12 @@ Group #MainContainer {
 
         Button #CharacterSlot5Button {
           FlexWeight: 1;
-          Style: (...@CharacterSlotButtonStyle);
+          Style: (...$C.@CharacterSlotButtonStyle);
 
           Group {
             Anchor: (Top: 2, Bottom: 2, Left: 2, Right: 2);
             LayoutMode: Top;
-            Background: #131c24(1.00);
+            Background: $C.@ColorSurfaceAlt;
             Padding: (Full: 8);
 
             Group {
@@ -218,12 +203,12 @@ Group #MainContainer {
 
         Button #CharacterSlot6Button {
           FlexWeight: 1;
-          Style: (...@CharacterSlotButtonStyle);
+          Style: (...$C.@CharacterSlotButtonStyle);
 
           Group {
             Anchor: (Top: 2, Bottom: 2, Left: 2, Right: 2);
             LayoutMode: Top;
-            Background: #131c24(1.00);
+            Background: $C.@ColorSurfaceAlt;
             Padding: (Full: 8);
 
             Group {

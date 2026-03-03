@@ -1,28 +1,30 @@
+$C = "../../Commons.ui";
+
 @TopTabButtonStyle = TextButtonStyle(
   Default: (
     Background: #000000(0.00),
-    LabelStyle: (FontSize: 16, TextColor: #8e9cab, RenderUppercase: true, RenderBold: true, VerticalAlignment: Center, Alignment: Center)
+    LabelStyle: (FontSize: 16, TextColor: $C.@ColorTextMuted, RenderUppercase: true, RenderBold: true, VerticalAlignment: Center, Alignment: Center)
   ),
   Hovered: (
-    Background: #ffffff(0.06),
-    LabelStyle: (FontSize: 16, TextColor: #d2dce8, RenderUppercase: true, RenderBold: true, VerticalAlignment: Center, Alignment: Center)
+    Background: #ffffff(0.03),
+    LabelStyle: (FontSize: 16, TextColor: $C.@ColorTextMain, RenderUppercase: true, RenderBold: true, VerticalAlignment: Center, Alignment: Center)
   )
 );
 
 @TopTabButtonActiveStyle = TextButtonStyle(
   Default: (
-    Background: #d2a85d(0.20),
+    Background: #000000(0.00),
     LabelStyle: (FontSize: 16, TextColor: #e4be7c, RenderUppercase: true, RenderBold: true, VerticalAlignment: Center, Alignment: Center)
   ),
   Hovered: (
-    Background: #d2a85d(0.26),
+    Background: #ffffff(0.03),
     LabelStyle: (FontSize: 16, TextColor: #eac88e, RenderUppercase: true, RenderBold: true, VerticalAlignment: Center, Alignment: Center)
   )
 );
 
 @TopBar = Group {
   Anchor: (Top: 0, Left: 0, Right: 0, Height: 72);
-  Background: #11181f(0.96);
+  Background: #11181f(0.94);
   LayoutMode: Left;
   Padding: (Left: 18, Right: 18, Top: 8, Bottom: 8);
 
@@ -38,13 +40,13 @@
 
     Group {
       Anchor: (Height: 40, Width: 2);
-      Background: #31414f(1.00);
+      Background: $C.@ColorBorder;
     }
   }
 
   Group #TopBarTabs {
     LayoutMode: Left;
-    Anchor: (Height: 52);
+    Anchor: (Height: 48);
   }
 
   Group {
@@ -53,6 +55,11 @@
 
   Group #TopBarActions {
     LayoutMode: Right;
-    Anchor: (Height: 52);
+    Anchor: (Height: 48);
+  }
+
+  Group {
+    Anchor: (Left: 0, Right: 0, Bottom: 0, Height: 1);
+    Background: #d2a85d(0.24);
   }
 };

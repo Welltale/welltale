@@ -23,7 +23,7 @@ Group #MainContainer {
 
         Label #ClassSelectorTitle {
           Text: "CLASSE";
-          Style: (FontName: "Secondary", FontSize: 20, TextColor: #d2a85d, Alignment: Center, RenderBold: true, RenderUppercase: true, LetterSpacing: 1);
+          Style: (FontName: "Secondary", FontSize: 22, TextColor: $C.@ColorAccent, Alignment: Center, RenderBold: true, RenderUppercase: true, LetterSpacing: 2);
         }
 
         $C.@WhiteSeparator {}
@@ -40,7 +40,7 @@ Group #MainContainer {
               Style: (...$C.@ClickableSlotButtonStyle);
 
               Label #Class1Name {
-                Style: (FontSize: 10, TextColor: #d7e0ea, Alignment: Center);
+                Style: (FontSize: 11, TextColor: $C.@ColorTextMain, Alignment: Center, RenderBold: true);
               }
             }
 
@@ -51,7 +51,7 @@ Group #MainContainer {
               Style: (...$C.@ClickableSlotButtonStyle);
 
               Label #Class2Name {
-                Style: (FontSize: 10, TextColor: #d7e0ea, Alignment: Center);
+                Style: (FontSize: 11, TextColor: $C.@ColorTextMain, Alignment: Center, RenderBold: true);
               }
             }
 
@@ -62,7 +62,7 @@ Group #MainContainer {
               Style: (...$C.@ClickableSlotButtonStyle);
 
               Label #Class3Name {
-                Style: (FontSize: 10, TextColor: #d7e0ea, Alignment: Center);
+                Style: (FontSize: 11, TextColor: $C.@ColorTextMain, Alignment: Center, RenderBold: true);
               }
             }
 
@@ -73,7 +73,7 @@ Group #MainContainer {
               Style: (...$C.@ClickableSlotButtonStyle);
 
               Label #Class4Name {
-                Style: (FontSize: 10, TextColor: #d7e0ea, Alignment: Center);
+                Style: (FontSize: 11, TextColor: $C.@ColorTextMain, Alignment: Center, RenderBold: true);
               }
             }
           }
@@ -91,7 +91,7 @@ Group #MainContainer {
         $C.@SmallSpacer {}
 
         Label #WIPText {
-          Text: "Work In Progress";
+          Text: "En développement";
           Style: (FontSize: 20, TextColor: #d7e0ea, RenderBold: true, Alignment: Center);
         }
       }
@@ -113,7 +113,7 @@ Group #MainContainer {
 
         Label #ClassSelectedName {
           Text: "UNDEFINED";
-          Style: (FontName: "Secondary", FontSize: 30, RenderUppercase: true, RenderBold: true, Alignment: Center, TextColor: #d2a85d);
+          Style: (FontName: "Secondary", FontSize: 30, RenderUppercase: true, RenderBold: true, Alignment: Center, TextColor: $C.@ColorAccent);
         }
       }
 

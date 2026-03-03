@@ -7,8 +7,9 @@ Group #MainContainer {
 
     Label #LevelLabel {
       Style: (
+        FontName: "Secondary",
         FontSize: 10,
-        TextColor: #ffffff,
+        TextColor: #e5ebf2,
         RenderBold: true,
         Alignment: Center
       );
@@ -19,8 +20,9 @@ Group #MainContainer {
 
     Label #XPLabel {
       Style: (
+        FontName: "Secondary",
         FontSize: 10,
-        TextColor: #ffffff,
+        TextColor: #e5ebf2,
         RenderBold: true,
         Alignment: Center
       );

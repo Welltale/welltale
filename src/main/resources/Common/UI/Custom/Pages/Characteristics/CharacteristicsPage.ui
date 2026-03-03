@@ -3,20 +3,20 @@ $M = "../Shared/MenuBar.ui";
 
 Group #MainContainer {
   Anchor: (Top: 0, Left: 0, Right: 0, Bottom: 0);
-  Background: #0b1117(0.78);
+  Background: $C.@ColorOverlay;
 
   $M.@TopBar #TopBar {
     #TopBarTabs {
       TextButton #TabInventory {
         Text: "Inventaire";
         Style: (...$M.@TopTabButtonStyle);
-        Anchor: (Width: 220, Height: 56);
+        Anchor: (Width: 220, Height: 48);
       }
 
       TextButton #TabCharacteristics {
-        Text: "Caracteristiques";
+        Text: "Caractéristiques";
         Style: (...$M.@TopTabButtonActiveStyle);
-        Anchor: (Width: 260, Height: 56);
+        Anchor: (Width: 260, Height: 48);
       }
     }
   }
@@ -25,15 +25,15 @@ Group #MainContainer {
     Anchor: (Top: 80, Bottom: 10, Horizontal: 55);
     LayoutMode: Top;
     Padding: (Full: 10);
-    Background: #121a22(0.98);
+    Background: $C.@ColorBackground;
 
     Group #Header {
       Anchor: (Height: 54);
-      Background: #1a232d(1.00);
+      Background: $C.@ColorSurfaceAlt;
       Padding: (Left: 16, Right: 16);
 
       Label {
-        Text: "CARACTERISTIQUES";
+        Text: "CARACTÉRISTIQUES";
         Style: (FontName: "Secondary", FontSize: 22, RenderBold: true, RenderUppercase: true, LetterSpacing: 1, Alignment: Center, TextColor: #d2a85d);
       }
     }
@@ -41,16 +41,16 @@ Group #MainContainer {
     $C.@SmallSpacer {}
 
     Group #CharacteristicsPanel {
-      Anchor: (Left: 0, Right: 0, Height: 430);
+      Anchor: (Left: 0, Right: 0, Height: 425);
       LayoutMode: Left;
       Padding: (Left: 10, Right: 10);
 
       Group #LeftColumn {
-        Anchor: (Height: 390, Top: 0);
+        Anchor: (Height: 380, Top: 0);
         FlexWeight: 1;
         LayoutMode: Top;
         Padding: (Full: 8);
-        Background: #1a232d(0.98);
+        Background: $C.@ColorSurface;
 
         Group #ProgressHeader {
           Anchor: (Height: 56);
@@ -144,11 +144,11 @@ Group #MainContainer {
       $C.@HytaleVerticalSeparator {}
 
       Group #RightColumn {
-        Anchor: (Height: 700, Top: 0);
+        Anchor: (Height: 685, Top: 0);
         FlexWeight: 1;
         LayoutMode: Top;
         Padding: (Full: 8);
-        Background: #1a232d(0.98);
+        Background: $C.@ColorSurface;
 
         Group { Anchor: (Height: 22); Label { Text: "STATS DERIVEES"; Style: (FontName: "Secondary", FontSize: 14, RenderUppercase: true, RenderBold: true, LetterSpacing: 1, TextColor: #d2a85d, Alignment: Start); } }
         $C.@SmallSpacer {}

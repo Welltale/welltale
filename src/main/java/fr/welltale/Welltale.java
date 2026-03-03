@@ -166,6 +166,14 @@ public class Welltale extends JavaPlugin {
             logger.atInfo().log("Level loaded!");
             //Level
 
+            //Item
+            logger.atInfo().log("Loading items...");
+            RolledVirtualItemRegistry rolledVirtualItemRegistry = new RolledVirtualItemRegistry();
+            this.rolledItemPacketAdapter = new RolledItemPacketAdapter(logger, rolledVirtualItemRegistry);
+            this.rolledItemPacketAdapter.register();
+            logger.atInfo().log("Items loaded!");
+            //Item
+
             //Inventory
             OpenInventoryPacketInterceptor openInventoryPacketInterceptor = new OpenInventoryPacketInterceptor(
                     inventoryService,
@@ -173,10 +181,6 @@ public class Welltale extends JavaPlugin {
                     playerRepository,
                     logger
             );
-
-            RolledVirtualItemRegistry rolledVirtualItemRegistry = new RolledVirtualItemRegistry();
-            this.rolledItemPacketAdapter = new RolledItemPacketAdapter(logger, rolledVirtualItemRegistry);
-            this.rolledItemPacketAdapter.register();
 
             this.getEventRegistry().registerGlobal(
                     PlayerReadyEvent.class,

@@ -98,7 +98,7 @@ public class CharacterSelectPage extends InteractiveCustomUIPage<CharacterSelect
             return;
         }
 
-        cmd.append("Pages/Player/CharacterSelectPage.ui");
+        cmd.append("Pages/Character/CharacterSelectPage.ui");
         event.addEventBinding(CustomUIEventBindingType.Activating, "#DisconnectButton", EventData.of("Action", ACTION_DISCONNECT));
         for (int i = 0; i < SLOT_COUNT; i++) {
             String selector = "#CharacterSlot" + (i + 1) + "Button";

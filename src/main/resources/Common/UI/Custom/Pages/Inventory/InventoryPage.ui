@@ -3,20 +3,20 @@ $M = "../Shared/MenuBar.ui";
 
 Group #MainContainer {
   Anchor: (Top: 0, Left: 0, Right: 0, Bottom: 0);
-  Background: #0b1117(0.78);
+  Background: $C.@ColorOverlay;
 
   $M.@TopBar #TopBar {
     #TopBarTabs {
       TextButton #TabInventory {
         Text: "Inventaire";
         Style: (...$M.@TopTabButtonActiveStyle);
-        Anchor: (Width: 220, Height: 56);
+        Anchor: (Width: 220, Height: 48);
       }
 
       TextButton #TabCharacteristics {
-        Text: "Caracteristiques";
+        Text: "Caractéristiques";
         Style: (...$M.@TopTabButtonStyle);
-        Anchor: (Width: 260, Height: 56);
+        Anchor: (Width: 260, Height: 48);
       }
     }
   }
@@ -25,11 +25,11 @@ Group #MainContainer {
     Anchor: (Top: 80, Bottom: 10, Horizontal: 55);
     LayoutMode: Top;
     Padding: (Full: 10);
-    Background: #121a22(0.98);
+    Background: $C.@ColorBackground;
 
     Group #Header {
       Anchor: (Height: 54);
-      Background: #1a232d(1.00);
+      Background: $C.@ColorSurfaceAlt;
       Padding: (Left: 16, Right: 16);
 
       Label {
@@ -55,10 +55,10 @@ Group #MainContainer {
           FlexWeight: 31;
           LayoutMode: Top;
           Padding: (Full: 10);
-          Background: #1a232d(0.98);
+          Background: $C.@ColorSurface;
 
           Label #EquipmentTitle {
-            Text: "EQUIPEMENT";
+            Text: "ÉQUIPEMENT";
             Style: (FontName: "Secondary", FontSize: 16, RenderUppercase: true, RenderBold: true, Alignment: Center, TextColor: #d2a85d);
           }
 
@@ -136,7 +136,7 @@ Group #MainContainer {
           FlexWeight: 50;
           LayoutMode: Top;
           Padding: (Full: 10);
-          Background: #1a232d(0.98);
+          Background: $C.@ColorSurface;
 
           Label #InventoryTitle {
             Text: "SACS";
@@ -227,7 +227,7 @@ Group #MainContainer {
           FlexWeight: 24;
           LayoutMode: Top;
           Padding: (Full: 10);
-          Background: #1a232d(0.98);
+          Background: $C.@ColorSurface;
 
           Label #LootTitle {
             Text: "BUTIN";
@@ -259,7 +259,7 @@ Group #MainContainer {
           $C.@SmallSpacer {}
 
           TextButton #CollectAllButton {
-            Text: "TOUT RECUPERER";
+            Text: "TOUT RÉCUPÉRER";
             Style: (...$C.@MainButtonStyle);
             Anchor: (Height: 38, Width: 220);
           }
