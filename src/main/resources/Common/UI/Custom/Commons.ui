@@ -1,70 +1,85 @@
 $Sounds = "Sound.ui";
 
-@WelltaleColor = #57CD4BFF;
+@ColorBackground = #0f141a(0.94);
+@ColorSurface = #1a232d(0.96);
+@ColorSurfaceAlt = #222d38(0.96);
+@ColorBorder = #31414f(1.00);
+@ColorTextMain = #e5ebf2(1.00);
+@ColorTextMuted = #94a2b2(1.00);
+@ColorAccent = #d2a85d(1.00);
+@ColorAccentHover = #e0ba79(1.00);
+@ColorDanger = #9f4d4d(1.00);
+@ColorDangerHover = #b36060(1.00);
+
+@WelltaleColor = @ColorAccent;
+
+@SmallLabel = (FontSize: 11, TextColor: @ColorTextMuted);
+@BodyLabel = (FontSize: 13, TextColor: @ColorTextMain);
+@HeadingLabel = (FontName: "Secondary", FontSize: 16, RenderUppercase: true, RenderBold: true, LetterSpacing: 1, TextColor: @ColorAccent, Alignment: Center);
 
 @CancelButtonStyle = TextButtonStyle(
   Default: (
-    Background: "Commons/Buttons/CancelButton.png", LabelStyle: (FontSize: 13, TextColor: #ffffff, RenderBold: true, Alignment: Center)
+    Background: @ColorDanger, LabelStyle: (FontSize: 13, TextColor: @ColorTextMain, RenderBold: true, Alignment: Center, RenderUppercase: true)
   ),
   Hovered: (
-    Background: "Commons/Buttons/CancelButtonHovered.png", LabelStyle: (FontSize: 13, TextColor: #ffffff, RenderBold: true, Alignment: Center)
+    Background: @ColorDangerHover, LabelStyle: (FontSize: 13, TextColor: #ffffff, RenderBold: true, Alignment: Center, RenderUppercase: true)
   ),
   Pressed: (
-    Background: "Commons/Buttons/CancelButtonPressed.png", LabelStyle: (FontSize: 13, TextColor: #ffffff, RenderBold: true, Alignment: Center)
+    Background: #7f3f3f(1.00), LabelStyle: (FontSize: 13, TextColor: #ffffff, RenderBold: true, Alignment: Center, RenderUppercase: true)
   ),
   Sounds: $Sounds.@ButtonsCancel,
 );
 
 @MainButtonStyle = TextButtonStyle(
   Default: (
-    Background: "Commons/Buttons/Button.png", LabelStyle: (FontSize: 13, TextColor: #ffffff, RenderBold: true, Alignment: Center)
+    Background: @ColorAccent, LabelStyle: (FontSize: 13, TextColor: #10161c, RenderBold: true, Alignment: Center, RenderUppercase: true)
   ),
   Hovered: (
-    Background: "Commons/Buttons/ButtonHovered.png", LabelStyle: (FontSize: 13, TextColor: #ffffff, RenderBold: true, Alignment: Center)
+    Background: @ColorAccentHover, LabelStyle: (FontSize: 13, TextColor: #0d141b, RenderBold: true, Alignment: Center, RenderUppercase: true)
   ),
   Pressed: (
-    Background: "Commons/Buttons/ButtonPressed.png", LabelStyle: (FontSize: 13, TextColor: #ffffff, RenderBold: true, Alignment: Center)
+    Background: #b88f4d(1.00), LabelStyle: (FontSize: 13, TextColor: #0d141b, RenderBold: true, Alignment: Center, RenderUppercase: true)
   ),
   Sounds: $Sounds.@ButtonsMain,
 );
 
 @EnterButtonStyle = TextButtonStyle(
   Default: (
-    Background: "Commons/Buttons/Button.png", LabelStyle: (FontSize: 13, TextColor: #ffffff, RenderBold: true, Alignment: Center)
+    Background: #79a96a(1.00), LabelStyle: (FontSize: 13, TextColor: #0f171d, RenderBold: true, Alignment: Center, RenderUppercase: true)
   ),
   Hovered: (
-    Background: "Commons/Buttons/ButtonHovered.png", LabelStyle: (FontSize: 13, TextColor: #ffffff, RenderBold: true, Alignment: Center)
+    Background: #89bb78(1.00), LabelStyle: (FontSize: 13, TextColor: #0f171d, RenderBold: true, Alignment: Center, RenderUppercase: true)
   ),
   Pressed: (
-    Background: "Commons/Buttons/ButtonPressed.png", LabelStyle: (FontSize: 13, TextColor: #ffffff, RenderBold: true, Alignment: Center)
+    Background: #68955b(1.00), LabelStyle: (FontSize: 13, TextColor: #0f171d, RenderBold: true, Alignment: Center, RenderUppercase: true)
   ),
   Sounds: $Sounds.@EnterWorld,
 );
 
 @ClickableSlotButtonStyle = ButtonStyle(
   Default: (
-    Background: "Commons/Slots/Slot.png"
+    Background: @ColorSurface
   ),
   Hovered: (
-    Background: "Commons/Slots/SlotHovered.png"
+    Background: @ColorSurfaceAlt
   ),
   Pressed: (
-    Background: "Commons/Slots/SlotPressed.png"
+    Background: #101820(1.00)
   ),
   Sounds: $Sounds.@ButtonsLight,
 );
 
-@HytaleContainerBackground = PatchStyle(TexturePath: "Commons/Container/ContainerPatch.png", Border: 23);
-@HytaleHeaderBackground = PatchStyle(TexturePath: "Commons/Container/ContainerHeaderNoRunes.png", HorizontalBorder: 35, VerticalBorder: 0);
-@HytalePanelBackground = PatchStyle(TexturePath: "Commons/Container/ContainerPanelLightPatch.png", Border: 50);
+@HytaleContainerBackground = @ColorBackground;
+@HytaleHeaderBackground = @ColorSurface;
+@HytalePanelBackground = @ColorSurface;
 @HytaleSectionSeparator = Group {
-  Anchor: (Height: 6, Right: 0, Left: 0, Top: 8, Bottom: 8);
-  Background: (TexturePath: "Commons/Container/ContainerSectionSeparator.png", Border: 2);
+  Anchor: (Height: 2, Right: 0, Left: 0, Top: 8, Bottom: 8);
+  Background: @ColorBorder;
 };
 
 @HytaleVerticalSeparator = Group {
-  Anchor: (Width: 6, Top: 8, Bottom: 8);
-  Background: (TexturePath: "Commons/Container/ContainerVerticalSeparator.png");
+  Anchor: (Width: 2, Top: 8, Bottom: 8);
+  Background: @ColorBorder;
 };
 
 @SmallSpacer = Group {
@@ -81,8 +96,8 @@ $Sounds = "Sound.ui";
 
 @WhiteSeparator = Group {
   LayoutMode: Left;
-  Anchor: (Height: 2, Right: 0, Left: 0, Top: 10, Bottom: 10);
-  Background: #ffffff(1.00);
+  Anchor: (Height: 1, Right: 0, Left: 0, Top: 10, Bottom: 10);
+  Background: #e5ebf2(0.18);
 };
 
 @WelltaleSeparator = Group {

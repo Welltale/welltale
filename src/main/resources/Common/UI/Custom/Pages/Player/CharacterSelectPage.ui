@@ -3,13 +3,13 @@ $Sounds = "../../Sound.ui";
 
 @CharacterSlotButtonStyle = ButtonStyle(
   Default: (
-    Background: #13233a(1.00)
+    Background: #1a232d(0.96)
   ),
   Hovered: (
-    Background: #1a2f4a(1.00)
+    Background: #24303d(0.98)
   ),
   Pressed: (
-    Background: #0e1827(1.00)
+    Background: #121a22(0.98)
   ),
   Sounds: $Sounds.@ButtonsLight,
 );
@@ -22,7 +22,7 @@ Group #MainContainer {
     Anchor: (Top: 24, Left: 24, Width: 520, Height: 82);
     LayoutMode: Top;
     Padding: (Top: 10, Bottom: 8, Left: 10, Right: 10);
-    Background: (TexturePath: "../../Commons/Container/ContainerPanelPatch.png", Border: 4);
+    Background: #172029(0.98);
 
     Group {
       Anchor: (Height: 32);
@@ -30,7 +30,7 @@ Group #MainContainer {
 
       Label {
         Text: "WELLTALE";
-        Style: (FontName: "Secondary", FontSize: 22, RenderUppercase: true, RenderBold: true, LetterSpacing: 2, TextColor: #d2bc90, Alignment: Start, VerticalAlignment: Center);
+        Style: (FontName: "Secondary", FontSize: 22, RenderUppercase: true, RenderBold: true, LetterSpacing: 2, TextColor: #d2a85d, Alignment: Start, VerticalAlignment: Center);
       }
 
       Group { FlexWeight: 1; }
@@ -52,7 +52,7 @@ Group #MainContainer {
 
       Label {
         Text: "Choix du personnage";
-        Style: (FontSize: 15, TextColor: #b89a66, Alignment: Center, VerticalAlignment: Center);
+        Style: (FontSize: 15, TextColor: #aeb9c7, Alignment: Center, VerticalAlignment: Center);
       }
     }
   }
@@ -64,7 +64,7 @@ Group #MainContainer {
     Label {
       Text: "PERSONNAGES";
       Anchor: (Height: 34);
-      Style: (FontName: "Secondary", FontSize: 22, RenderUppercase: true, RenderBold: true, LetterSpacing: 2, TextColor: #d2bc90, Alignment: Start, VerticalAlignment: Center);
+      Style: (FontName: "Secondary", FontSize: 22, RenderUppercase: true, RenderBold: true, LetterSpacing: 2, TextColor: #d2a85d, Alignment: Start, VerticalAlignment: Center);
     }
 
     $C.@SmallSpacer {}
@@ -73,7 +73,7 @@ Group #MainContainer {
       Anchor: (Height: 338);
       LayoutMode: Top;
       Padding: (Full: 14);
-      Background: (TexturePath: "../../Commons/Container/ContainerFullPatch.png", HorizontalBorder: 30, VerticalBorder: 30);
+      Background: #111920(0.98);
 
       Group #CharacterRow1 {
         Anchor: (Height: 150);
@@ -87,20 +87,20 @@ Group #MainContainer {
           Group {
             Anchor: (Top: 2, Bottom: 2, Left: 2, Right: 2);
             LayoutMode: Top;
-            Background: #10161f(1.00);
+            Background: #131c24(1.00);
             Padding: (Full: 8);
 
             Group {
               Anchor: (Height: 24);
               LayoutMode: Left;
-              Label #CharacterSlot1Name { Text: "CRÉER UNE CLASSE"; Style: (FontName: "Secondary", FontSize: 14, RenderUppercase: true, RenderBold: true, TextColor: #d2bc90, Alignment: Start, VerticalAlignment: Center); }
+              Label #CharacterSlot1Name { Text: "CRÉER UNE CLASSE"; Style: (FontName: "Secondary", FontSize: 14, RenderUppercase: true, RenderBold: true, TextColor: #d2a85d, Alignment: Start, VerticalAlignment: Center); }
               Group { FlexWeight: 1; }
-              Label #CharacterSlot1Level { Text: ""; Style: (FontName: "Secondary", FontSize: 12, RenderBold: true, TextColor: #8f9aa4, Alignment: End, VerticalAlignment: Center); }
+              Label #CharacterSlot1Level { Text: ""; Style: (FontName: "Secondary", FontSize: 12, RenderBold: true, TextColor: #94a2b2, Alignment: End, VerticalAlignment: Center); }
             }
             $C.@SmallSpacer {}
-            Label #CharacterSlot1Class { Text: "Emplacement libre"; Style: (FontSize: 13, TextColor: #a8b5c4, Alignment: Start); }
+            Label #CharacterSlot1Class { Text: "Emplacement libre"; Style: (FontSize: 13, TextColor: #b7c2cf, Alignment: Start); }
             Group { FlexWeight: 1; }
-            Label #CharacterSlot1Action { Text: "Cliquer pour créer"; Style: (FontSize: 11, TextColor: #8f9aa4, Alignment: End); }
+            Label #CharacterSlot1Action { Text: "Cliquer pour créer"; Style: (FontSize: 11, TextColor: #94a2b2, Alignment: End); }
           }
         }
 
@@ -113,20 +113,20 @@ Group #MainContainer {
           Group {
             Anchor: (Top: 2, Bottom: 2, Left: 2, Right: 2);
             LayoutMode: Top;
-            Background: #10161f(1.00);
+            Background: #131c24(1.00);
             Padding: (Full: 8);
 
             Group {
               Anchor: (Height: 24);
               LayoutMode: Left;
-              Label #CharacterSlot2Name { Text: "CRÉER UNE CLASSE"; Style: (FontName: "Secondary", FontSize: 14, RenderUppercase: true, RenderBold: true, TextColor: #d2bc90, Alignment: Start, VerticalAlignment: Center); }
+              Label #CharacterSlot2Name { Text: "CRÉER UNE CLASSE"; Style: (FontName: "Secondary", FontSize: 14, RenderUppercase: true, RenderBold: true, TextColor: #d2a85d, Alignment: Start, VerticalAlignment: Center); }
               Group { FlexWeight: 1; }
-              Label #CharacterSlot2Level { Text: ""; Style: (FontName: "Secondary", FontSize: 12, RenderBold: true, TextColor: #8f9aa4, Alignment: End, VerticalAlignment: Center); }
+              Label #CharacterSlot2Level { Text: ""; Style: (FontName: "Secondary", FontSize: 12, RenderBold: true, TextColor: #94a2b2, Alignment: End, VerticalAlignment: Center); }
             }
             $C.@SmallSpacer {}
-            Label #CharacterSlot2Class { Text: "Emplacement libre"; Style: (FontSize: 13, TextColor: #a8b5c4, Alignment: Start); }
+            Label #CharacterSlot2Class { Text: "Emplacement libre"; Style: (FontSize: 13, TextColor: #b7c2cf, Alignment: Start); }
             Group { FlexWeight: 1; }
-            Label #CharacterSlot2Action { Text: "Cliquer pour créer"; Style: (FontSize: 11, TextColor: #8f9aa4, Alignment: End); }
+            Label #CharacterSlot2Action { Text: "Cliquer pour créer"; Style: (FontSize: 11, TextColor: #94a2b2, Alignment: End); }
           }
         }
 
@@ -139,20 +139,20 @@ Group #MainContainer {
           Group {
             Anchor: (Top: 2, Bottom: 2, Left: 2, Right: 2);
             LayoutMode: Top;
-            Background: #10161f(1.00);
+            Background: #131c24(1.00);
             Padding: (Full: 8);
 
             Group {
               Anchor: (Height: 24);
               LayoutMode: Left;
-              Label #CharacterSlot3Name { Text: "CRÉER UNE CLASSE"; Style: (FontName: "Secondary", FontSize: 14, RenderUppercase: true, RenderBold: true, TextColor: #d2bc90, Alignment: Start, VerticalAlignment: Center); }
+              Label #CharacterSlot3Name { Text: "CRÉER UNE CLASSE"; Style: (FontName: "Secondary", FontSize: 14, RenderUppercase: true, RenderBold: true, TextColor: #d2a85d, Alignment: Start, VerticalAlignment: Center); }
               Group { FlexWeight: 1; }
-              Label #CharacterSlot3Level { Text: ""; Style: (FontName: "Secondary", FontSize: 12, RenderBold: true, TextColor: #8f9aa4, Alignment: End, VerticalAlignment: Center); }
+              Label #CharacterSlot3Level { Text: ""; Style: (FontName: "Secondary", FontSize: 12, RenderBold: true, TextColor: #94a2b2, Alignment: End, VerticalAlignment: Center); }
             }
             $C.@SmallSpacer {}
-            Label #CharacterSlot3Class { Text: "Emplacement libre"; Style: (FontSize: 13, TextColor: #a8b5c4, Alignment: Start); }
+            Label #CharacterSlot3Class { Text: "Emplacement libre"; Style: (FontSize: 13, TextColor: #b7c2cf, Alignment: Start); }
             Group { FlexWeight: 1; }
-            Label #CharacterSlot3Action { Text: "Cliquer pour créer"; Style: (FontSize: 11, TextColor: #8f9aa4, Alignment: End); }
+            Label #CharacterSlot3Action { Text: "Cliquer pour créer"; Style: (FontSize: 11, TextColor: #94a2b2, Alignment: End); }
           }
         }
       }
@@ -171,20 +171,20 @@ Group #MainContainer {
           Group {
             Anchor: (Top: 2, Bottom: 2, Left: 2, Right: 2);
             LayoutMode: Top;
-            Background: #10161f(1.00);
+            Background: #131c24(1.00);
             Padding: (Full: 8);
 
             Group {
               Anchor: (Height: 24);
               LayoutMode: Left;
-              Label #CharacterSlot4Name { Text: "CRÉER UNE CLASSE"; Style: (FontName: "Secondary", FontSize: 14, RenderUppercase: true, RenderBold: true, TextColor: #d2bc90, Alignment: Start, VerticalAlignment: Center); }
+              Label #CharacterSlot4Name { Text: "CRÉER UNE CLASSE"; Style: (FontName: "Secondary", FontSize: 14, RenderUppercase: true, RenderBold: true, TextColor: #d2a85d, Alignment: Start, VerticalAlignment: Center); }
               Group { FlexWeight: 1; }
-              Label #CharacterSlot4Level { Text: ""; Style: (FontName: "Secondary", FontSize: 12, RenderBold: true, TextColor: #8f9aa4, Alignment: End, VerticalAlignment: Center); }
+              Label #CharacterSlot4Level { Text: ""; Style: (FontName: "Secondary", FontSize: 12, RenderBold: true, TextColor: #94a2b2, Alignment: End, VerticalAlignment: Center); }
             }
             $C.@SmallSpacer {}
-            Label #CharacterSlot4Class { Text: "Emplacement libre"; Style: (FontSize: 13, TextColor: #a8b5c4, Alignment: Start); }
+            Label #CharacterSlot4Class { Text: "Emplacement libre"; Style: (FontSize: 13, TextColor: #b7c2cf, Alignment: Start); }
             Group { FlexWeight: 1; }
-            Label #CharacterSlot4Action { Text: "Cliquer pour créer"; Style: (FontSize: 11, TextColor: #8f9aa4, Alignment: End); }
+            Label #CharacterSlot4Action { Text: "Cliquer pour créer"; Style: (FontSize: 11, TextColor: #94a2b2, Alignment: End); }
           }
         }
 
@@ -197,20 +197,20 @@ Group #MainContainer {
           Group {
             Anchor: (Top: 2, Bottom: 2, Left: 2, Right: 2);
             LayoutMode: Top;
-            Background: #10161f(1.00);
+            Background: #131c24(1.00);
             Padding: (Full: 8);
 
             Group {
               Anchor: (Height: 24);
               LayoutMode: Left;
-              Label #CharacterSlot5Name { Text: "CRÉER UNE CLASSE"; Style: (FontName: "Secondary", FontSize: 14, RenderUppercase: true, RenderBold: true, TextColor: #d2bc90, Alignment: Start, VerticalAlignment: Center); }
+              Label #CharacterSlot5Name { Text: "CRÉER UNE CLASSE"; Style: (FontName: "Secondary", FontSize: 14, RenderUppercase: true, RenderBold: true, TextColor: #d2a85d, Alignment: Start, VerticalAlignment: Center); }
               Group { FlexWeight: 1; }
-              Label #CharacterSlot5Level { Text: ""; Style: (FontName: "Secondary", FontSize: 12, RenderBold: true, TextColor: #8f9aa4, Alignment: End, VerticalAlignment: Center); }
+              Label #CharacterSlot5Level { Text: ""; Style: (FontName: "Secondary", FontSize: 12, RenderBold: true, TextColor: #94a2b2, Alignment: End, VerticalAlignment: Center); }
             }
             $C.@SmallSpacer {}
-            Label #CharacterSlot5Class { Text: "Emplacement libre"; Style: (FontSize: 13, TextColor: #a8b5c4, Alignment: Start); }
+            Label #CharacterSlot5Class { Text: "Emplacement libre"; Style: (FontSize: 13, TextColor: #b7c2cf, Alignment: Start); }
             Group { FlexWeight: 1; }
-            Label #CharacterSlot5Action { Text: "Cliquer pour créer"; Style: (FontSize: 11, TextColor: #8f9aa4, Alignment: End); }
+            Label #CharacterSlot5Action { Text: "Cliquer pour créer"; Style: (FontSize: 11, TextColor: #94a2b2, Alignment: End); }
           }
         }
 
@@ -223,20 +223,20 @@ Group #MainContainer {
           Group {
             Anchor: (Top: 2, Bottom: 2, Left: 2, Right: 2);
             LayoutMode: Top;
-            Background: #10161f(1.00);
+            Background: #131c24(1.00);
             Padding: (Full: 8);
 
             Group {
               Anchor: (Height: 24);
               LayoutMode: Left;
-              Label #CharacterSlot6Name { Text: "CRÉER UNE CLASSE"; Style: (FontName: "Secondary", FontSize: 14, RenderUppercase: true, RenderBold: true, TextColor: #d2bc90, Alignment: Start, VerticalAlignment: Center); }
+              Label #CharacterSlot6Name { Text: "CRÉER UNE CLASSE"; Style: (FontName: "Secondary", FontSize: 14, RenderUppercase: true, RenderBold: true, TextColor: #d2a85d, Alignment: Start, VerticalAlignment: Center); }
               Group { FlexWeight: 1; }
-              Label #CharacterSlot6Level { Text: ""; Style: (FontName: "Secondary", FontSize: 12, RenderBold: true, TextColor: #8f9aa4, Alignment: End, VerticalAlignment: Center); }
+              Label #CharacterSlot6Level { Text: ""; Style: (FontName: "Secondary", FontSize: 12, RenderBold: true, TextColor: #94a2b2, Alignment: End, VerticalAlignment: Center); }
             }
             $C.@SmallSpacer {}
-            Label #CharacterSlot6Class { Text: "Emplacement libre"; Style: (FontSize: 13, TextColor: #a8b5c4, Alignment: Start); }
+            Label #CharacterSlot6Class { Text: "Emplacement libre"; Style: (FontSize: 13, TextColor: #b7c2cf, Alignment: Start); }
             Group { FlexWeight: 1; }
-            Label #CharacterSlot6Action { Text: "Cliquer pour créer"; Style: (FontSize: 11, TextColor: #8f9aa4, Alignment: End); }
+            Label #CharacterSlot6Action { Text: "Cliquer pour créer"; Style: (FontSize: 11, TextColor: #94a2b2, Alignment: End); }
           }
         }
       }

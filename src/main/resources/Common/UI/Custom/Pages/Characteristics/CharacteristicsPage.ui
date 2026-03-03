@@ -3,38 +3,38 @@ $M = "../Shared/MenuBar.ui";
 
 Group #MainContainer {
   Anchor: (Top: 0, Left: 0, Right: 0, Bottom: 0);
-  Background: #000000(0.58);
+  Background: #0b1117(0.78);
 
   $M.@TopBar #TopBar {
     #TopBarTabs {
       TextButton #TabInventory {
         Text: "Inventaire";
         Style: (...$M.@TopTabButtonStyle);
-        Anchor: (Width: 220, Height: 79);
+        Anchor: (Width: 220, Height: 56);
       }
 
       TextButton #TabCharacteristics {
         Text: "Caracteristiques";
         Style: (...$M.@TopTabButtonActiveStyle);
-        Anchor: (Width: 260, Height: 79);
+        Anchor: (Width: 260, Height: 56);
       }
     }
   }
 
   Group #Frame {
-    Anchor: (Top: 92, Bottom: 10, Horizontal: 55);
+    Anchor: (Top: 80, Bottom: 10, Horizontal: 55);
     LayoutMode: Top;
     Padding: (Full: 10);
-    Background: (TexturePath: "../../Commons/Container/ContainerFullPatch.png", HorizontalBorder: 30, VerticalBorder: 30);
+    Background: #121a22(0.98);
 
     Group #Header {
       Anchor: (Height: 54);
-      Background: (TexturePath: "../../Commons/Container/ContainerHeaderStyled.png", HorizontalBorder: 50, VerticalBorder: 0);
+      Background: #1a232d(1.00);
       Padding: (Left: 16, Right: 16);
 
       Label {
         Text: "CARACTERISTIQUES";
-        Style: (FontName: "Secondary", FontSize: 22, RenderBold: true, RenderUppercase: true, LetterSpacing: 1, Alignment: Center, TextColor: #d2bc90);
+        Style: (FontName: "Secondary", FontSize: 22, RenderBold: true, RenderUppercase: true, LetterSpacing: 1, Alignment: Center, TextColor: #d2a85d);
       }
     }
 
@@ -50,7 +50,7 @@ Group #MainContainer {
         FlexWeight: 1;
         LayoutMode: Top;
         Padding: (Full: 8);
-        Background: (TexturePath: "../../Commons/Container/ContainerPanelPatch.png", Border: 4);
+        Background: #1a232d(0.98);
 
         Group #ProgressHeader {
           Anchor: (Height: 56);
@@ -67,7 +67,7 @@ Group #MainContainer {
               Label #LevelLabel {
                 Text: "LV.1";
                 Anchor: (Width: 130);
-                Style: (FontName: "Secondary", FontSize: 14, RenderUppercase: true, RenderBold: true, TextColor: #d2bc90, Alignment: Start);
+                Style: (FontName: "Secondary", FontSize: 14, RenderUppercase: true, RenderBold: true, TextColor: #d2a85d, Alignment: Start);
               }
             }
 
@@ -123,20 +123,20 @@ Group #MainContainer {
 
         $C.@SmallSpacer {}
         $C.@HytaleSectionSeparator {}
-        Group { Anchor: (Height: 22); Label { Text: "STATS PRIMAIRES"; Style: (FontName: "Secondary", FontSize: 14, RenderUppercase: true, RenderBold: true, LetterSpacing: 1, TextColor: #b89a66, Alignment: Start); } }
+        Group { Anchor: (Height: 22); Label { Text: "STATS PRIMAIRES"; Style: (FontName: "Secondary", FontSize: 14, RenderUppercase: true, RenderBold: true, LetterSpacing: 1, TextColor: #d2a85d, Alignment: Start); } }
         $C.@SmallSpacer {}
 
-        Group { Anchor: (Height: 32); LayoutMode: Left; Padding: (Right: 1); Background: #273247(0.94); Label { Text: "VIT"; Anchor: (Width: 46); Style: (FontName: "Secondary", FontSize: 12, RenderBold: true, TextColor: #e65c7d, Alignment: Center, VerticalAlignment: Center); } Label { Text: "Vitalité"; Anchor: (Width: 176); Style: (FontSize: 14, TextColor: #d3dde6, Alignment: Start, VerticalAlignment: Center); } Group { FlexWeight: 1; } Label #HealthStatValueLabel { Text: "0"; Anchor: (Width: 40); Style: (FontName: "Secondary", FontSize: 16, RenderBold: true, TextColor: #ff4f94, Alignment: End, VerticalAlignment: Center); } Group { Anchor: (Width: 4); } TextButton #AddHealthButton { Text: "+"; Style: (...$C.@MainButtonStyle); Anchor: (Width: 32, Height: 30); } }
+        Group { Anchor: (Height: 32); LayoutMode: Left; Padding: (Right: 1); Background: #222d38(0.94); Label { Text: "VIT"; Anchor: (Width: 46); Style: (FontName: "Secondary", FontSize: 12, RenderBold: true, TextColor: #cf6d86, Alignment: Center, VerticalAlignment: Center); } Label { Text: "Vitalité"; Anchor: (Width: 176); Style: (FontSize: 14, TextColor: #d7e0ea, Alignment: Start, VerticalAlignment: Center); } Group { FlexWeight: 1; } Label #HealthStatValueLabel { Text: "0"; Anchor: (Width: 40); Style: (FontName: "Secondary", FontSize: 16, RenderBold: true, TextColor: #df89a2, Alignment: End, VerticalAlignment: Center); } Group { Anchor: (Width: 4); } TextButton #AddHealthButton { Text: "+"; Style: (...$C.@MainButtonStyle); Anchor: (Width: 32, Height: 30); } }
         $C.@SmallSpacer {}
-        Group { Anchor: (Height: 32); LayoutMode: Left; Padding: (Right: 1); Background: #273247(0.94); Label { Text: "SAG"; Anchor: (Width: 46); Style: (FontName: "Secondary", FontSize: 12, RenderBold: true, TextColor: #a171ff, Alignment: Center, VerticalAlignment: Center); } Label { Text: "Sagesse"; Anchor: (Width: 176); Style: (FontSize: 14, TextColor: #d3dde6, Alignment: Start, VerticalAlignment: Center); } Group { FlexWeight: 1; } Label #WisdomStatValueLabel { Text: "0"; Anchor: (Width: 40); Style: (FontName: "Secondary", FontSize: 16, RenderBold: true, TextColor: #b276ff, Alignment: End, VerticalAlignment: Center); } Group { Anchor: (Width: 4); } TextButton #AddWisdomButton { Text: "+"; Style: (...$C.@MainButtonStyle); Anchor: (Width: 32, Height: 30); } }
+        Group { Anchor: (Height: 32); LayoutMode: Left; Padding: (Right: 1); Background: #222d38(0.94); Label { Text: "SAG"; Anchor: (Width: 46); Style: (FontName: "Secondary", FontSize: 12, RenderBold: true, TextColor: #9d86cc, Alignment: Center, VerticalAlignment: Center); } Label { Text: "Sagesse"; Anchor: (Width: 176); Style: (FontSize: 14, TextColor: #d7e0ea, Alignment: Start, VerticalAlignment: Center); } Group { FlexWeight: 1; } Label #WisdomStatValueLabel { Text: "0"; Anchor: (Width: 40); Style: (FontName: "Secondary", FontSize: 16, RenderBold: true, TextColor: #b29ac7, Alignment: End, VerticalAlignment: Center); } Group { Anchor: (Width: 4); } TextButton #AddWisdomButton { Text: "+"; Style: (...$C.@MainButtonStyle); Anchor: (Width: 32, Height: 30); } }
         $C.@SmallSpacer {}
-        Group { Anchor: (Height: 32); LayoutMode: Left; Padding: (Right: 1); Background: #273247(0.94); Label { Text: "FOR"; Anchor: (Width: 46); Style: (FontName: "Secondary", FontSize: 12, RenderBold: true, TextColor: #e7d89a, Alignment: Center, VerticalAlignment: Center); } Label { Text: "Force"; Anchor: (Width: 176); Style: (FontSize: 14, TextColor: #d3dde6, Alignment: Start, VerticalAlignment: Center); } Group { FlexWeight: 1; } Label #StrengthStatValueLabel { Text: "0"; Anchor: (Width: 40); Style: (FontName: "Secondary", FontSize: 16, RenderBold: true, TextColor: #f7d26d, Alignment: End, VerticalAlignment: Center); } Group { Anchor: (Width: 4); } TextButton #AddStrengthButton { Text: "+"; Style: (...$C.@MainButtonStyle); Anchor: (Width: 32, Height: 30); } }
+        Group { Anchor: (Height: 32); LayoutMode: Left; Padding: (Right: 1); Background: #222d38(0.94); Label { Text: "FOR"; Anchor: (Width: 46); Style: (FontName: "Secondary", FontSize: 12, RenderBold: true, TextColor: #c8b181, Alignment: Center, VerticalAlignment: Center); } Label { Text: "Force"; Anchor: (Width: 176); Style: (FontSize: 14, TextColor: #d7e0ea, Alignment: Start, VerticalAlignment: Center); } Group { FlexWeight: 1; } Label #StrengthStatValueLabel { Text: "0"; Anchor: (Width: 40); Style: (FontName: "Secondary", FontSize: 16, RenderBold: true, TextColor: #d2b178, Alignment: End, VerticalAlignment: Center); } Group { Anchor: (Width: 4); } TextButton #AddStrengthButton { Text: "+"; Style: (...$C.@MainButtonStyle); Anchor: (Width: 32, Height: 30); } }
         $C.@SmallSpacer {}
-        Group { Anchor: (Height: 32); LayoutMode: Left; Padding: (Right: 1); Background: #273247(0.94); Label { Text: "INT"; Anchor: (Width: 46); Style: (FontName: "Secondary", FontSize: 12, RenderBold: true, TextColor: #f0873d, Alignment: Center, VerticalAlignment: Center); } Label { Text: "Intelligence"; Anchor: (Width: 176); Style: (FontSize: 14, TextColor: #d3dde6, Alignment: Start, VerticalAlignment: Center); } Group { FlexWeight: 1; } Label #IntelligenceStatValueLabel { Text: "0"; Anchor: (Width: 40); Style: (FontName: "Secondary", FontSize: 16, RenderBold: true, TextColor: #ff8f3f, Alignment: End, VerticalAlignment: Center); } Group { Anchor: (Width: 4); } TextButton #AddIntelligenceButton { Text: "+"; Style: (...$C.@MainButtonStyle); Anchor: (Width: 32, Height: 30); } }
+        Group { Anchor: (Height: 32); LayoutMode: Left; Padding: (Right: 1); Background: #222d38(0.94); Label { Text: "INT"; Anchor: (Width: 46); Style: (FontName: "Secondary", FontSize: 12, RenderBold: true, TextColor: #d39a6d, Alignment: Center, VerticalAlignment: Center); } Label { Text: "Intelligence"; Anchor: (Width: 176); Style: (FontSize: 14, TextColor: #d7e0ea, Alignment: Start, VerticalAlignment: Center); } Group { FlexWeight: 1; } Label #IntelligenceStatValueLabel { Text: "0"; Anchor: (Width: 40); Style: (FontName: "Secondary", FontSize: 16, RenderBold: true, TextColor: #dfaa81, Alignment: End, VerticalAlignment: Center); } Group { Anchor: (Width: 4); } TextButton #AddIntelligenceButton { Text: "+"; Style: (...$C.@MainButtonStyle); Anchor: (Width: 32, Height: 30); } }
         $C.@SmallSpacer {}
-        Group { Anchor: (Height: 32); LayoutMode: Left; Padding: (Right: 1); Background: #273247(0.94); Label { Text: "CHA"; Anchor: (Width: 46); Style: (FontName: "Secondary", FontSize: 12, RenderBold: true, TextColor: #38b2ff, Alignment: Center, VerticalAlignment: Center); } Label { Text: "Chance"; Anchor: (Width: 176); Style: (FontSize: 14, TextColor: #d3dde6, Alignment: Start, VerticalAlignment: Center); } Group { FlexWeight: 1; } Label #ChanceStatValueLabel { Text: "0"; Anchor: (Width: 40); Style: (FontName: "Secondary", FontSize: 16, RenderBold: true, TextColor: #53c7ff, Alignment: End, VerticalAlignment: Center); } Group { Anchor: (Width: 4); } TextButton #AddChanceButton { Text: "+"; Style: (...$C.@MainButtonStyle); Anchor: (Width: 32, Height: 30); } }
+        Group { Anchor: (Height: 32); LayoutMode: Left; Padding: (Right: 1); Background: #222d38(0.94); Label { Text: "CHA"; Anchor: (Width: 46); Style: (FontName: "Secondary", FontSize: 12, RenderBold: true, TextColor: #7fb8d3, Alignment: Center, VerticalAlignment: Center); } Label { Text: "Chance"; Anchor: (Width: 176); Style: (FontSize: 14, TextColor: #d7e0ea, Alignment: Start, VerticalAlignment: Center); } Group { FlexWeight: 1; } Label #ChanceStatValueLabel { Text: "0"; Anchor: (Width: 40); Style: (FontName: "Secondary", FontSize: 16, RenderBold: true, TextColor: #94c3d8, Alignment: End, VerticalAlignment: Center); } Group { Anchor: (Width: 4); } TextButton #AddChanceButton { Text: "+"; Style: (...$C.@MainButtonStyle); Anchor: (Width: 32, Height: 30); } }
         $C.@SmallSpacer {}
-        Group { Anchor: (Height: 32); LayoutMode: Left; Padding: (Right: 1); Background: #273247(0.94); Label { Text: "AGI"; Anchor: (Width: 46); Style: (FontName: "Secondary", FontSize: 12, RenderBold: true, TextColor: #31bf6b, Alignment: Center, VerticalAlignment: Center); } Label { Text: "Agilité"; Anchor: (Width: 176); Style: (FontSize: 14, TextColor: #d3dde6, Alignment: Start, VerticalAlignment: Center); } Group { FlexWeight: 1; } Label #AgilityStatValueLabel { Text: "0"; Anchor: (Width: 40); Style: (FontName: "Secondary", FontSize: 16, RenderBold: true, TextColor: #3fd976, Alignment: End, VerticalAlignment: Center); } Group { Anchor: (Width: 4); } TextButton #AddAgilityButton { Text: "+"; Style: (...$C.@MainButtonStyle); Anchor: (Width: 32, Height: 30); } }
+        Group { Anchor: (Height: 32); LayoutMode: Left; Padding: (Right: 1); Background: #222d38(0.94); Label { Text: "AGI"; Anchor: (Width: 46); Style: (FontName: "Secondary", FontSize: 12, RenderBold: true, TextColor: #7eb698, Alignment: Center, VerticalAlignment: Center); } Label { Text: "Agilité"; Anchor: (Width: 176); Style: (FontSize: 14, TextColor: #d7e0ea, Alignment: Start, VerticalAlignment: Center); } Group { FlexWeight: 1; } Label #AgilityStatValueLabel { Text: "0"; Anchor: (Width: 40); Style: (FontName: "Secondary", FontSize: 16, RenderBold: true, TextColor: #94c8ac, Alignment: End, VerticalAlignment: Center); } Group { Anchor: (Width: 4); } TextButton #AddAgilityButton { Text: "+"; Style: (...$C.@MainButtonStyle); Anchor: (Width: 32, Height: 30); } }
 
         Group { FlexWeight: 1; }
       }
@@ -148,9 +148,9 @@ Group #MainContainer {
         FlexWeight: 1;
         LayoutMode: Top;
         Padding: (Full: 8);
-        Background: (TexturePath: "../../Commons/Container/ContainerPanelPatch.png", Border: 4);
+        Background: #1a232d(0.98);
 
-        Group { Anchor: (Height: 22); Label { Text: "STATS DERIVEES"; Style: (FontName: "Secondary", FontSize: 14, RenderUppercase: true, RenderBold: true, LetterSpacing: 1, TextColor: #b89a66, Alignment: Start); } }
+        Group { Anchor: (Height: 22); Label { Text: "STATS DERIVEES"; Style: (FontName: "Secondary", FontSize: 14, RenderUppercase: true, RenderBold: true, LetterSpacing: 1, TextColor: #d2a85d, Alignment: Start); } }
         $C.@SmallSpacer {}
 
         Group { Anchor: (Height: 24); LayoutMode: Left; Label { Text: "REG"; Anchor: (Width: 42); Style: (FontName: "Secondary", FontSize: 13, RenderBold: true, TextColor: #58e7a3, Alignment: Start, VerticalAlignment: Center); } Label { Text: "Regeneration vie"; Anchor: (Width: 170); Style: (FontSize: 13, TextColor: #d3dde6, Alignment: Start, VerticalAlignment: Center); } Label { Text: "PV/s via Intelligence"; Anchor: (Width: 176); Style: (FontSize: 12, TextColor: #8e9bad, Alignment: Start, VerticalAlignment: Center); } Group { FlexWeight: 1; } Label #LifeRegenStatValueLabel { Text: "0%"; Anchor: (Width: 78); Style: (FontName: "Secondary", FontSize: 15, RenderBold: true, TextColor: #58e7a3, Alignment: End, VerticalAlignment: Center); } }
@@ -162,7 +162,7 @@ Group #MainContainer {
         $C.@SmallSpacer {}
         $C.@HytaleSectionSeparator {}
         $C.@SmallSpacer {}
-        Group { Anchor: (Height: 22); Label { Text: "STATS PRIMAIRES"; Style: (FontName: "Secondary", FontSize: 14, RenderUppercase: true, RenderBold: true, LetterSpacing: 1, TextColor: #b89a66, Alignment: Start); } }
+        Group { Anchor: (Height: 22); Label { Text: "STATS PRIMAIRES"; Style: (FontName: "Secondary", FontSize: 14, RenderUppercase: true, RenderBold: true, LetterSpacing: 1, TextColor: #d2a85d, Alignment: Start); } }
         $C.@SmallSpacer {}
 
         Group { Anchor: (Height: 24); LayoutMode: Left; Label { Text: "VIT"; Anchor: (Width: 42); Style: (FontName: "Secondary", FontSize: 13, RenderBold: true, TextColor: #e65c7d, Alignment: Start, VerticalAlignment: Center); } Label { Text: "Vitalité"; Anchor: (Width: 170); Style: (FontSize: 13, TextColor: #d3dde6, Alignment: Start, VerticalAlignment: Center); } Label { Text: "Vitalité totale"; Anchor: (Width: 176); Style: (FontSize: 12, TextColor: #8e9bad, Alignment: Start, VerticalAlignment: Center); } Group { FlexWeight: 1; } Label #GlobalHealthStatValueLabel { Text: "0"; Anchor: (Width: 78); Style: (FontName: "Secondary", FontSize: 15, RenderBold: true, TextColor: #ff4f94, Alignment: End, VerticalAlignment: Center); } }
@@ -175,7 +175,7 @@ Group #MainContainer {
         $C.@SmallSpacer {}
         $C.@HytaleSectionSeparator {}
         $C.@SmallSpacer {}
-        Group { Anchor: (Height: 22); Label { Text: "RESISTANCES ELEMENTAIRES"; Style: (FontName: "Secondary", FontSize: 14, RenderUppercase: true, RenderBold: true, LetterSpacing: 1, TextColor: #b89a66, Alignment: Start); } }
+        Group { Anchor: (Height: 22); Label { Text: "RESISTANCES ELEMENTAIRES"; Style: (FontName: "Secondary", FontSize: 14, RenderUppercase: true, RenderBold: true, LetterSpacing: 1, TextColor: #d2a85d, Alignment: Start); } }
         $C.@SmallSpacer {}
 
         Group { Anchor: (Height: 24); LayoutMode: Left; Label { Text: "RST"; Anchor: (Width: 42); Style: (FontName: "Secondary", FontSize: 13, RenderBold: true, TextColor: #d59f4b, Alignment: Start, VerticalAlignment: Center); } Label { Text: "Resistance terre"; Anchor: (Width: 170); Style: (FontSize: 13, TextColor: #d3dde6, Alignment: Start, VerticalAlignment: Center); } Label { Text: "Reduit les degats terre"; Anchor: (Width: 176); Style: (FontSize: 12, TextColor: #8e9bad, Alignment: Start, VerticalAlignment: Center); } Group { FlexWeight: 1; } Label #EarthResistanceStatValueLabel { Text: "0%"; Anchor: (Width: 78); Style: (FontName: "Secondary", FontSize: 15, RenderBold: true, TextColor: #d59f4b, Alignment: End, VerticalAlignment: Center); } }
@@ -186,7 +186,7 @@ Group #MainContainer {
         $C.@SmallSpacer {}
         $C.@HytaleSectionSeparator {}
         $C.@SmallSpacer {}
-        Group { Anchor: (Height: 22); Label { Text: "STATS DE COMBAT"; Style: (FontName: "Secondary", FontSize: 14, RenderUppercase: true, RenderBold: true, LetterSpacing: 1, TextColor: #b89a66, Alignment: Start); } }
+        Group { Anchor: (Height: 22); Label { Text: "STATS DE COMBAT"; Style: (FontName: "Secondary", FontSize: 14, RenderUppercase: true, RenderBold: true, LetterSpacing: 1, TextColor: #d2a85d, Alignment: Start); } }
         $C.@SmallSpacer {}
 
         Group { Anchor: (Height: 24); LayoutMode: Left; Label { Text: "CRT"; Anchor: (Width: 42); Style: (FontName: "Secondary", FontSize: 13, RenderBold: true, TextColor: #ffb63f, Alignment: Start, VerticalAlignment: Center); } Label { Text: "Taux critique"; Anchor: (Width: 170); Style: (FontSize: 13, TextColor: #d3dde6, Alignment: Start, VerticalAlignment: Center); } Label { Text: "Chance de critique"; Anchor: (Width: 176); Style: (FontSize: 12, TextColor: #8e9bad, Alignment: Start, VerticalAlignment: Center); } Group { FlexWeight: 1; } Label #CriticalPctStatValueLabel { Text: "0%"; Anchor: (Width: 78); Style: (FontName: "Secondary", FontSize: 14, RenderBold: true, TextColor: #ffb63f, Alignment: End, VerticalAlignment: Center); } }

@@ -1,47 +1,50 @@
 @TopTabButtonStyle = TextButtonStyle(
   Default: (
-    LabelStyle: (FontSize: 18, TextColor: #7c8b99, RenderUppercase: true, RenderBold: true, VerticalAlignment: End, Alignment: Center)
+    Background: #000000(0.00),
+    LabelStyle: (FontSize: 16, TextColor: #8e9cab, RenderUppercase: true, RenderBold: true, VerticalAlignment: Center, Alignment: Center)
   ),
   Hovered: (
-    Background: "../../Commons/Navigation/NavigationItemHovered.png",
-    LabelStyle: (FontSize: 18, TextColor: #bbcedf, RenderUppercase: true, RenderBold: true, VerticalAlignment: End, Alignment: Center)
+    Background: #ffffff(0.06),
+    LabelStyle: (FontSize: 16, TextColor: #d2dce8, RenderUppercase: true, RenderBold: true, VerticalAlignment: Center, Alignment: Center)
   )
 );
 
 @TopTabButtonActiveStyle = TextButtonStyle(
   Default: (
-    Background: "../../Commons/Navigation/NavigationItemSelected.png",
-    LabelStyle: (FontSize: 18, TextColor: #e8bd6e, RenderUppercase: true, RenderBold: true, VerticalAlignment: End, Alignment: Center)
+    Background: #d2a85d(0.20),
+    LabelStyle: (FontSize: 16, TextColor: #e4be7c, RenderUppercase: true, RenderBold: true, VerticalAlignment: Center, Alignment: Center)
   ),
   Hovered: (
-    Background: "../../Commons/Navigation/NavigationItemSelected.png",
-    LabelStyle: (FontSize: 18, TextColor: #e8bd6e, RenderUppercase: true, RenderBold: true, VerticalAlignment: End, Alignment: Center)
+    Background: #d2a85d(0.26),
+    LabelStyle: (FontSize: 16, TextColor: #eac88e, RenderUppercase: true, RenderBold: true, VerticalAlignment: Center, Alignment: Center)
   )
 );
 
 @TopBar = Group {
-  Anchor: (Top: 0, Left: 0, Right: 0, Height: 83);
-  Background: "../../Commons/TopBar/Background.png";
+  Anchor: (Top: 0, Left: 0, Right: 0, Height: 72);
+  Background: #11181f(0.96);
   LayoutMode: Left;
+  Padding: (Left: 18, Right: 18, Top: 8, Bottom: 8);
 
   Group #TopBarLogo {
-    Anchor: (Width: 213, Height: 83, Left: 25);
+    Anchor: (Width: 213, Height: 56);
     LayoutMode: Left;
 
-    Group {
-      Anchor: (Width: 210, Height: 70);
-      Background: "../../Commons/TopBar/Logo.png";
+    Label {
+      Text: "WELLTALE";
+      Anchor: (Width: 210, Height: 56);
+      Style: (FontName: "Secondary", FontSize: 24, RenderUppercase: true, RenderBold: true, LetterSpacing: 2, TextColor: #d2a85d, Alignment: Center, VerticalAlignment: Center);
     }
 
     Group {
-      Anchor: (Height: 75, Width: 3);
-      Background: "../../Commons/TopBar/MenuSeperator.png";
+      Anchor: (Height: 40, Width: 2);
+      Background: #31414f(1.00);
     }
   }
 
   Group #TopBarTabs {
     LayoutMode: Left;
-    Anchor: (Bottom: 4);
+    Anchor: (Height: 52);
   }
 
   Group {
@@ -50,6 +53,6 @@
 
   Group #TopBarActions {
     LayoutMode: Right;
-    Anchor: (Bottom: 4, Right: 25);
+    Anchor: (Height: 52);
   }
 };

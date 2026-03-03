@@ -3,38 +3,38 @@ $M = "../Shared/MenuBar.ui";
 
 Group #MainContainer {
   Anchor: (Top: 0, Left: 0, Right: 0, Bottom: 0);
-  Background: #000000(0.58);
+  Background: #0b1117(0.78);
 
   $M.@TopBar #TopBar {
     #TopBarTabs {
       TextButton #TabInventory {
         Text: "Inventaire";
         Style: (...$M.@TopTabButtonActiveStyle);
-        Anchor: (Width: 220, Height: 79);
+        Anchor: (Width: 220, Height: 56);
       }
 
       TextButton #TabCharacteristics {
         Text: "Caracteristiques";
         Style: (...$M.@TopTabButtonStyle);
-        Anchor: (Width: 260, Height: 79);
+        Anchor: (Width: 260, Height: 56);
       }
     }
   }
 
   Group #Frame {
-    Anchor: (Top: 92, Bottom: 10, Horizontal: 55);
+    Anchor: (Top: 80, Bottom: 10, Horizontal: 55);
     LayoutMode: Top;
     Padding: (Full: 10);
-    Background: (TexturePath: "../../Commons/Container/ContainerFullPatch.png", HorizontalBorder: 30, VerticalBorder: 30);
+    Background: #121a22(0.98);
 
     Group #Header {
       Anchor: (Height: 54);
-      Background: (TexturePath: "../../Commons/Container/ContainerHeaderStyled.png", HorizontalBorder: 50, VerticalBorder: 0);
+      Background: #1a232d(1.00);
       Padding: (Left: 16, Right: 16);
 
       Label {
         Text: "INVENTAIRE";
-        Style: (FontName: "Secondary", FontSize: 22, RenderBold: true, RenderUppercase: true, LetterSpacing: 1, Alignment: Center, TextColor: #d2bc90);
+        Style: (FontName: "Secondary", FontSize: 22, RenderBold: true, RenderUppercase: true, LetterSpacing: 1, Alignment: Center, TextColor: #d2a85d);
       }
     }
 
@@ -55,11 +55,11 @@ Group #MainContainer {
           FlexWeight: 31;
           LayoutMode: Top;
           Padding: (Full: 10);
-          Background: (TexturePath: "../../Commons/Container/ContainerPanelPatch.png", Border: 4);
+          Background: #1a232d(0.98);
 
           Label #EquipmentTitle {
             Text: "EQUIPEMENT";
-            Style: (FontName: "Secondary", FontSize: 16, RenderUppercase: true, RenderBold: true, Alignment: Center, TextColor: #c9b486);
+            Style: (FontName: "Secondary", FontSize: 16, RenderUppercase: true, RenderBold: true, Alignment: Center, TextColor: #d2a85d);
           }
 
           $C.@HytaleSectionSeparator {}
@@ -136,11 +136,11 @@ Group #MainContainer {
           FlexWeight: 50;
           LayoutMode: Top;
           Padding: (Full: 10);
-          Background: (TexturePath: "../../Commons/Container/ContainerPanelPatch.png", Border: 4);
+          Background: #1a232d(0.98);
 
           Label #InventoryTitle {
             Text: "SACS";
-            Style: (FontName: "Secondary", FontSize: 16, RenderUppercase: true, RenderBold: true, Alignment: Center, TextColor: #c9b486);
+            Style: (FontName: "Secondary", FontSize: 16, RenderUppercase: true, RenderBold: true, Alignment: Center, TextColor: #d2a85d);
           }
 
           $C.@HytaleSectionSeparator {}
@@ -150,7 +150,7 @@ Group #MainContainer {
 
             Label {
               Text: "Barre rapide";
-              Style: (FontSize: 12, TextColor: #96a9be, Alignment: Center);
+              Style: (FontSize: 12, TextColor: #94a2b2, Alignment: Center);
               Anchor: (Height: 18);
             }
 
@@ -169,7 +169,7 @@ Group #MainContainer {
                   SlotSize: 46,
                   SlotIconSize: 36,
                   SlotSpacing: 4,
-                  SlotBackground: "../../Commons/Tiles/SlotDefault.png"
+                  SlotBackground: "../../Commons/Slots/SlotDefault.png"
                 );
               }
             }
@@ -178,7 +178,7 @@ Group #MainContainer {
 
             Label {
               Text: "Sac";
-              Style: (FontSize: 12, TextColor: #96a9be, Alignment: Center);
+              Style: (FontSize: 12, TextColor: #94a2b2, Alignment: Center);
               Anchor: (Height: 18);
             }
 
@@ -197,7 +197,7 @@ Group #MainContainer {
                   SlotSize: 46,
                   SlotIconSize: 36,
                   SlotSpacing: 4,
-                  SlotBackground: "../../Commons/Tiles/SlotDefault.png"
+                  SlotBackground: "../../Commons/Slots/SlotDefault.png"
                 );
               }
             }
@@ -208,14 +208,14 @@ Group #MainContainer {
 
               Label #GemsFooterAmount {
                 Text: "0";
-                Style: (FontSize: 12, TextColor: #57CD4BFF, Alignment: Center);
+                Style: (FontSize: 12, TextColor: #d2a85d, Alignment: Center);
               }
 
               $C.@SmallSpacer {}
 
               Label #GemsFooterLabel {
                 Text: "Gemmes";
-                Style: (FontSize: 12, TextColor: #96a9be, Alignment: Center);
+                Style: (FontSize: 12, TextColor: #94a2b2, Alignment: Center);
               }
             }
           }
@@ -227,11 +227,11 @@ Group #MainContainer {
           FlexWeight: 24;
           LayoutMode: Top;
           Padding: (Full: 10);
-          Background: (TexturePath: "../../Commons/Container/ContainerPanelPatch.png", Border: 4);
+          Background: #1a232d(0.98);
 
           Label #LootTitle {
             Text: "BUTIN";
-            Style: (FontName: "Secondary", FontSize: 16, RenderUppercase: true, RenderBold: true, Alignment: Center, TextColor: #c9b486);
+            Style: (FontName: "Secondary", FontSize: 16, RenderUppercase: true, RenderBold: true, Alignment: Center, TextColor: #d2a85d);
           }
 
           $C.@HytaleSectionSeparator {}
@@ -251,7 +251,7 @@ Group #MainContainer {
                 SlotSize: 44,
                 SlotIconSize: 36,
                 SlotSpacing: 4,
-                SlotBackground: "../../Commons/Tiles/SlotDefault.png"
+                SlotBackground: "../../Commons/Slots/SlotDefault.png"
               );
             }
           }
@@ -280,7 +280,7 @@ Group #MainContainer {
 
             Label {
               Text: "Butins:";
-              Style: (FontSize: 12, TextColor: #96a9be, Alignment: Start, VerticalAlignment: Center);
+              Style: (FontSize: 12, TextColor: #94a2b2, Alignment: Start, VerticalAlignment: Center);
               Anchor: (Width: 100, Height: 20);
             }
 
@@ -288,7 +288,7 @@ Group #MainContainer {
 
             Label #LootCountLabel {
               Text: "0/0";
-              Style: (FontSize: 12, TextColor: #ccb588, Alignment: End, VerticalAlignment: Center);
+              Style: (FontSize: 12, TextColor: #d2a85d, Alignment: End, VerticalAlignment: Center);
               Anchor: (Width: 70, Height: 20);
             }
           }
