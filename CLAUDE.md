@@ -105,7 +105,9 @@ Each game system follows a consistent pattern:
 - `ItemStatRoller` rolls per-stat modifier values and stores rolls under metadata key `wtItemRoll`
 - Runtime virtual item IDs (`<baseItemId>__wtroll_<hash>`) are used for tooltip/stat rendering without mutating source assets
 - `RolledItemPacketAdapter` rewrites outbound/inbound packet item IDs for custom pages and inventory interactions
-- `RolledItemStatSystem` applies equipped rolled deltas into `EntityStatMap` with per-player caching/signatures
+- `RolledItemStatSystem` applies equipped rolled deltas into `EntityStatMap` with per-player caching/fingerprints
+- `RolledItemStatSystem` performs immediate resync on equipment fingerprint change, with periodic fallback rescan
+- `RolledItemConstants` centralizes roll-system tuning constants (rescan interval, epsilon, cache limits)
 
 ## File Structure
 
@@ -201,6 +203,7 @@ The mod heavily uses Hytale's Entity Component System:
 - On entity remove/leave, sync runtime state back to persisted character data (XP + inventory + custom inventory sections).
 - Always clear per-player runtime guards/caches on leave (packet interceptor install guards, stamina tracking maps, etc.).
 - For rolled items, also clear per-player rolled caches on leave (`RolledItemPacketAdapter`, `RolledItemStatSystem`).
+- When max health/stamina modifiers are (re)applied during character enter/class selection, align current values to max to avoid partial spawn resources.
 
 ## UI Development
 
@@ -259,7 +262,9 @@ The mod heavily uses Hytale's Entity Component System:
 ## Manual Smoke Checklist
 
 - Character flow: create/select character, relog, and verify class/stats/XP/inventory restoration.
+- Spawn resources: after class/character selection, verify player starts with full health and full stamina.
 - Inventory flow: transfer, drag/drop, collect-all, equipment slots, and loot-cap behavior.
+- Rolled equipment flow: equipping rolled HP/Stamina gear should not show long transient jumps before settling.
 - Combat flow: spell stamina usage, cooldown behavior, and damage/nameplate consistency.
 - Runtime cleanup: repeated join/leave cycles without duplicate packet handlers or stale per-player caches.
 
