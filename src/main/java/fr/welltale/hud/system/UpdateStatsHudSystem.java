@@ -9,10 +9,9 @@ import com.hypixel.hytale.component.system.tick.EntityTickingSystem;
 import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.modules.entitystats.EntityStatMap;
 import com.hypixel.hytale.server.core.modules.entitystats.EntityStatValue;
-import com.hypixel.hytale.server.core.modules.entitystats.asset.EntityStatType;
+import com.hypixel.hytale.server.core.modules.entitystats.asset.DefaultEntityStatTypes;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
-import fr.welltale.characteristic.Characteristics;
 import fr.welltale.hud.HudBuilder;
 import org.jspecify.annotations.NonNull;
 
@@ -34,10 +33,10 @@ public class UpdateStatsHudSystem extends EntityTickingSystem<EntityStore> {
         EntityStatMap playerStatsMap = store.getComponent(ref, EntityStatMap.getComponentType());
         if (playerStatsMap == null) return;
 
-        EntityStatValue healthStatValue = playerStatsMap.get(EntityStatType.getAssetMap().getIndex(Characteristics.STATIC_MODIFIER_HEALTH_KEY));
+        EntityStatValue healthStatValue = playerStatsMap.get(DefaultEntityStatTypes.getHealth());
         if (healthStatValue == null) return;
 
-        EntityStatValue staminaStatValue = playerStatsMap.get(EntityStatType.getAssetMap().getIndex(Characteristics.STATIC_MODIFIER_STAMINA_KEY));
+        EntityStatValue staminaStatValue = playerStatsMap.get(DefaultEntityStatTypes.getStamina());
         if (staminaStatValue == null) return;
 
 //        if (healthStatValue.get() == healthStatValue.getMax() && staminaStatValue.get() == staminaStatValue.getMax()) {

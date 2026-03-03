@@ -9,7 +9,6 @@ import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.ParticleUtil;
 import com.hypixel.hytale.server.core.universe.world.SoundUtil;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
-import fr.welltale.characteristic.Characteristics;
 import fr.welltale.constant.Constant;
 import fr.welltale.hud.HudBuilder;
 import fr.welltale.level.event.LevelUpEvent;
@@ -24,6 +23,8 @@ import java.util.function.Consumer;
 public class LevelUpHandler implements Consumer<LevelUpEvent> {
     private final CharacterCacheRepository characterCacheRepository;
     private final HytaleLogger logger;
+
+    private static final int LEVEL_UP_CHARACTERISTICS_POINTS = 3;
 
     @Override
     public void accept(LevelUpEvent event) {
@@ -42,7 +43,7 @@ public class LevelUpHandler implements Consumer<LevelUpEvent> {
                     .log("[LEVEL] LevelUpHandler Accept Error: CachedCharacter is null");
             return;
         } else {
-            cachedCharacter.setCharacteristicPoints(cachedCharacter.getCharacteristicPoints() + Characteristics.LEVEL_UP_CHARACTERISTICS_POINTS * event.levelsGained());
+            cachedCharacter.setCharacteristicPoints(cachedCharacter.getCharacteristicPoints() + LEVEL_UP_CHARACTERISTICS_POINTS * event.levelsGained());
 
             try {
                 this.characterCacheRepository.updateCharacter(cachedCharacter);
@@ -55,7 +56,7 @@ public class LevelUpHandler implements Consumer<LevelUpEvent> {
         Title.sendTitle(
                 playerRef,
                 "Niveau " + event.newLevel() + " !",
-                "Vous avez gagné " + Characteristics.LEVEL_UP_CHARACTERISTICS_POINTS * event.levelsGained() + " points de caractéristiques",
+                "Vous avez gagné " + LEVEL_UP_CHARACTERISTICS_POINTS * event.levelsGained() + " points de caractéristiques",
                 false
         );
 

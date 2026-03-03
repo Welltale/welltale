@@ -1,8 +1,8 @@
 package fr.welltale.inventory;
 
+import com.hypixel.hytale.protocol.ItemWithAllMetadata;
 import com.hypixel.hytale.server.core.inventory.Inventory;
 import com.hypixel.hytale.server.core.inventory.ItemStack;
-import com.hypixel.hytale.protocol.ItemWithAllMetadata;
 import lombok.Getter;
 import org.bson.BsonDocument;
 

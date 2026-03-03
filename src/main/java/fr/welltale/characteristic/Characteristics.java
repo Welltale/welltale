@@ -14,7 +14,6 @@ import lombok.NonNull;
 import lombok.Setter;
 
 public class Characteristics {
-    public static final int LEVEL_UP_CHARACTERISTICS_POINTS = 3;
     public static final float MAX_ELEMENTAL_RESISTANCE = 50f;
 
     public static final int DEFAULT_HEALTH = 20;
@@ -83,7 +82,6 @@ public class Characteristics {
         private static final int LIFE_REGEN = EntityStatType.getAssetMap().getIndex(STATIC_MODIFIER_LIFE_REGEN_PCT_KEY);
         private static final int DROP_CHANCE = EntityStatType.getAssetMap().getIndex(STATIC_MODIFIER_DROP_CHANCE_KEY);
         private static final int MOVE_SPEED = EntityStatType.getAssetMap().getIndex(STATIC_MODIFIER_MOVE_SPEED_KEY);
-        private static final int STAMINA = EntityStatType.getAssetMap().getIndex(STATIC_MODIFIER_STAMINA_KEY);
         private static final int CRITICAL_DAMAGE = EntityStatType.getAssetMap().getIndex(STATIC_MODIFIER_CRITICAL_DAMAGE_KEY);
         private static final int CRITICAL_PCT = EntityStatType.getAssetMap().getIndex(STATIC_MODIFIER_CRITICAL_PCT_KEY);
         private static final int CRITICAL_RESISTANCE = EntityStatType.getAssetMap().getIndex(STATIC_MODIFIER_CRITICAL_RESISTANCE_KEY);
@@ -138,14 +136,10 @@ public class Characteristics {
             @NonNull Ref<EntityStore> ref,
             @NonNull Store<EntityStore> store
     ) {
-        if (!ref.isValid()) {
-            return new AdditionalCharacteristics();
-        }
+        if (!ref.isValid()) return new AdditionalCharacteristics();
 
         EntityStatMap playerStatMap = store.getComponent(ref, EntityStatMap.getComponentType());
-        if (playerStatMap == null) {
-            return new AdditionalCharacteristics();
-        }
+        if (playerStatMap == null) return new AdditionalCharacteristics();
 
         AdditionalCharacteristics additionalCharacteristics = new AdditionalCharacteristics();
 
@@ -194,7 +188,7 @@ public class Characteristics {
             additionalCharacteristics.moveSpeed = moveSpeedStatValue.getMax();
         }
 
-        EntityStatValue staminaStatValue = playerStatMap.get(StatIndices.STAMINA);
+        EntityStatValue staminaStatValue = playerStatMap.get(DefaultEntityStatTypes.getStamina());
         if (staminaStatValue != null) {
             additionalCharacteristics.stamina = (int) staminaStatValue.getMax();
         }
@@ -242,25 +236,23 @@ public class Characteristics {
             @NonNull Store<EntityStore> store,
             @NonNull EditableCharacteristics playerEditableCharacteristics
     ) {
-        if (!ref.isValid()) {
-            return;
-        }
+        if (!ref.isValid()) return;
 
         EntityStatMap playerStatMap = store.getComponent(ref, EntityStatMap.getComponentType());
-        if (playerStatMap == null) {
-            return;
-        }
+        if (playerStatMap == null) return;
 
+        float calculatedHealth = (DEFAULT_HEALTH + playerEditableCharacteristics.health) - DEFAULT_HEALTH_AMOUNT;
         StaticModifier staticModifierHealth = new StaticModifier(
                 Modifier.ModifierTarget.MAX,
                 StaticModifier.CalculationType.ADDITIVE,
-                (DEFAULT_HEALTH + playerEditableCharacteristics.health) - DEFAULT_HEALTH_AMOUNT
+                calculatedHealth
         );
         playerStatMap.putModifier(
                 DefaultEntityStatTypes.getHealth(),
                 MODIFIER_KEY_HEALTH,
                 staticModifierHealth
         );
+        playerStatMap.maximizeStatValue(DefaultEntityStatTypes.getHealth());
 
         StaticModifier staticModifierWisdom = new StaticModifier(
                 Modifier.ModifierTarget.MAX,
@@ -350,16 +342,18 @@ public class Characteristics {
                 staticModifierMoveSpeed
         );
 
+        float calculatedStamina = DEFAULT_STAMINA - DEFAULT_STAMINA_AMOUNT;
         StaticModifier staticModifierStamina = new StaticModifier(
                 Modifier.ModifierTarget.MAX,
                 StaticModifier.CalculationType.ADDITIVE,
-                DEFAULT_STAMINA - DEFAULT_STAMINA_AMOUNT
+                calculatedStamina
         );
         playerStatMap.putModifier(
                 DefaultEntityStatTypes.getStamina(),
                 MODIFIER_KEY_STAMINA,
                 staticModifierStamina
         );
+        playerStatMap.maximizeStatValue(DefaultEntityStatTypes.getStamina());
 
         StaticModifier staticModifierCriticalDamage = new StaticModifier(
                 Modifier.ModifierTarget.MAX,

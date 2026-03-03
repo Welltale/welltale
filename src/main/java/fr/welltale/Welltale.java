@@ -16,6 +16,7 @@ import fr.welltale.hud.system.UpdateStatsHudSystem;
 import fr.welltale.inventory.InventoryService;
 import fr.welltale.inventory.event.OpenInventoryPacketInterceptor;
 import fr.welltale.inventory.system.PlayerLeaveSystem;
+import fr.welltale.item.system.RolledItemGameModeSystem;
 import fr.welltale.item.system.RolledItemStatSystem;
 import fr.welltale.item.virtual.RolledItemPacketAdapter;
 import fr.welltale.item.virtual.RolledVirtualItemRegistry;
@@ -171,6 +172,8 @@ public class Welltale extends JavaPlugin {
             RolledVirtualItemRegistry rolledVirtualItemRegistry = new RolledVirtualItemRegistry();
             this.rolledItemPacketAdapter = new RolledItemPacketAdapter(logger, rolledVirtualItemRegistry);
             this.rolledItemPacketAdapter.register();
+            this.getEventRegistry().registerGlobal(PlayerReadyEvent.class, this.rolledItemPacketAdapter::onPlayerReady);
+            this.getEntityStoreRegistry().registerSystem(new RolledItemGameModeSystem(this.rolledItemPacketAdapter));
             logger.atInfo().log("Items loaded!");
             //Item
 

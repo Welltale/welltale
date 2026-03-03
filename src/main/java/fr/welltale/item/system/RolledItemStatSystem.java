@@ -6,7 +6,6 @@ import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.component.query.Query;
 import com.hypixel.hytale.component.system.tick.EntityTickingSystem;
-import com.hypixel.hytale.protocol.ItemWithAllMetadata;
 import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.inventory.Inventory;
 import com.hypixel.hytale.server.core.inventory.ItemStack;
@@ -19,6 +18,7 @@ import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import fr.welltale.characteristic.Characteristics;
 import fr.welltale.item.ItemStatRoller;
+import fr.welltale.item.RolledItemConstants;
 import lombok.NonNull;
 
 import java.util.HashMap;
@@ -28,17 +28,21 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class RolledItemStatSystem extends EntityTickingSystem<EntityStore> {
     private static final String MODIFIER_NAMESPACE = "WTRolledItem";
-    private static final double DELTA_EPSILON = 0.0001d;
-    private static final long EQUIPMENT_RESCAN_INTERVAL_MS = 250L;
+    private static final long FNV64_OFFSET_BASIS = 0xcbf29ce484222325L;
+    private static final long FNV64_PRIME = 0x100000001b3L;
+    private static final int EMPTY_STACK_FINGERPRINT = -1;
 
     private final ConcurrentHashMap<UUID, Map<Integer, Double>> lastAppliedByPlayer = new ConcurrentHashMap<>();
-    private final ConcurrentHashMap<UUID, String> lastEquipmentSignatureByPlayer = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<UUID, Long> lastEquipmentFingerprintByPlayer = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<UUID, Long> nextRescanByPlayer = new ConcurrentHashMap<>();
+    private final long equipmentRescanIntervalMs;
 
     private final Map<Integer, StaticModifier.CalculationType> calculationTypeByStat = new HashMap<>();
     private volatile boolean statIndicesInitialized;
 
-    public RolledItemStatSystem() {}
+    public RolledItemStatSystem() {
+        this.equipmentRescanIntervalMs = RolledItemConstants.STATS_EQUIPMENT_RESCAN_INTERVAL_MS;
+    }
 
     private boolean ensureStatIndicesInitialized() {
         if (statIndicesInitialized) return true;
@@ -55,7 +59,7 @@ public class RolledItemStatSystem extends EntityTickingSystem<EntityStore> {
             int lifeRegen = EntityStatType.getAssetMap().getIndex(Characteristics.STATIC_MODIFIER_LIFE_REGEN_PCT_KEY);
             int dropChance = EntityStatType.getAssetMap().getIndex(Characteristics.STATIC_MODIFIER_DROP_CHANCE_KEY);
             int moveSpeed = EntityStatType.getAssetMap().getIndex(Characteristics.STATIC_MODIFIER_MOVE_SPEED_KEY);
-            int stamina = EntityStatType.getAssetMap().getIndex(Characteristics.STATIC_MODIFIER_STAMINA_KEY);
+            int stamina = DefaultEntityStatTypes.getStamina();
             int criticalDamage = EntityStatType.getAssetMap().getIndex(Characteristics.STATIC_MODIFIER_CRITICAL_DAMAGE_KEY);
             int criticalPct = EntityStatType.getAssetMap().getIndex(Characteristics.STATIC_MODIFIER_CRITICAL_PCT_KEY);
             int criticalResistance = EntityStatType.getAssetMap().getIndex(Characteristics.STATIC_MODIFIER_CRITICAL_RESISTANCE_KEY);
@@ -107,11 +111,6 @@ public class RolledItemStatSystem extends EntityTickingSystem<EntityStore> {
 
         UUID playerUuid = playerRef.getUuid();
 
-        long now = System.currentTimeMillis();
-        Long nextRescanAt = nextRescanByPlayer.get(playerUuid);
-        if (nextRescanAt != null && now < nextRescanAt) return;
-        nextRescanByPlayer.put(playerUuid, now + EQUIPMENT_RESCAN_INTERVAL_MS);
-
         EntityStatMap statMap = store.getComponent(ref, EntityStatMap.getComponentType());
         if (statMap == null) return;
 
@@ -121,25 +120,43 @@ public class RolledItemStatSystem extends EntityTickingSystem<EntityStore> {
         Inventory inventory = runtimePlayer.getInventory();
         if (inventory == null) return;
 
-        String currentSignature = buildEquipmentSignature(inventory);
-        String previousSignature = lastEquipmentSignatureByPlayer.get(playerUuid);
-        if (currentSignature.equals(previousSignature)) return;
+        long now = System.currentTimeMillis();
+        EquipmentScan equipmentScan = scanEquipment(inventory);
+        Long previousFingerprint = lastEquipmentFingerprintByPlayer.get(playerUuid);
+        boolean equipmentChanged = previousFingerprint == null || previousFingerprint != equipmentScan.fingerprint();
+
+        if (!equipmentChanged) {
+            Long nextRescanAt = nextRescanByPlayer.get(playerUuid);
+            if (nextRescanAt != null && now < nextRescanAt) return;
+        }
+
+        nextRescanByPlayer.put(playerUuid, now + equipmentRescanIntervalMs);
+
+        Map<Integer, Double> previous = lastAppliedByPlayer.get(playerUuid);
+        if (!equipmentScan.hasRolledMetadata()) {
+            if (previous != null && !previous.isEmpty()) {
+                applyDelta(statMap, previous, Map.of());
+                lastAppliedByPlayer.put(playerUuid, Map.of());
+            }
+
+            lastEquipmentFingerprintByPlayer.put(playerUuid, equipmentScan.fingerprint());
+            return;
+        }
 
         Map<Integer, Double> current = collectEquippedRollDeltas(inventory);
-        Map<Integer, Double> previous = lastAppliedByPlayer.get(playerUuid);
         if (hasSameDeltas(previous, current)) {
-            lastEquipmentSignatureByPlayer.put(playerUuid, currentSignature);
+            lastEquipmentFingerprintByPlayer.put(playerUuid, equipmentScan.fingerprint());
             return;
         }
 
         applyDelta(statMap, previous, current);
         lastAppliedByPlayer.put(playerUuid, current);
-        lastEquipmentSignatureByPlayer.put(playerUuid, currentSignature);
+        lastEquipmentFingerprintByPlayer.put(playerUuid, equipmentScan.fingerprint());
     }
 
     public void clearPlayer(@NonNull UUID playerUuid) {
         lastAppliedByPlayer.remove(playerUuid);
-        lastEquipmentSignatureByPlayer.remove(playerUuid);
+        lastEquipmentFingerprintByPlayer.remove(playerUuid);
         nextRescanByPlayer.remove(playerUuid);
     }
 
@@ -180,37 +197,53 @@ public class RolledItemStatSystem extends EntityTickingSystem<EntityStore> {
         for (Map.Entry<Integer, Double> entry : a.entrySet()) {
             Double other = b.get(entry.getKey());
             if (other == null) return false;
-            if (Math.abs(entry.getValue() - other) > DELTA_EPSILON) return false;
+            if (Math.abs(entry.getValue() - other) > RolledItemConstants.STATS_DELTA_EPSILON) return false;
         }
 
         return true;
     }
 
-    private String buildEquipmentSignature(@NonNull Inventory inventory) {
-        StringBuilder signature = new StringBuilder(256);
-        appendStackSignature(signature, inventory.getItemInHand());
-        appendStackSignature(signature, inventory.getUtilityItem());
+    private EquipmentScan scanEquipment(@NonNull Inventory inventory) {
+        long fingerprint = FNV64_OFFSET_BASIS;
+        boolean hasRolledMetadata = false;
+
+        ItemStatRoller.RollMetadataHint inHandHint = ItemStatRoller.inspectRollMetadata(inventory.getItemInHand());
+        fingerprint = mixStackFingerprint(fingerprint, inventory.getItemInHand(), inHandHint.hash(), inHandHint.length());
+        if (inHandHint.present()) hasRolledMetadata = true;
+
+        ItemStatRoller.RollMetadataHint utilityHint = ItemStatRoller.inspectRollMetadata(inventory.getUtilityItem());
+        fingerprint = mixStackFingerprint(fingerprint, inventory.getUtilityItem(), utilityHint.hash(), utilityHint.length());
+        if (utilityHint.present()) hasRolledMetadata = true;
 
         var armorSection = inventory.getSectionById(Inventory.ARMOR_SECTION_ID);
         if (armorSection != null) {
             short capacity = armorSection.getCapacity();
             for (short slot = 0; slot < capacity; slot++) {
-                appendStackSignature(signature, armorSection.getItemStack(slot));
+                ItemStack stack = armorSection.getItemStack(slot);
+                ItemStatRoller.RollMetadataHint hint = ItemStatRoller.inspectRollMetadata(stack);
+                fingerprint = mixStackFingerprint(fingerprint, stack, hint.hash(), hint.length());
+                if (hint.present()) hasRolledMetadata = true;
             }
         }
 
-        return signature.toString();
+        return new EquipmentScan(fingerprint, hasRolledMetadata);
     }
 
-    private void appendStackSignature(@NonNull StringBuilder signature, ItemStack stack) {
+    private long mixStackFingerprint(long fingerprint, ItemStack stack, int rollHash, int rollLength) {
+        fingerprint = mixFingerprint(fingerprint, 31);
         if (ItemStack.isEmpty(stack)) {
-            signature.append("|-");
-            return;
+            return mixFingerprint(fingerprint, EMPTY_STACK_FINGERPRINT);
         }
 
-        ItemWithAllMetadata packet = stack.toPacket();
-        signature.append('|').append(stack.getItemId());
-        signature.append('|').append(packet != null && packet.metadata != null ? packet.metadata : "");
+        String itemId = stack.getItemId();
+        fingerprint = mixFingerprint(fingerprint, itemId.hashCode());
+        fingerprint = mixFingerprint(fingerprint, rollHash);
+        return mixFingerprint(fingerprint, rollLength);
+    }
+
+    private long mixFingerprint(long fingerprint, int value) {
+        long mixed = fingerprint ^ (value & 0xffffffffL);
+        return mixed * FNV64_PRIME;
     }
 
     private void applyDelta(
@@ -230,6 +263,13 @@ public class RolledItemStatSystem extends EntityTickingSystem<EntityStore> {
             Integer statIndex = entry.getKey();
             Double delta = entry.getValue();
             if (statIndex == null || delta == null) continue;
+            if (previous != null) {
+                Double previousAmount = previous.get(statIndex);
+                if (previousAmount != null && Math.abs(previousAmount - delta) <= RolledItemConstants.STATS_DELTA_EPSILON) {
+                    continue;
+                }
+            }
+
             putModifier(statMap, statIndex, delta);
         }
     }
@@ -240,4 +280,6 @@ public class RolledItemStatSystem extends EntityTickingSystem<EntityStore> {
         StaticModifier modifier = new StaticModifier(Modifier.ModifierTarget.MAX, calcType, (float) amount);
         statMap.putModifier(statIndex, key, modifier);
     }
+
+    private record EquipmentScan(long fingerprint, boolean hasRolledMetadata) {}
 }

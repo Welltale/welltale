@@ -12,6 +12,28 @@ $Sounds = "Sound.ui";
 @ColorDangerHover = #b36060(1.00);
 @ColorOverlay = #0b1117(0.78);
 
+@ColorStatVitality = #df89a2;
+@ColorStatWisdom = #b29ac7;
+@ColorStatStrength = #d2b178;
+@ColorStatIntelligence = #dfaa81;
+@ColorStatChance = #94c3d8;
+@ColorStatAgility = #94c8ac;
+
+@ColorStatLifeRegen = #58e7a3;
+@ColorStatDropChance = #ffc553;
+@ColorStatMoveSpeed = #53baff;
+@ColorStatStamina = #ffcf58;
+@ColorStatStaminaCost = #f2a85a;
+
+@ColorStatEarth = #d59f4b;
+@ColorStatFire = #ff6666;
+@ColorStatWater = #63c9ff;
+@ColorStatAir = #6bdd89;
+
+@ColorStatCriticalPct = #ffb63f;
+@ColorStatCriticalDamage = #ff5d5d;
+@ColorStatCriticalResistance = #e98af3;
+
 @CancelButtonStyle = TextButtonStyle(
   Default: (
     Background: @ColorDanger, LabelStyle: (FontSize: 13, TextColor: @ColorTextMain, RenderBold: true, Alignment: Center, RenderUppercase: true)

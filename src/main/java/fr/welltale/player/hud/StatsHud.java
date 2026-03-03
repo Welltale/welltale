@@ -8,11 +8,10 @@ import com.hypixel.hytale.server.core.entity.entities.player.hud.CustomUIHud;
 import com.hypixel.hytale.server.core.entity.entities.player.hud.HudManager;
 import com.hypixel.hytale.server.core.modules.entitystats.EntityStatMap;
 import com.hypixel.hytale.server.core.modules.entitystats.EntityStatValue;
-import com.hypixel.hytale.server.core.modules.entitystats.asset.EntityStatType;
+import com.hypixel.hytale.server.core.modules.entitystats.asset.DefaultEntityStatTypes;
 import com.hypixel.hytale.server.core.ui.builder.UICommandBuilder;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
-import fr.welltale.characteristic.Characteristics;
 import org.jspecify.annotations.NonNull;
 
 public class StatsHud {
@@ -24,8 +23,8 @@ public class StatsHud {
         EntityStatMap playerStatMap = store.getComponent(ref, EntityStatMap.getComponentType());
         if (playerStatMap == null) return;
 
-        EntityStatValue playerHealthStatValue = playerStatMap.get(EntityStatType.getAssetMap().getIndex(Characteristics.STATIC_MODIFIER_HEALTH_KEY));
-        EntityStatValue playerStaminaStatValue = playerStatMap.get(EntityStatType.getAssetMap().getIndex(Characteristics.STATIC_MODIFIER_STAMINA_KEY));
+        EntityStatValue playerHealthStatValue = playerStatMap.get(DefaultEntityStatTypes.getHealth());
+        EntityStatValue playerStaminaStatValue = playerStatMap.get(DefaultEntityStatTypes.getStamina());
         if (playerHealthStatValue == null || playerStaminaStatValue == null) return;
 
         uiCommandBuilder.append("Hud/Player/Stats.ui");
@@ -50,8 +49,8 @@ public class StatsHud {
         EntityStatMap playerStatMap = store.getComponent(ref, EntityStatMap.getComponentType());
         if (playerStatMap == null) return;
 
-        EntityStatValue playerHealthStatValue = playerStatMap.get(EntityStatType.getAssetMap().getIndex(Characteristics.STATIC_MODIFIER_HEALTH_KEY));
-        EntityStatValue playerStaminaStatValue = playerStatMap.get(EntityStatType.getAssetMap().getIndex(Characteristics.STATIC_MODIFIER_STAMINA_KEY));
+        EntityStatValue playerHealthStatValue = playerStatMap.get(DefaultEntityStatTypes.getHealth());
+        EntityStatValue playerStaminaStatValue = playerStatMap.get(DefaultEntityStatTypes.getStamina());
         if (playerHealthStatValue == null || playerStaminaStatValue == null) return;
 
         UICommandBuilder uiCommandBuilder = new UICommandBuilder();
