@@ -26,6 +26,7 @@ import lombok.NonNull;
  * The system directly modifies the Health stat's current value each tick
  * to simulate natural regeneration, without increasing any permanent stats.
  */
+//TODO DELETE INTELLIGENCE STATS TO CALCULATE ONLY LIFE REGEN STAT
 public class LifeRegenSystem extends EntityTickingSystem<EntityStore> {
     // Cached stat indices
     private int intelligenceStatIndex = -1;

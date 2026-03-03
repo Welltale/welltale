@@ -247,6 +247,7 @@ public class CharacteristicsPage extends InteractiveCustomUIPage<Characteristics
         float strengthStaminaReductionPct = StaminaCostReductionSystem.getReductionPctFromStrength(
                 additionalCharacteristics.getStrength()
         ) * 100f;
+        //TODO REMOVE GLOBAL PRIMARY STATS
         cmd.set("#StaminaConsumptionReductionStatValueLabel.Text", formatPercent(strengthStaminaReductionPct));
         cmd.set("#GlobalHealthStatValueLabel.Text", String.valueOf(additionalCharacteristics.getHealth()));
         cmd.set("#GlobalWisdomStatValueLabel.Text", String.valueOf(additionalCharacteristics.getWisdom()));
