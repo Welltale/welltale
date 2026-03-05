@@ -15,6 +15,8 @@ import lombok.Setter;
 
 public class Characteristics {
     public static final float MAX_ELEMENTAL_RESISTANCE = 50f;
+    //TODO IMPLEMENT THIS PASSIVE
+    public static final float HEAL_INTELLIGENCE_BONUS_PER_POINT = 0.01f;
 
     public static final int DEFAULT_HEALTH = 20;
     public static final int DEFAULT_WISDOM = 0;

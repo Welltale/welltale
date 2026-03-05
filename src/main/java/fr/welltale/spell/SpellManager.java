@@ -17,6 +17,7 @@ import fr.welltale.clazz.ClassRepository;
 import fr.welltale.player.charactercache.CachedCharacter;
 import fr.welltale.player.charactercache.CharacterCacheRepository;
 import fr.welltale.spell.spells.Jump;
+import fr.welltale.spell.spells.LightbenderHealing;
 import fr.welltale.spell.spells.Supershot;
 import fr.welltale.util.Color;
 import lombok.NonNull;
@@ -52,6 +53,7 @@ public class SpellManager {
     void registerSpells() {
         spellRegistry.add(new Jump());
         spellRegistry.add(new Supershot());
+        spellRegistry.add(new LightbenderHealing());
 
         this.logger.atInfo().log("Spells registered: " + spellRegistry.size());
     }

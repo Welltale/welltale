@@ -36,6 +36,8 @@ public class CastSpellInteraction extends SimpleInteraction {
 
     @Override
     protected void tick0(boolean firstRun, float time, @NonNull InteractionType type, @NonNull InteractionContext context, @NonNull CooldownHandler cooldownHandler) {
+        if (!firstRun) return;
+
         if (type != InteractionType.Ability1 && type != InteractionType.Ability2 && type != InteractionType.Ability3) {
             return;
         }
@@ -77,5 +79,9 @@ public class CastSpellInteraction extends SimpleInteraction {
         }
 
         staticSpellManager.cast(player, playerData, type, commandBuffer);
+    }
+
+    @Override
+    protected void simulateTick0(boolean firstRun, float time, @NonNull InteractionType type, @NonNull InteractionContext context, @NonNull CooldownHandler cooldownHandler) {
     }
 }

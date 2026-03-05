@@ -234,27 +234,43 @@ public class CharacteristicsPage extends InteractiveCustomUIPage<Characteristics
         cmd.set("#XpLabel.Text", currentLevelXp + " / " + xpToNextLevel + " XP");
         cmd.set("#XpProgressBar.Value", progressToNextLevel);
         cmd.set("#CharacteristicPointsLabel.Text", String.valueOf(points));
-        cmd.set("#HealthStatValueLabel.Text", String.valueOf(editable != null ? editable.getHealth() : 0));
-        cmd.set("#WisdomStatValueLabel.Text", String.valueOf(editable != null ? editable.getWisdom() : 0));
-        cmd.set("#StrengthStatValueLabel.Text", String.valueOf(editable != null ? editable.getStrength() : 0));
-        cmd.set("#IntelligenceStatValueLabel.Text", String.valueOf(editable != null ? editable.getIntelligence() : 0));
-        cmd.set("#ChanceStatValueLabel.Text", String.valueOf(editable != null ? editable.getChance() : 0));
-        cmd.set("#AgilityStatValueLabel.Text", String.valueOf(editable != null ? editable.getAgility() : 0));
+        cmd.set("#HealthStatValueLabel.Text", editable != null ?
+                editable.getHealth() + " (+" + (editable.getHealth() + additionalCharacteristics.getHealth()) + ")":
+                0 + " (+" + additionalCharacteristics.getHealth() + ")");
+
+        cmd.set("#WisdomStatValueLabel.Text", editable != null ?
+                editable.getWisdom() + " (+" + (editable.getWisdom() + additionalCharacteristics.getWisdom()) + ")":
+                0 + " (+" + additionalCharacteristics.getWisdom() + ")");
+
+        cmd.set("#StrengthStatValueLabel.Text", editable != null ?
+                editable.getStrength() + " (+" + (editable.getStrength() + additionalCharacteristics.getStrength()) + ")":
+                0 + " (+" + additionalCharacteristics.getStrength() + ")");
+
+        cmd.set("#IntelligenceStatValueLabel.Text", editable != null ?
+                editable.getIntelligence() + " (+" + (editable.getIntelligence() + additionalCharacteristics.getIntelligence()) + ")":
+                0 + " (+" + additionalCharacteristics.getIntelligence() + ")");
+
+        cmd.set("#ChanceStatValueLabel.Text", editable != null ?
+                editable.getChance() + " (+" + (editable.getChance() + additionalCharacteristics.getChance()) + ")":
+                0 + " (+" + additionalCharacteristics.getChance() + ")");
+
+        cmd.set("#AgilityStatValueLabel.Text", editable != null ?
+                editable.getAgility() + " (+" + (editable.getAgility() + additionalCharacteristics.getAgility()) + ")":
+                0 + " (+" + additionalCharacteristics.getAgility() + ")");
+
         cmd.set("#LifeRegenStatValueLabel.Text", formatPercent(additionalCharacteristics.getLifeRegenPct()));
         cmd.set("#DropChanceStatValueLabel.Text", formatPercent(additionalCharacteristics.getDropChance()));
         cmd.set("#MoveSpeedStatValueLabel.Text", formatPercent(additionalCharacteristics.getMoveSpeed()));
         cmd.set("#StaminaStatValueLabel.Text", String.valueOf(additionalCharacteristics.getStamina()));
-        float strengthStaminaReductionPct = StaminaCostReductionSystem.getReductionPctFromStrength(
+        cmd.set("#StaminaConsumptionReductionStatValueLabel.Text", formatPercent(StaminaCostReductionSystem.getReductionPctFromStrength(
                 additionalCharacteristics.getStrength()
-        ) * 100f;
-        //TODO REMOVE GLOBAL PRIMARY STATS
-        cmd.set("#StaminaConsumptionReductionStatValueLabel.Text", formatPercent(strengthStaminaReductionPct));
-        cmd.set("#GlobalHealthStatValueLabel.Text", String.valueOf(additionalCharacteristics.getHealth()));
-        cmd.set("#GlobalWisdomStatValueLabel.Text", String.valueOf(additionalCharacteristics.getWisdom()));
-        cmd.set("#GlobalStrengthStatValueLabel.Text", String.valueOf(additionalCharacteristics.getStrength()));
-        cmd.set("#GlobalIntelligenceStatValueLabel.Text", String.valueOf(additionalCharacteristics.getIntelligence()));
-        cmd.set("#GlobalChanceStatValueLabel.Text", String.valueOf(additionalCharacteristics.getChance()));
-        cmd.set("#GlobalAgilityStatValueLabel.Text", String.valueOf(additionalCharacteristics.getAgility()));
+        ) * 100f));
+//        cmd.set("#GlobalHealthStatValueLabel.Text", String.valueOf(additionalCharacteristics.getHealth()));
+//        cmd.set("#GlobalWisdomStatValueLabel.Text", String.valueOf(additionalCharacteristics.getWisdom()));
+//        cmd.set("#GlobalStrengthStatValueLabel.Text", String.valueOf(additionalCharacteristics.getStrength()));
+//        cmd.set("#GlobalIntelligenceStatValueLabel.Text", String.valueOf(additionalCharacteristics.getIntelligence()));
+//        cmd.set("#GlobalChanceStatValueLabel.Text", String.valueOf(additionalCharacteristics.getChance()));
+//        cmd.set("#GlobalAgilityStatValueLabel.Text", String.valueOf(additionalCharacteristics.getAgility()));
         cmd.set("#CriticalDamageStatValueLabel.Text", String.valueOf(additionalCharacteristics.getCriticalDamage()));
         cmd.set("#CriticalPctStatValueLabel.Text", formatPercent(additionalCharacteristics.getCriticalPct()));
         cmd.set("#CriticalResistanceStatValueLabel.Text", String.valueOf(additionalCharacteristics.getCriticalResistance()));

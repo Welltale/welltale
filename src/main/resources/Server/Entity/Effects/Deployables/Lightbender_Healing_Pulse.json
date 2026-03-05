@@ -1,0 +1,13 @@
+{
+  "ApplicationEffects": {
+    "EntityTopTint": "#02de45",
+    "LocalSoundEventId": "SFX_Deployable_Totem_Heal_Effect_Local"
+  },
+  "Duration": 1.0,
+  "OverlapBehavior": "Overwrite",
+  "StatModifiers": {
+    "Health": 5
+  },
+  "Debuff": false,
+  "StatusEffectIcon": "UI/StatusEffects/AddHealth/Small.png"
+}

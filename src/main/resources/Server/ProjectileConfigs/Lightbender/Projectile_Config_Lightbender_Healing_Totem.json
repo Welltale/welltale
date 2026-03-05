@@ -1,0 +1,86 @@
+{
+  "Model": "Healing_Totem_Projectile",
+  "Physics": {
+    "Type": "Standard",
+    "Gravity": 30.0,
+    "TerminalVelocityAir": 60,
+    "TerminalVelocityWater": 15,
+    "RotationMode": "None",
+    "Bounciness": 0,
+    "SticksVertically": false
+  },
+  "LaunchForce": 0.0,
+  "SpawnOffset": {
+    "X": 0.0,
+    "Y": 14.0,
+    "Z": 0.0
+  },
+  "SpawnRotationOffset": {
+    "Pitch": 0.0,
+    "Yaw": 0.0,
+    "Roll": 0.0
+  },
+  "Interactions": {
+    "ProjectileMiss": {
+      "Interactions": [
+        {
+          "Type": "SpawnDeployableAtHitLocation",
+          "Config": {
+            "Type": "Aoe",
+            "Shape": "Cylinder",
+            "Id": "Lightbender_Healing_Totem",
+            "LiveDuration": 3.25,
+            "Model": "Healing_Totem",
+            "ModelScale": 1.0,
+            "Invulnerable": true,
+            "Stats": {
+              "Health": {
+                "Initial": 999999,
+                "Max": 999999
+              }
+            },
+            "StartRadius": 0.1,
+            "EndRadius": 8.0,
+            "Height": 2.0,
+            "RadiusChangeTime": 0.2,
+            "DamageInterval": 1.0,
+            "DamageAmount": 0.0,
+            "AttackOwner": true,
+            "AttackTeam": true,
+            "AttackEnemies": false,
+            "ApplyEffects": [
+              "Lightbender_Healing_Pulse"
+            ],
+            "DeploySoundEventId": "SFX_Deployable_Totem_Heal_Spawn",
+            "DespawnSoundEventId": "SFX_Deployable_Totem_Heal_Despawn",
+            "SpawnParticles": [
+              {
+                "SystemId": "Explosion_Medium",
+                "TargetEntityPart": "Entity"
+              },
+              {
+                "SystemId": "Totem_Heal_Simple_Test",
+                "TargetEntityPart": "Entity",
+                "Scale": 0.6
+              },
+              {
+                "SystemId": "Totem_Heal_Extra",
+                "TargetEntityPart": "Entity"
+              }
+            ],
+            "DespawnParticles": [
+              {
+                "SystemId": "Explosion_Medium",
+                "TargetEntityPart": "Entity"
+              }
+            ]
+          }
+        },
+        {
+          "Type": "RemoveEntity",
+          "Entity": "User"
+        }
+      ]
+    }
+  }
+}

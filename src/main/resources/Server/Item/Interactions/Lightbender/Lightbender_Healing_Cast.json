@@ -1,0 +1,26 @@
+{
+  "Type": "Serial",
+  "Interactions": [
+    {
+      "Type": "Simple",
+      "RunTime": 0.25,
+      "Effects": {
+        "ItemPlayerAnimationsId": "Default",
+        "ItemAnimationId": "CastLeftCharged",
+        "LocalSoundEventId": "SFX_Deployable_Totem_Heal_Spawn",
+        "WorldSoundEventId": "SFX_Deployable_Totem_Heal_Spawn",
+        "Particles": [
+          {
+            "SystemId": "Totem_Heal_Extra",
+            "TargetEntityPart": "Entity",
+            "Scale": 0.5
+          }
+        ]
+      }
+    },
+    {
+      "Type": "Projectile",
+      "Config": "Projectile_Config_Lightbender_Healing_Totem"
+    }
+  ]
+}
